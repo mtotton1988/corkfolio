@@ -1,0 +1,3917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Corkfolio">
+<meta name="theme-color" content="#f6f2ec">
+<title>Corkfolio</title>
+<link rel="apple-touch-icon" href="./app-icon.png">
+<link rel="icon" type="image/png" href="./app-icon.png">
+<link rel="preload" href="./fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="./fonts/newsreader-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="manifest" href="./manifest.webmanifest">
+<style>
+  /* ----------------------------------------------------------------- colour
+     Daylight, and only daylight. There was an evening palette here, chosen by
+     the system preference or by hand from Settings; it was removed on 24
+     August because one set of colours is one set to get right. Every colour
+     still resolves through these variables rather than being written into a
+     style object, which is worth keeping whether or not a second palette ever
+     comes back.
+
+     Contrast was measured rather than eyeballed - see the README. */
+  :root{
+    --ink:#211c19;        --ink-rgb:33,28,25;
+    --paper:#f6f2ec;      --paper-rgb:246,242,236;
+    --card:#fffdf9;      --card-rgb:255,253,249;
+    --band:#ece5da;
+    --claret:#8c2f3a;     --claret-rgb:140,47,58;
+    --link:#8a5a2f;
+    --shadow-card:0 1px 3px rgba(33,28,25,0.07);
+    --shadow-soft:0 1px 2px rgba(33,28,25,0.05);
+    --shadow-sheet:0 -6px 18px rgba(33,28,25,0.08);
+    --scrim:rgba(33,28,25,0.35);
+    --surface:var(--paper);
+    /* Five maturity states, not BBR's four, because "closing" is the one that
+       should make you act and BBR does not distinguish it. */
+    --st-young:#5c7d93;
+    --st-opening:#5f8a5b;
+    --st-prime:#a8762c;
+    --st-closing:#b4552f;
+    --st-past:#8c2f3a;
+    --st-unknown:#857c70;
+    /* Region colours for the timeline. Chosen to be distinguishable from each
+       other AND from the state colours, which appear alongside them. */
+    /* Burgundy is burgundy - the one region whose name is already a colour,
+       so anything else there reads as a mistake. Bordeaux takes the deep
+       estuary blue of the Gironde instead: it is the largest holding and needs
+       to be unmistakable, and blue against wine-red is the strongest pair in
+       the set. The rest follow their own landscape - southern rust for the
+       Rhone, vine-green for Piedmont, straw gold for Champagne.
+
+       Measured against the card: every one clears the 3:1 a filled shape
+       needs. Champagne was a lighter gold and reached only 2.83:1 on paper, so
+       it was darkened. */
+    --rg-bordeaux:#33465e;
+    --rg-burgundy:#6e1b32;
+    --rg-rhone:#a85a2e;
+    --rg-piedmont:#6e8a4a;
+    --rg-champagne:#8a7328;
+    --rg-other:#9a8e80;
+    /* History. The same wine red as the Burgundy region marker, and that is a
+       coincidence rather than a statement: this one is a wash across a whole
+       tile rather than a 3px swatch, and the word HISTORY on the tile carries
+       the meaning. Named separately so that changing one never quietly
+       changes the other. */
+    --hist:#6e1b32;
+    --hist-wash:rgba(110,27,50,0.09);
+    --hist-edge:rgba(110,27,50,0.22);
+  }
+  /* Newsreader, served from this repo so the app owns its own typeface: no
+     third-party request, and it works with no connection. */
+  @font-face {
+    font-family:'Newsreader'; font-style:normal; font-weight:400 600;
+    font-display:swap; src:url('./fonts/newsreader-latin.woff2') format('woff2');
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+  }
+  @font-face {
+    font-family:'Newsreader'; font-style:normal; font-weight:400 600;
+    font-display:swap; src:url('./fonts/newsreader-latin-ext.woff2') format('woff2');
+    unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+  }
+  @font-face {
+    font-family:'Newsreader'; font-style:italic; font-weight:400 600;
+    font-display:swap; src:url('./fonts/newsreader-italic-latin.woff2') format('woff2');
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+  }
+  @font-face {
+    font-family:'Newsreader'; font-style:italic; font-weight:400 600;
+    font-display:swap; src:url('./fonts/newsreader-italic-latin-ext.woff2') format('woff2');
+    unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0; padding:0; height:100%; overscroll-behavior-y:none}
+  body{
+    background:var(--surface); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    font-size:15px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  #root{height:100%}
+  button{font-family:inherit; font-size:inherit; color:inherit; cursor:pointer}
+  input,select{font-family:inherit; font-size:inherit; color:inherit}
+  .m-num{font-variant-numeric:tabular-nums}
+  a{color:var(--link)}
+  ::placeholder{color:rgba(var(--ink-rgb),0.38)}
+  button:focus-visible,input:focus-visible,select:focus-visible{
+    outline:2px solid var(--claret); outline-offset:2px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script>
+/* ============================================================================
+   CORKFOLIO - see what you have, and learn about it.
+
+   One screen with three illustrations of the same cellar:
+
+     Windows   every lot drawn as a bar across its drinking window, with a line
+               for today. What is ready, what is not yet, what is closing and
+               what has gone past reads off the page without a legend.
+     Regions   where the cellar actually is, by bottles and by price paid
+     Vintages  the shape of the cellar by year
+
+   Tap any wine for the estate, the producer, how it tastes, the character of
+   that vintage - and the duty-paid delivered price of one bottle, which is the
+   only price that matters when the cellar exists to be drunk.
+
+   No build step. Edit this file and push. Plain React via createElement.
+
+   ---------------------------------------------------------------------------
+   localStorage keys - NEVER RENAME ONE. Existing data becomes unreachable.
+
+     corkfolio.lots.v1        the cellar as last imported from BBR. FACTS:
+                              replaced wholesale by each import, never edited
+                              by hand.
+     corkfolio.notes.v1       OPINIONS, one per lot key. Nothing writes to this
+                              yet; the key exists so the importer can already
+                              read a pinned window and a corrected producer,
+                              and so the shape is fixed before there is data in
+                              it to migrate.
+     corkfolio.sync.v1        { token, repo } for GitHub sync, if it is set up.
+                              Device-only and never synced anywhere itself.
+     corkfolio.history-deleted.v1
+                              tombstones: history entries removed by hand, so
+                              a removal survives a sync instead of being
+                              pushed back by the other device.
+     corkfolio.history.v1     WHAT HAS LEFT BOND. Shown as "Home and consumed",
+                              and called `history` in the code and in this key
+                              because a storage key can never be renamed
+                              without orphaning the data already under it. The
+                              label is free to change; the key is not. Bottles that were in one export
+                              and not the next, which means they were pulled
+                              from bond for drinking. Accumulated by the app -
+                              neither BBR nor you typed it, it comes from
+                              noticing a difference between two imports - so
+                              it cannot live in lots, which every import
+                              replaces wholesale. Never counted in a total.
+     corkfolio.prefs.v1       NOTHING, now. It held the theme and the delivery
+                              charge, and both went on 24 August. The app no
+                              longer reads or writes it; a copy may still sit
+                              on a device from an earlier version, which is
+                              harmless. Do not reuse the name for something
+                              with a different shape.
+     corkfolio.preupgrade.v1  a one-off copy, taken the first time a new
+                              version of the app runs. Written once, never
+                              overwritten.
+
+   Reference content lives in wines.json and vintages.json in this repo. It is
+   general knowledge about estates and vintages, not personal data, so it is
+   public and shipped with the app - which also means it works offline and
+   costs no request. Nothing leaves the device: no CDN, no analytics, no API.
+============================================================================ */
+
+const h = React.createElement;
+
+const INK = 'var(--ink)';
+const PAPER = 'var(--paper)';
+const CARD = 'var(--card)';
+const CLARET = 'var(--claret)';
+const ink = a => 'rgba(var(--ink-rgb),' + a + ')';
+
+/* =========================================================================
+   Constants. Every one that looks arbitrary has a sentence saying what
+   happens at other values.
+========================================================================= */
+
+const PRE_UPGRADE_KEY = 'corkfolio.preupgrade.v1';
+const HISTORY_KEY = 'corkfolio.history.v1';
+const DELETED_KEY = 'corkfolio.history-deleted.v1';
+const SYNC_KEY = 'corkfolio.sync.v1';
+
+/* Community tasting notes live on CellarTracker, which has thousands of them
+   per wine and is the one thing a reference file written by anybody cannot be:
+   other people, drinking the same bottle, over years.
+
+   This is a LINK, not a request. The app fetches nothing from CellarTracker
+   and could not if it wanted to - they block automated readers, which is why
+   scraping them was rejected long ago. Tapping it hands the wine's name to a
+   new browser tab, the way typing it into the search box would.
+
+   Kept as one constant because the URL is UNVERIFIED. CellarTracker answered
+   an automated check with a bot wall rather than a page, so the search path
+   below is from knowledge rather than from a test. If the button lands
+   somewhere unhelpful, this line is the fix - not a hunt through the sheet. */
+const CT_SEARCH = 'https://www.cellartracker.com/list.asp?szSearch=';
+
+/* Wine-Searcher's find path, which takes the wine as plus-separated words, then
+   the vintage, then a country for the prices. `uk` because that is where these
+   bottles would be delivered and a dollar price answers nobody's question here.
+
+   UNVERIFIED, and deliberately untested: Wine-Searcher prohibits automated
+   access and CellarTracker answered the equivalent check with a bot wall, so
+   loading this to see what came back would have been both rude and unlikely to
+   tell the truth about what a phone sees. Same rule as CT_SEARCH - if the
+   button lands somewhere unhelpful, this line is the fix. */
+const WS_FIND = 'https://www.wine-searcher.com/find/';
+const WS_COUNTRY = 'uk';
+
+function wineSearcherUrl(lot, wine) {
+  const name = wine ? wine.name : shortName(lot);
+  const slug = fold(name)
+    .replace(/[^a-z0-9]+/g, '+').replace(/^\++|\++$/g, '');
+  return WS_FIND + slug + (lot.vintage ? '/' + encodeURIComponent(lot.vintage) : '') +
+    '/' + WS_COUNTRY;
+}
+
+/* Producer, cuvee and vintage, in that order, with the accents folded off:
+   the point is a search term other people's notes will match, and an
+   apostrophe or a circumflex in a query string helps nobody. */
+function communityNotesUrl(lot, wine) {
+  const name = wine ? wine.name : shortName(lot);
+  const terms = fold(name + ' ' + (lot.vintage || ''))
+    .replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+  return CT_SEARCH + encodeURIComponent(terms);
+}
+
+/* The file the sync reads and writes, in a repo you own. One file, not one per
+   thing: the whole cellar is a few hundred kilobytes of text, and a single
+   file means a single sha to race on rather than four. */
+const GH_FILE = 'cellar.json';
+
+/* How long a removed history entry keeps overriding what a sync finds. Without
+   tombstones a "not drunk - remove" on the phone is pushed straight back by
+   the next laptop to sync, because the laptop still has the entry and cannot
+   tell a deletion from data it has never seen. A device that has not synced in
+   longer than this can still resurrect one. */
+const TOMBSTONE_TTL = 90 * 24 * 60 * 60 * 1000;
+
+/* Duty is charged per litre of pure alcohol, not per bottle. This matters:
+   the easement that treated everything from 11.5% to 14.5% as if it were
+   12.5% ended on 1 February 2025, and the L2.67-a-bottle figure that is still
+   widely quoted predates it. At L29.54 per litre of pure alcohol a 12.5%
+   bottle pays L2.77 and a 14.5% Chateauneuf pays L3.21. The export gives an
+   alcohol content per row, so each wine is charged its own duty.
+
+   VERIFY THIS AGAINST HMRC before trusting a delivered price: it is uprated
+   most years, and a wrong rate here misprices every bottle in the app. */
+const DUTY_PER_LPA = 29.54;
+const VAT = 0.20;
+/* BBR charges this per product when you break a case rather than taking all
+   of it. It belongs to a withdrawal, not to a bottle. */
+const PART_CASE_FEE = 10;
+
+/* Years left in the window before a wine counts as closing. Three at 130
+   bottles a year is time to drink a twelve in tranches without rushing. */
+const CLOSING_YEARS = 3;
+
+/* A comp above this multiple of the Liv-ex mark is a bad print, not a market.
+   Clinet 2016 shows a BBX low of L1,000 against a L360 last trade. */
+const OUTLIER_MULTIPLE = 2;
+
+/* The timeline's x-axis. Showing the true full span would run 2006 to 2067
+   and squeeze every bar into nothing, so it is clamped and anything running
+   past the right edge is drawn with an open end rather than a truncated one. */
+const AXIS_BACK = 4;
+const AXIS_FORWARD = 26;
+
+const STATES = {
+  young:   { name: 'Not ready', colour: 'var(--st-young)',   blurb: 'inside no drinking window yet' },
+  opening: { name: 'Opening',   colour: 'var(--st-opening)', blurb: 'drinkable and still improving' },
+  prime:   { name: 'At best',   colour: 'var(--st-prime)',   blurb: 'in the middle of its window' },
+  closing: { name: 'Closing',   colour: 'var(--st-closing)', blurb: 'three years or less of window left' },
+  past:    { name: 'Past',      colour: 'var(--st-past)',    blurb: 'beyond the stated window' },
+  unknown: { name: 'No window', colour: 'var(--st-unknown)', blurb: 'no window stated and no vintage to estimate from' },
+};
+const STATE_ORDER = ['closing', 'past', 'prime', 'opening', 'young', 'unknown'];
+
+const REGION_COLOUR = {
+  'Bordeaux': 'var(--rg-bordeaux)',
+  'Burgundy': 'var(--rg-burgundy)',
+  'Rhône': 'var(--rg-rhone)',
+  'Piedmont': 'var(--rg-piedmont)',
+  'Champagne': 'var(--rg-champagne)',
+};
+
+/* Sub-region inferred from the description, because the export gives a Region
+   and never a sub-region.
+
+   Two rules, and both have already caused a bug:
+
+   ORDER MATTERS. The first match wins, so anything that is a substring of
+   another entry comes after it. Savigny-les-Beaune, Chorey-les-Beaune and
+   Cote de Beaune all contain "beaune"; Amarone della Valpolicella contains
+   "valpolicella"; Cote de Brouilly contains "brouilly"; Chianti Classico
+   contains "chianti". Each container is listed before the thing it contains.
+
+   KEYWORDS MUST BE PRECISE. These keys also strip the geographic tail off a
+   description when inferring the producer, so a loose key mislabels the wine
+   and then misnames its grower. Three were caught writing this table: "port"
+   sits inside "Portugal", so every Douro wine would have read as Port;
+   "baden" sits inside "Badenhorst", the Swartland grower; "collio" sits
+   inside "Collioure", which is in Roussillon. Port and Toro are matched with
+   their commas because their names are too short to be safe bare. Baden and
+   Collio are left out rather than made to work.
+
+   A region name that is also the only appellation anyone writes - Champagne,
+   Rioja, Alsace - appears here as its own sub-region. The funnel needs a
+   level below the region, and repeating the name is better than inventing
+   one. */
+const SUBREGIONS = [
+  /* Bordeaux */
+  ['Pessac-Léognan', ['pessac-leognan', 'pessac']],
+  ['St Julien', ['st julien', 'saint-julien', 'st-julien']],
+  ['St Estèphe', ['st estephe', 'saint-estephe', 'st-estephe']],
+  ['St Émilion', ['st emilion', 'saint-emilion', 'st-emilion']],
+  ['Pomerol', ['pomerol']],
+  ['Pauillac', ['pauillac']],
+  ['Margaux', ['margaux']],
+  ['Sauternes', ['sauternes', 'barsac']],
+  ['Fronsac', ['fronsac']],
+  ['Listrac', ['listrac']],
+  ['Moulis', ['moulis']],
+  ['Haut-Médoc', ['haut-medoc']],
+  ['Médoc', ['medoc']],
+  ['Graves', ['graves']],
+  ['Entre-Deux-Mers', ['entre-deux-mers']],
+  ['Côtes de Bourg', ['cotes de bourg']],
+  ['Blaye', ['blaye']],
+
+  /* Burgundy. A description often gives only the vineyard, so a grand cru is
+     matched by its own name and mapped to the commune that owns it:
+     Richebourg is Vosne, Chambertin is Gevrey. */
+  ['Chablis', ['chablis']],
+  ['Marsannay', ['marsannay']],
+  ['Fixin', ['fixin']],
+  ['Gevrey-Chambertin', ['gevrey', 'chambertin']],
+  ['Morey-St Denis', ['morey', 'clos de tart', 'clos st denis']],
+  ['Chambolle-Musigny', ['chambolle', 'musigny', 'bonnes mares', 'bonnes-mares']],
+  ['Vougeot', ['vougeot']],
+  ['Vosne-Romanée', ['vosne', 'romanee', 'echezeaux', 'richebourg', 'la tache']],
+  ['Nuits-St Georges', ['nuits-st georges', 'nuits st georges', 'nuits-saint-georges']],
+  ['Ladoix', ['ladoix']],
+  ['Aloxe-Corton', ['aloxe', 'corton']],
+  ['Pernand-Vergelesses', ['pernand']],
+  ['Savigny-lès-Beaune', ['savigny']],
+  ['Chorey-lès-Beaune', ['chorey']],
+  ['Beaune', ['beaune']],
+  ['Pommard', ['pommard']],
+  ['Volnay', ['volnay']],
+  ['Monthélie', ['monthelie']],
+  ['Auxey-Duresses', ['auxey']],
+  ['Meursault', ['meursault']],
+  ['Puligny-Montrachet', ['puligny']],
+  ['Chassagne-Montrachet', ['chassagne']],
+  ['Montrachet', ['montrachet']],
+  ['St Aubin', ['st aubin', 'saint-aubin']],
+  ['Santenay', ['santenay']],
+  ['Maranges', ['maranges']],
+  ['Mercurey', ['mercurey']],
+  ['Rully', ['rully']],
+  ['Givry', ['givry']],
+  ['Montagny', ['montagny']],
+  ['Pouilly-Fuissé', ['pouilly-fuisse', 'pouilly fuisse']],
+  ['St Véran', ['st veran', 'saint-veran']],
+  ['Mâcon', ['macon']],
+  ['Bourgogne', ['bourgogne']],
+
+  /* Beaujolais. The crus first, the regional name last. */
+  ['Côte de Brouilly', ['cote de brouilly']],
+  ['Brouilly', ['brouilly']],
+  ['Moulin-à-Vent', ['moulin-a-vent', 'moulin a vent']],
+  ['Fleurie', ['fleurie']],
+  ['Morgon', ['morgon']],
+  ['Juliénas', ['julienas']],
+  ['Chénas', ['chenas']],
+  ['Chiroubles', ['chiroubles']],
+  ['St Amour', ['st amour', 'saint-amour']],
+  ['Régnié', ['regnie']],
+  ['Beaujolais', ['beaujolais']],
+
+  /* Rhône */
+  ['Châteauneuf-du-Pape', ['chateauneuf']],
+  ['Côte-Rôtie', ['cote-rotie', 'cote rotie']],
+  ['Condrieu', ['condrieu']],
+  ['Château-Grillet', ['chateau-grillet']],
+  ['Crozes-Hermitage', ['crozes']],
+  ['Hermitage', ['hermitage']],
+  ['St Joseph', ['st joseph', 'saint-joseph', 'st-joseph']],
+  ['Cornas', ['cornas']],
+  ['Gigondas', ['gigondas']],
+  ['Vacqueyras', ['vacqueyras']],
+  ['Lirac', ['lirac']],
+  ['Tavel', ['tavel']],
+  ['Ventoux', ['ventoux']],
+  ['Côtes du Rhône', ['cotes du rhone']],
+
+  /* Loire */
+  ['Sancerre', ['sancerre']],
+  ['Pouilly-Fumé', ['pouilly-fume', 'pouilly fume']],
+  ['Vouvray', ['vouvray']],
+  ['Chinon', ['chinon']],
+  ['Bourgueil', ['bourgueil']],
+  ['Saumur-Champigny', ['saumur-champigny', 'saumur champigny']],
+  ['Saumur', ['saumur']],
+  ['Savennières', ['savennieres']],
+  ['Anjou', ['anjou']],
+  ['Muscadet', ['muscadet']],
+
+  /* The rest of France */
+  ['Champagne', ['coteaux champenois', 'champagne']],
+  ['Alsace', ['alsace']],
+  ['Bandol', ['bandol']],
+  ['Côtes de Provence', ['cotes de provence']],
+  ['Provence', ['provence']],
+  ['Château-Chalon', ['chateau-chalon']],
+  ['Arbois', ['arbois']],
+  ['Côtes du Jura', ['cotes du jura']],
+  ['Cahors', ['cahors']],
+  ['Madiran', ['madiran']],
+  ['Jurançon', ['jurancon']],
+  ['Bergerac', ['bergerac']],
+  ['Collioure', ['collioure', 'banyuls']],
+  ['Côtes du Roussillon', ['cotes du roussillon', 'maury', 'rivesaltes']],
+  ['St Guilhem-le-Désert', ['st guilhem', 'aniane']],
+  ['Corbières', ['corbieres']],
+  ['Minervois', ['minervois']],
+  ['Faugères', ['faugeres']],
+  ['Pic St Loup', ['pic st loup', 'pic saint-loup']],
+  ['Languedoc', ['languedoc']],
+
+  /* Italy */
+  ['Barolo', ['barolo']],
+  ['Barbaresco', ['barbaresco']],
+  ['Roero', ['roero']],
+  ['Gattinara', ['gattinara']],
+  ['Langhe', ['langhe']],
+  ['Rosso di Montalcino', ['rosso di montalcino']],
+  ['Brunello di Montalcino', ['brunello']],
+  ['Vino Nobile di Montepulciano', ['vino nobile']],
+  ['Chianti Classico', ['chianti classico']],
+  ['Chianti', ['chianti']],
+  ['Bolgheri', ['bolgheri']],
+  ['Maremma', ['maremma']],
+  ['Amarone della Valpolicella', ['amarone']],
+  ['Valpolicella', ['valpolicella']],
+  ['Soave', ['soave']],
+  ['Franciacorta', ['franciacorta']],
+  ['Alto Adige', ['alto adige']],
+  ['Montefalco', ['montefalco', 'sagrantino']],
+  ['Taurasi', ['taurasi']],
+  ['Etna', ['etna']],
+
+  /* Spain and Portugal */
+  ['Rioja', ['rioja']],
+  ['Ribera del Duero', ['ribera del duero']],
+  ['Priorat', ['priorat']],
+  ['Rías Baixas', ['rias baixas']],
+  ['Toro', [', toro,']],
+  ['Jerez', ['jerez']],
+  ['Port', ['vintage port', 'tawny port', 'white port', 'colheita', ', port,']],
+  ['Douro', ['douro']],
+  ['Alentejo', ['alentejo']],
+  ['Vinho Verde', ['vinho verde']],
+  ['Madeira', ['madeira']],
+
+  /* Germany, Austria, Hungary */
+  ['Mosel', ['mosel', 'saar', 'ruwer']],
+  ['Nahe', ['nahe']],
+  ['Rheingau', ['rheingau']],
+  ['Rheinhessen', ['rheinhessen']],
+  ['Pfalz', ['pfalz']],
+  ['Wachau', ['wachau']],
+  ['Kamptal', ['kamptal']],
+  ['Kremstal', ['kremstal']],
+  ['Burgenland', ['burgenland']],
+  ['Tokaj', ['tokaj']],
+
+  /* The New World. Napa's own districts come before Napa Valley, because a
+     description that names Oakville names the valley as well. */
+  ['Oakville', ['oakville']],
+  ['Rutherford', ['rutherford']],
+  ['Howell Mountain', ['howell mountain']],
+  ['Stags Leap', ['stags leap', "stag's leap"]],
+  ['Spring Mountain', ['spring mountain']],
+  ['Diamond Mountain', ['diamond mountain']],
+  ['Mount Veeder', ['mount veeder']],
+  ['Atlas Peak', ['atlas peak']],
+  ['Coombsville', ['coombsville']],
+  ['Calistoga', ['calistoga']],
+  ['St Helena', ['st helena', 'saint helena']],
+  ['Yountville', ['yountville']],
+  ['Carneros', ['carneros']],
+  ['Napa Valley', ['napa']],
+  ['Russian River Valley', ['russian river']],
+  ['Sonoma Coast', ['sonoma coast']],
+  ['Sonoma', ['sonoma']],
+  ['Santa Rita Hills', ['santa rita hills', 'sta. rita hills']],
+  ['Santa Barbara', ['santa barbara', 'santa maria valley']],
+  ['Paso Robles', ['paso robles']],
+  ['Willamette Valley', ['willamette']],
+  ['Walla Walla', ['walla walla']],
+  ['Columbia Valley', ['columbia valley']],
+  ['Barossa Valley', ['barossa']],
+  ['Eden Valley', ['eden valley']],
+  ['Clare Valley', ['clare valley']],
+  ['McLaren Vale', ['mclaren']],
+  ['Coonawarra', ['coonawarra']],
+  ['Yarra Valley', ['yarra']],
+  ['Margaret River', ['margaret river']],
+  ['Hunter Valley', ['hunter valley']],
+  ['Tasmania', ['tasmania']],
+  ['Marlborough', ['marlborough']],
+  ['Central Otago', ['central otago']],
+  ["Hawke's Bay", ['hawkes bay', "hawke's bay"]],
+  ['Stellenbosch', ['stellenbosch']],
+  ['Swartland', ['swartland']],
+  ['Walker Bay', ['walker bay', 'hemel-en-aarde']],
+  ['Franschhoek', ['franschhoek']],
+  ['Constantia', ['constantia']],
+  ['Uco Valley', ['uco valley']],
+  ['Mendoza', ['mendoza']],
+  ['Maipo Valley', ['maipo']],
+  ['Colchagua', ['colchagua']],
+  ['Aconcagua', ['aconcagua']],
+];
+
+/* Years after the vintage that a window typically opens and closes, used only
+   where the export states none - five lots and 42 bottles of the August 2026
+   cellar. Deliberately conservative: an estimate that says "drink it" is more
+   dangerous than one that says "wait", because you can always wait longer.
+
+   Looked up by sub-region first, then region, then the default. A sub-region
+   is listed only where it says something its region does not - Port and
+   Madeira against Douro, Howell Mountain against Napa Valley, plain
+   Beaujolais against its own crus. Everything else inherits, because forty
+   near-identical rows are forty chances to mistype one. */
+const ESTIMATED_SPANS = {
+  /* France */
+  'Barolo': [8, 30], 'Barbaresco': [7, 25],
+  'Châteauneuf-du-Pape': [6, 22], 'Côte-Rôtie': [5, 20],
+  'Crozes-Hermitage': [3, 14], 'Hermitage': [8, 30], 'Cornas': [6, 22],
+  'St Joseph': [4, 16], 'Gigondas': [4, 18], 'Vacqueyras': [3, 15],
+  'Condrieu': [1, 6], 'Côtes du Rhône': [2, 10],
+  'Volnay': [5, 18], 'Pommard': [6, 20], 'Beaune': [4, 16],
+  'Monthélie': [4, 15], 'Santenay': [3, 14],
+  'Gevrey-Chambertin': [6, 20], 'Nuits-St Georges': [6, 20],
+  'Chablis': [3, 15], 'Meursault': [4, 16], 'Puligny-Montrachet': [4, 18],
+  'Chassagne-Montrachet': [4, 16], 'Montrachet': [6, 26],
+  'Sauternes': [8, 40],
+  'Sancerre': [2, 10], 'Muscadet': [2, 10], 'Vouvray': [5, 30],
+  'Chinon': [4, 16], 'Savennières': [5, 25],
+  'Beaujolais': [1, 6], 'Moulin-à-Vent': [3, 15], 'Morgon': [3, 14],
+  'Bandol': [5, 20], 'Château-Chalon': [10, 50],
+  'Cahors': [4, 18], 'Madiran': [5, 20], 'Jurançon': [4, 20],
+  /* Italy, Spain, Portugal */
+  'Brunello di Montalcino': [8, 30], 'Rosso di Montalcino': [3, 12],
+  'Chianti Classico': [4, 18], 'Vino Nobile di Montepulciano': [5, 18],
+  'Bolgheri': [6, 22], 'Amarone della Valpolicella': [8, 30],
+  'Valpolicella': [2, 10], 'Taurasi': [8, 28], 'Etna': [4, 18],
+  'Franciacorta': [3, 15],
+  'Ribera del Duero': [7, 25], 'Priorat': [6, 22], 'Toro': [5, 18],
+  'Rías Baixas': [1, 6],
+  /* A vintage Port is the longest window in the app by a wide margin, and
+     Madeira longer still. Both would have read as a five-to-twenty-year
+     Douro red on the default. */
+  'Port': [15, 50], 'Madeira': [10, 60],
+  /* Germany and Austria. Riesling is drinkable young and keeps for decades,
+     which is the widest honest window here rather than a hedge. */
+  'Mosel': [3, 25], 'Nahe': [3, 22], 'Rheingau': [4, 25],
+  'Rheinhessen': [3, 20], 'Pfalz': [3, 20],
+  'Wachau': [3, 20], 'Kamptal': [3, 18], 'Tokaj': [8, 40],
+  /* The New World */
+  'Howell Mountain': [8, 30], 'Mount Veeder': [7, 28],
+  'Spring Mountain': [7, 28], 'Diamond Mountain': [7, 28],
+  'Carneros': [3, 14], 'Russian River Valley': [3, 15],
+  'Willamette Valley': [4, 16], 'Central Otago': [3, 14],
+  'Marlborough': [2, 10], 'Coonawarra': [6, 24], 'Clare Valley': [3, 20],
+  'Eden Valley': [4, 22],
+  /* Region level, for everything that inherits */
+  Bordeaux: [7, 26], Burgundy: [5, 18], 'Rhône': [6, 22], Piedmont: [8, 28],
+  Champagne: [4, 25], Alsace: [3, 20], Loire: [3, 15], Beaujolais: [2, 10],
+  Provence: [2, 10], Jura: [3, 15], 'Languedoc-Roussillon': [3, 14],
+  Tuscany: [6, 24], Toscana: [6, 24], Veneto: [4, 18], Sicily: [4, 18],
+  Sicilia: [4, 18], Umbria: [5, 20], Campania: [6, 24], Lombardy: [3, 15],
+  Rioja: [6, 25], Navarra: [4, 16], Douro: [5, 20], Alentejo: [4, 16],
+  Mosel: [3, 25], Rheingau: [4, 25], Nahe: [3, 22], Pfalz: [3, 20],
+  Burgenland: [4, 18],
+  California: [5, 22], 'Napa Valley': [6, 26], 'Sonoma County': [4, 18],
+  Oregon: [4, 16], Washington: [5, 20],
+  'South Australia': [5, 22], 'Barossa Valley': [6, 26], Victoria: [4, 18],
+  'Western Australia': [5, 20], 'New South Wales': [4, 18],
+  'Hawkes Bay': [4, 18], Stellenbosch: [5, 20], Swartland: [4, 18],
+  'Western Cape': [4, 18], Mendoza: [5, 20], 'Uco Valley': [5, 20],
+  'Maipo Valley': [5, 20], Colchagua: [4, 18],
+  default: [5, 20],
+};
+
+/* =========================================================================
+   Pure logic. No side effects, no React.
+========================================================================= */
+
+/* Combining accents and the byte-order mark, as char codes rather than
+   literals: an invisible character in the source is easy for an editor or a
+   copy-paste to mangle into something that matches nothing, and one of these
+   was silently broken exactly that way during the first build. */
+const COMBINING = new RegExp('[' + String.fromCharCode(768) + '-' +
+                             String.fromCharCode(879) + ']', 'g');
+const BOM = String.fromCharCode(65279);
+const stripBom = s => (s && s.charAt(0) === BOM) ? s.slice(1) : s;
+
+const fold = s => (s || '').toLowerCase()
+  .normalize('NFD').replace(COMBINING, '')
+  .replace(/\s+/g, ' ').trim();
+
+/* The per-cent sign matters: the export writes alcohol content as "14.5%",
+   and without stripping it every lot fell back to an assumed strength and was
+   charged the wrong duty. */
+function num(v) {
+  if (v === null || v === undefined) return null;
+  const s = String(v).replace(/[£,%\s]/g, '');
+  if (!s) return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+
+/* Whole pounds everywhere. Wine is not bought in pence and a column of
+   figures reads faster without them. */
+const money = n => (n === null || n === undefined || !Number.isFinite(n)) ? '—'
+  : '£' + Math.round(n).toLocaleString('en-GB');
+/* Rounding each line of a breakdown on its own lets the parts miss the total
+   by a pound: 46.67 + 2.77 + 9.89 is 59.33, but rounded separately they come
+   to 47 + 3 + 10 = 60 against a total of 59. A sum that does not add up looks
+   broken, especially on a price. So round every line, then push the residue
+   onto the largest, where a pound is proportionally least visible. */
+function reconcileToTotal(rows, total) {
+  const rounded = rows.map(([label, v]) => [label, Math.round(v)]);
+  const drift = Math.round(total) - rounded.reduce((a, r) => a + r[1], 0);
+  if (!drift) return rounded;
+  let big = 0;
+  for (let i = 1; i < rounded.length; i++) if (rounded[i][1] > rounded[big][1]) big = i;
+  rounded[big] = [rounded[big][0], rounded[big][1] + drift];
+  return rounded;
+}
+const money0 = n => (n === null || !Number.isFinite(n)) ? '—' : '£' + Math.round(n).toLocaleString('en-GB');
+const pct = n => (n === null || !Number.isFinite(n)) ? '—' : (n > 0 ? '+' : '') + Math.round(n * 100) + '%';
+
+function parseCsv(csv) {
+  const rows = [];
+  let field = '', row = [], quoted = false;
+  for (let i = 0; i < csv.length; i++) {
+    const c = csv[i];
+    if (quoted) {
+      if (c === '"') {
+        if (csv[i + 1] === '"') { field += '"'; i++; } else quoted = false;
+      } else field += c;
+    } else if (c === '"') quoted = true;
+    else if (c === ',') { row.push(field); field = ''; }
+    else if (c === '\n') {
+      row.push(field.replace(/\r$/, ''));
+      if (row.some(x => x.trim())) rows.push(row);
+      row = []; field = '';
+    } else field += c;
+  }
+  if (field || row.length) {
+    row.push(field);
+    if (row.some(x => x.trim())) rows.push(row);
+  }
+  if (rows.length && rows[0].length) rows[0][0] = stripBom(rows[0][0]);
+  return rows;
+}
+
+function subRegionOf(description) {
+  const d = fold(description);
+  for (const [name, keys] of SUBREGIONS) {
+    for (const k of keys) if (d.includes(fold(k))) return name;
+  }
+  return null;
+}
+
+/* The description is comma-separated and its shape depends on the region.
+   Bordeaux leads with the chateau - "Chateau Langoa Barton, St Julien,
+   Bordeaux" - while Burgundy leads with the appellation and puts the domaine
+   second from last. So: prefer a segment that names itself a producer, fall
+   back to a leading chateau, fall back again to second-from-last. This gets
+   the whole of the August 2026 cellar right, which is a low bar; a note can
+   pin a producer by hand and the pin wins. */
+/* Segments that are places rather than producers, for stripping the tail of
+   a description. Folded, so accents do not matter. */
+const COUNTRIES = new Set(['france', 'italy', 'spain', 'portugal', 'germany', 'austria',
+  'usa', 'california', 'australia', 'new zealand', 'south africa', 'chile', 'argentina',
+  'hungary', 'greece', 'lebanon', 'england', 'united kingdom', 'israel', 'uruguay',
+  'canada', 'switzerland', 'slovenia', 'croatia', 'romania', 'georgia']);
+/* Matched exactly, never as a substring, which is what lets short and
+   otherwise dangerous names sit here: "port" and "toro" are safe in this set
+   and would be a menace in SUBREGIONS. */
+const REGION_NAMES = new Set(['bordeaux', 'burgundy', 'bourgogne', 'rhone', 'piedmont',
+  'piemonte', 'champagne', 'tuscany', 'toscana', 'languedoc', 'languedoc-roussillon',
+  'loire', 'alsace', 'provence', 'beaujolais', 'jura', 'savoie', 'south west france',
+  'veneto', 'lombardy', 'umbria', 'campania', 'sicily', 'sicilia', 'abruzzo',
+  'friuli', 'marche', 'rioja', 'ribera del duero', 'priorat', 'navarra', 'toro',
+  'douro', 'port', 'madeira', 'alentejo', 'mosel', 'nahe', 'rheingau',
+  'rheinhessen', 'pfalz', 'wachau', 'kamptal', 'burgenland', 'tokaj',
+  'napa valley', 'sonoma county', 'oregon', 'washington', 'south australia',
+  'barossa valley', 'victoria', 'western australia', 'new south wales',
+  'marlborough', 'central otago', 'hawkes bay', 'stellenbosch', 'swartland',
+  'western cape', 'mendoza', 'uco valley', 'maipo valley', 'colchagua']);
+
+/* Note the space after chateau: without it this matched "Chateauneu" and
+   four Chateauneuf-du-Pape lots had the appellation as their producer. */
+const PRODUCER_WORD = /^(ch(a|â)teau\s|dom(aine|\.)|maison|cascina|ciabot|clos |tenut[ae]|azienda|cantin[ae]|produttori|fattoria|podere|marchesi|weingut|schloss|bodegas?|quinta|herdade|casa |mas de|famille)/i;
+
+function producerOf(description) {
+  let parts = (description || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (!parts.length) return null;
+  /* Strip the geographic tail first. BBR writes country, region and often the
+     appellation at the end, and those segments were being mistaken for the
+     producer - "Barolo, Commune di Serralunga d'Alba, Giovanni Rosso,
+     Piedmont, Italy" returned "Piedmont", and "Alter Ego de Palmer, Margaux,
+     Bordeaux" returned "Margaux". */
+  /* A trailing segment is a place only if it reads as one. Two things stop a
+     grower being mistaken for the ground they farm, and both were measured
+     against the 6,123 wines in the BBX catalogue:
+
+     A segment that names itself a producer is never a place. "Chateau de
+     Puligny-Montrachet" is an estate, not the village, and "Produttori del
+     Barbaresco" is a co-operative.
+
+     A place name hyphenated onto the end of another word is a surname, not a
+     place. Pierre-Yves Colin-Morey, Thomas Morey and Jobard-Morey are all
+     growers, and all three were being stripped out as Morey-St Denis, which
+     left the appellation standing as the producer. The keyword still counts
+     when it opens the segment, so "Napa Valley" and "Los Carneros" are
+     stripped as before. */
+  const isPlace = seg => {
+    const f = fold(seg);
+    if (COUNTRIES.has(f) || REGION_NAMES.has(f)) return true;
+    if (PRODUCER_WORD.test(seg)) return false;
+    for (const [, keys] of SUBREGIONS) {
+      for (const k of keys) {
+        const kf = fold(k);
+        for (let i = f.indexOf(kf); i !== -1; i = f.indexOf(kf, i + 1)) {
+          if (i === 0 || f[i - 1] !== '-') return true;
+        }
+      }
+    }
+    return false;
+  };
+  while (parts.length > 1 && isPlace(parts[parts.length - 1])) parts.pop();
+  /* A segment that names itself a producer wins. Taking the LAST such segment
+     matters where a description carries two. */
+  for (let i = parts.length - 1; i >= 0; i--) {
+    if (PRODUCER_WORD.test(parts[i])) return parts[i];
+  }
+  /* Otherwise the last remaining segment: Burgundy and Piedmont put the
+     grower after the vineyard, and once the places are gone that is what is
+     left. Where only one segment survives it is a Bordeaux-style name that is
+     both the wine and the producer. */
+  return parts[parts.length - 1];
+}
+
+/* A lot is a holding, not a wine. Parent ID identifies a wine and a vintage,
+   so on its own it matched a case of d'Issan bottles to a case of magnums and
+   a Volnay to a jeroboam. Volume and price paid complete it - and two lots of
+   Batailley 2022 differ only in what was paid for them. */
+function lotKey(r) {
+  return [r.parentId || '', r.volumeCl || '', r.pricePerCase === null ? '' : r.pricePerCase].join('|');
+}
+
+function headerIndex(headerRow) {
+  const idx = {};
+  headerRow.forEach((cell, i) => { idx[stripBom(cell).trim()] = i; });
+  return idx;
+}
+
+function parseCellarCsv(text) {
+  const rows = parseCsv(text);
+  if (rows.length < 2) return { lots: [], problems: ['That file has no rows in it.'] };
+  const idx = headerIndex(rows[0]);
+  if (idx['Description'] === undefined || idx['Quantity in Bottles'] === undefined) {
+    return { lots: [], problems: ['That does not look like a BBR cellar export - it has no Description or Quantity in Bottles column.'] };
+  }
+  const g = (row, name) => (idx[name] === undefined ? '' : String(row[idx[name]] === undefined ? '' : row[idx[name]]).trim());
+  const lots = [];
+  const problems = [];
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    const description = g(row, 'Description');
+    if (!description) continue;
+    const abvRaw = num(g(row, 'Alcohol Content'));
+    const lot = {
+      parentId: g(row, 'Parent ID'),
+      country: g(row, 'Country'),
+      region: g(row, 'Region').trim(),
+      vintage: g(row, 'Vintage'),
+      description,
+      colour: g(row, 'Colour'),
+      maturity: g(row, 'Maturity'),
+      windowFrom: num(g(row, 'Drinking Window (From)')) || null,
+      windowTo: num(g(row, 'Drinking Window (To)')) || null,
+      format: g(row, 'Bottle Format'),
+      volumeCl: num(g(row, 'Bottle Volume')) || 75,
+      bottles: num(g(row, 'Quantity in Bottles')) || 0,
+      pricePerCase: num(g(row, 'Purchase Price per Case')),
+      caseSize: num(g(row, 'Case Size')),
+      livex: num(g(row, 'Livex Market Price')),
+      wsLowest: num(g(row, 'Wine Searcher Lowest List Price')),
+      bbxLastTxn: num(g(row, 'BBX Last Transaction Price')),
+      bbxLowest: num(g(row, 'BBX Lowest Price')),
+      status: g(row, 'Current Status'),
+      /* Stored as a fraction: "14.5%" becomes 0.145. */
+      abv: abvRaw === null ? null : (abvRaw > 1 ? abvRaw / 100 : abvRaw),
+    };
+    lot.key = lotKey(lot);
+    lot.subRegion = subRegionOf(description);
+    lot.producer = producerOf(description);
+    if (!lot.caseSize) problems.push(lot.vintage + ' ' + shortName(lot) + ' has no case size, so its per-bottle figures are unknown');
+    lots.push(lot);
+  }
+  /* Two identical lot keys means two holdings the export cannot tell apart.
+     Suffix them rather than silently dropping one. */
+  const seen = new Map();
+  for (const lot of lots) {
+    const n = (seen.get(lot.key) || 0) + 1;
+    seen.set(lot.key, n);
+    if (n > 1) lot.key = lot.key + '#' + n;
+  }
+  return { lots, problems };
+}
+
+function shortName(lot) {
+  const parts = (lot.description || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (parts.length > 2) parts.pop();
+  return parts.join(', ').replace(/^Château\s+/i, 'Ch. ').replace(/^Chateau\s+/i, 'Ch. ');
+}
+
+/* ------------------------------------------------------ money per bottle */
+
+function perBottle(lot) {
+  if (!lot.pricePerCase || !lot.caseSize) return null;
+  return lot.pricePerCase / lot.caseSize;
+}
+
+/* Liv-ex first, because on this cellar last-traded over Liv-ex measured 0.994
+   - the mark is a clearing price, not a shop window. Bad prints rejected. */
+function marketPerBottle(lot) {
+  const cs = lot.caseSize;
+  if (!cs) return null;
+  const lx = lot.livex ? lot.livex / cs : null;
+  const sane = v => {
+    if (!v) return null;
+    const p = v / cs;
+    if (lx && p > lx * OUTLIER_MULTIPLE) return null;
+    return p;
+  };
+  return lx || sane(lot.bbxLastTxn) || sane(lot.wsLowest) || sane(lot.bbxLowest) || null;
+}
+
+/* What a bottle is worth, with the price paid standing in where the export
+   gives no mark at all. En primeur lines have no market yet, and a wine the
+   export has no comp for would otherwise drop silently out of the "At market"
+   total and make the cellar look smaller than it is. Paid is the least-wrong
+   estimate available: it is what someone actually transacted at.
+
+   marketPerBottle stays honest and returns null when it does not know, so the
+   detail sheet can say so. Only the aggregate substitutes. */
+function marketOrPaid(lot) {
+  const mk = marketPerBottle(lot);
+  return mk === null ? perBottle(lot) : mk;
+}
+
+function marketIsEstimated(lot) {
+  return marketPerBottle(lot) === null && perBottle(lot) !== null;
+}
+
+/* Duty on one bottle of this wine, at its own strength and volume. Falls back
+   to 13.5% - the middle of what this cellar holds - when the export gives no
+   alcohol content, and the detail sheet says so rather than hiding it. */
+function dutyPerBottle(lot) {
+  const abv = lot.abv || 0.135;
+  return (lot.volumeCl / 100) * abv * DUTY_PER_LPA;
+}
+
+/* The only price that matters for a drinking cellar: what one bottle costs
+   once it has left bond and arrived at the house. Duty and VAT crystallise on
+   the way out, and the part-case fee is charged per product, so it is spread
+   over however many bottles you are actually pulling.
+
+   There was a delivery charge here too, set by hand in Settings because BBR's
+   varies with the order. It went on 24 August: there is no delivery charge to
+   pay, so a field asking for one was a question with no answer, and a line on
+   the breakdown that always read zero. */
+function deliveredPerBottle(lot, bottlesPulled) {
+  const ib = perBottle(lot);
+  if (ib === null) return null;
+  const duty = dutyPerBottle(lot);
+  const taxed = (ib + duty) * (1 + VAT);
+  const pulling = bottlesPulled || lot.bottles || 1;
+  const partCase = !!(lot.caseSize && pulling % lot.caseSize !== 0);
+  const fee = partCase ? PART_CASE_FEE / pulling : 0;
+  return {
+    ib, duty, vat: (ib + duty) * VAT, fee, partCase,
+    total: taxed + fee,
+  };
+}
+
+/* Bottles present last time and missing now, per lot. Increases are ignored:
+   a lot that grew was topped up, and a lot that shrank and later grew again
+   was drunk and then bought again - both of those are true at once, which is
+   why history counts bottles rather than marking a wine gone. Nothing here
+   ever deletes a history entry; a mistaken one is removed by hand. */
+function withdrawals(previousRows, nextRows) {
+  const now = new Map(nextRows.map(l => [l.key, l]));
+  const out = [];
+  for (const was of previousRows) {
+    const still = now.get(was.key);
+    const bottles = was.bottles - ((still && still.bottles) || 0);
+    if (bottles > 0) out.push({ lot: was, bottles, full: !still });
+  }
+  return out;
+}
+
+/* The date a bottle left, written the way a person would say it. The app only
+   knows which import noticed the bottles were gone, not the evening they were
+   opened, so this is deliberately a date and never a time. */
+function whenLeft(at) {
+  if (!at) return 'at some point';
+  const d = new Date(at);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+/* =========================================================================
+   Sync.
+
+   One JSON file in a private repo you own, holding everything the app knows.
+   The rules are per-kind, because the three kinds of data here are not alike
+   and a single rule would be wrong for two of them:
+
+   LOTS are a snapshot. Newest import wins, whole. Two devices holding
+   different exports is not a merge to be resolved row by row - it is a
+   question of which export is more recent, and merging them would invent a
+   cellar that never existed.
+
+   HISTORY is an append-only log. Union by event id, with tombstones for the
+   handful removed by hand. Nothing edits an event, so there is no newest-wins
+   question to answer.
+
+   NOTES are per lot key and hand-edited on any device. Newest edit wins, which
+   needs every note to carry when it was written. Nothing writes notes yet, so
+   that field is being fixed now rather than invented on the day there is data
+   to migrate - the same reason the key exists at all.
+
+   What is NOT synced: the token and repo, which belong to one device, and the
+   pre-upgrade snapshot, which is a local escape hatch and would be worse than
+   useless coming back from somewhere else.
+========================================================================= */
+
+/* A history event needs a stable identity to be merged. A lot yields at most
+   one event per import, so its key and the import stamp together are unique.
+   Backfilled on read for entries written before sync existed. */
+function eventId(e) {
+  return e.id || (e.key + '@' + e.at);
+}
+
+function withIds(history) {
+  return (history || []).map(e => (e && e.id) ? e : { ...e, id: eventId(e) });
+}
+
+function readPayload(p) {
+  if (!p || typeof p !== 'object') return { lots: null, notes: {}, history: [], deleted: {} };
+  return {
+    lots: (p.lots && p.lots.rows) ? p.lots : null,
+    notes: (p.notes && typeof p.notes === 'object') ? p.notes : {},
+    history: withIds(Array.isArray(p.history) ? p.history : []),
+    deleted: (p.deleted && typeof p.deleted === 'object') ? p.deleted : {},
+  };
+}
+
+/* Keys sorted so two runs over the same data serialise identically. That is
+   what lets a sync skip the write when nothing actually changed, which keeps
+   the repo history readable and avoids a commit every time the app opens. */
+function sortedKeys(map) {
+  const out = {};
+  for (const k of Object.keys(map || {}).sort()) out[k] = map[k];
+  return out;
+}
+
+function writePayload(lots, notes, history, deleted) {
+  return JSON.stringify({
+    v: 1,
+    lots: lots || null,
+    notes: sortedKeys(notes),
+    history: [...history].sort((a, b) => (a.at - b.at) || (eventId(a) < eventId(b) ? -1 : 1)),
+    deleted: sortedKeys(deleted),
+  });
+}
+
+/* The newer import wins outright. A missing importedAt is treated as older
+   than anything stamped, so a snapshot from before this field existed loses to
+   a real one rather than winning by accident. */
+function mergeLots(local, remote) {
+  if (!local) return remote || null;
+  if (!remote) return local;
+  return (remote.importedAt || 0) > (local.importedAt || 0) ? remote : local;
+}
+
+/* Union by id, minus anything a live tombstone covers. */
+function mergeHistory(local, remote, deleted) {
+  const byId = new Map();
+  for (const e of withIds(remote)) byId.set(eventId(e), e);
+  for (const e of withIds(local)) byId.set(eventId(e), e);
+  return [...byId.values()]
+    .filter(e => !deleted[eventId(e)])
+    .sort((a, b) => (a.at - b.at) || (eventId(a) < eventId(b) ? -1 : 1));
+}
+
+/* Newest edit wins per lot key. A note with no updatedAt is treated as older
+   than one that has it, so hand-written entries from before this field are
+   never allowed to overwrite something newer. */
+function mergeNotes(local, remote) {
+  const out = { ...(remote || {}) };
+  for (const k of Object.keys(local || {})) {
+    const mine = local[k], theirs = out[k];
+    if (!theirs || (mine.updatedAt || 0) >= (theirs.updatedAt || 0)) out[k] = mine;
+  }
+  return out;
+}
+
+/* Tombstones expire, or the file grows forever. */
+function mergeDeleted(a, b) {
+  const cutoff = Date.now() - TOMBSTONE_TTL;
+  const out = {};
+  for (const src of [a || {}, b || {}]) {
+    for (const id of Object.keys(src)) {
+      const ts = src[id];
+      if (typeof ts === 'number' && ts > cutoff) out[id] = Math.max(out[id] || 0, ts);
+    }
+  }
+  return out;
+}
+
+/* ------------------------------------------------------ drinking windows */
+
+/* A note can pin a window, and the pin always wins: it is a deliberate value
+   and recomputation must not touch it. */
+/* Precedence, strongest first:
+     1. a window you pinned yourself - a deliberate value, never recomputed
+     2. the window in the BBR export
+     3. a researched window from windows.json, for the lots the export leaves
+        blank - real published guidance rather than a rule of thumb
+     4. an estimate from vintage and sub-region, flagged as such everywhere
+
+   The app says which of the four it is using at the point of use, because a
+   researched window and a guessed one deserve different amounts of trust. */
+function windowOf(lot, note, researched) {
+  if (note && note.windowFrom && note.windowTo) {
+    return { from: note.windowFrom, to: note.windowTo, source: 'yours' };
+  }
+  if (lot.windowFrom && lot.windowTo) {
+    return { from: lot.windowFrom, to: lot.windowTo, source: 'bbr' };
+  }
+  const found = findWindow(lot, researched);
+  if (found) {
+    return { from: found.from, to: found.to, source: 'researched', basis: found.basis };
+  }
+  const v = num(lot.vintage);
+  if (!v) return { from: null, to: null, source: 'none' };
+  const span = ESTIMATED_SPANS[lot.subRegion] || ESTIMATED_SPANS[lot.region] || ESTIMATED_SPANS.default;
+  return { from: v + span[0], to: v + span[1], source: 'estimated' };
+}
+
+/* windows.json entries carry an ALL-of match array and a vintage, the same
+   scheme wines.json uses. Most specific wins, so a note for one vintage of a
+   wine cannot be picked up by another. */
+function findWindow(lot, researched) {
+  const list = (researched && researched.windows) || [];
+  const d = fold(lot.description);
+  let best = null, bestScore = 0;
+  for (const w of list) {
+    if (String(w.vintage) !== String(lot.vintage)) continue;
+    let score = 0, ok = true;
+    for (const p of (w.match || [])) {
+      const f = fold(p);
+      if (!d.includes(f)) { ok = false; break; }
+      score += f.length;
+    }
+    if (ok && score > bestScore) { best = w; bestScore = score; }
+  }
+  return best;
+}
+
+/* Kept as booleans because the screens ask these two questions constantly. */
+const windowIsEstimated = w => w.source === 'estimated';
+const windowLabel = w => (
+  w.source === 'yours' ? 'yours' :
+  w.source === 'bbr' ? 'per BBR' :
+  w.source === 'researched' ? 'researched' :
+  w.source === 'estimated' ? 'estimated' : ''
+);
+
+function stateOf(lot, note, year, researched) {
+  const w = windowOf(lot, note, researched);
+  if (!w.from || !w.to) return 'unknown';
+  if (year < w.from) return 'young';
+  if (year > w.to) return 'past';
+  if (w.to - year <= CLOSING_YEARS) return 'closing';
+  /* "At best" is the middle of the window. Before that it is opening -
+     drinkable and improving, which is a different decision. */
+  return (year - w.from) / Math.max(1, w.to - w.from) >= 0.25 ? 'prime' : 'opening';
+}
+
+/* ---------------------------------------------------- reference matching */
+
+/* wines.json entries carry an array of substrings that must ALL appear in the
+   folded description. The entry matching the most characters wins, which is
+   what separates Batailley from Haut-Batailley and Haut-Bailly from
+   Haut-Bailly II without any ordering rules. */
+function matchWine(lot, wines) {
+  const d = fold(lot.description);
+  let best = null, bestScore = 0;
+  for (const w of (wines || [])) {
+    const parts = w.match || [];
+    if (!parts.length) continue;
+    let score = 0, ok = true;
+    for (const p of parts) {
+      const f = fold(p);
+      if (!d.includes(f)) { ok = false; break; }
+      score += f.length;
+    }
+    if (ok && score > bestScore) { best = w; bestScore = score; }
+  }
+  return best;
+}
+
+function matchVintage(lot, vintages) {
+  if (!vintages) return null;
+  const byRegion = vintages[lot.region] || vintages[(lot.region || '').trim()];
+  if (!byRegion) return null;
+  return byRegion[lot.vintage] || null;
+}
+
+const regionColour = region => REGION_COLOUR[(region || '').trim()] || 'var(--rg-other)';
+
+/* =========================================================================
+   Styles. One object, so nothing is styled in two places.
+
+   THE FLEXSHRINK TRAP - read this before adding a component.
+   The screen body is a scrolling flex column, and flex children default to
+   flex-shrink: 1. So when the content is taller than the pane the browser
+   SQUASHES the children instead of scrolling. Components whose overflow
+   spills get away with it; anything that clips its overflow hides the damage
+   until something is badly truncated.
+
+   Every style used as a direct child of a scrolling pane therefore carries
+   flexShrink: 0 - card, row, panel, section, eyebrow, statRow, chipRow, note,
+   empty, and the Timeline and Bar components. Add one and it needs the same.
+========================================================================= */
+
+const sx = {
+  shell: {
+    height: '100%', display: 'flex', flexDirection: 'column',
+    background: 'var(--surface)', paddingTop: 'env(safe-area-inset-top)',
+    /* Positioning context for the region watermark, which sits behind
+       everything and does not scroll. */
+    position: 'relative', overflow: 'hidden',
+  },
+  header: {
+    flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10,
+    padding: '12px 16px 10px', borderBottom: '1px solid ' + ink(0.08),
+    position: 'relative', zIndex: 1,
+  },
+  title: {
+    fontFamily: "'Newsreader',Georgia,serif", fontSize: 23, fontWeight: 500,
+    letterSpacing: '-0.015em', flex: 1, margin: 0,
+  },
+  body: {
+    flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+    display: 'flex', flexDirection: 'column', gap: 15,
+    padding: '15px 16px 30px',
+    position: 'relative', zIndex: 1,
+  },
+
+  eyebrow: {
+    flexShrink: 0, fontSize: 10.5, letterSpacing: '0.12em', textTransform: 'uppercase',
+    color: ink(0.5), fontWeight: 600,
+  },
+  card: {
+    flexShrink: 0, background: CARD, border: '1px solid ' + ink(0.09),
+    borderRadius: 10, padding: 14, boxShadow: 'var(--shadow-card)',
+    display: 'flex', flexDirection: 'column', gap: 8,
+  },
+  panel: { flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 9 },
+
+  row: {
+    flexShrink: 0, display: 'flex', gap: 11, alignItems: 'stretch',
+    background: CARD, border: '1px solid ' + ink(0.08), borderRadius: 9,
+    padding: '10px 12px', textAlign: 'left', width: '100%',
+    boxShadow: 'var(--shadow-soft)',
+  },
+  rowMain: { flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 3 },
+  rowTitle: {
+    fontFamily: "'Newsreader',Georgia,serif", fontSize: 16.5, lineHeight: 1.25, fontWeight: 500,
+  },
+  rowMeta: {
+    display: 'flex', flexWrap: 'wrap', gap: '2px 9px', fontSize: 11.5, color: ink(0.55),
+  },
+  rowRight: {
+    flexShrink: 0, display: 'flex', flexDirection: 'column',
+    alignItems: 'flex-end', justifyContent: 'center', gap: 2,
+  },
+  /* A drunk bottle in a list of live ones has to be unmistakable at a glance,
+     before any label is read - so the whole tile is washed rather than given a
+     badge. Measured on the page: the title reads 12.9:1 against the wash and
+     the HISTORY label 8.6:1, both well clear. */
+  rowHistory: {
+    flexShrink: 0, display: 'flex', gap: 11, alignItems: 'stretch',
+    background: 'var(--hist-wash)', border: '1px solid var(--hist-edge)', borderRadius: 9,
+    padding: '10px 12px', textAlign: 'left', width: '100%',
+  },
+
+  /* One row, whatever the count, and the type shrinks to keep it there.
+
+     Two earlier versions were wrong in the same place. A grid of
+     repeat(auto-fit,minmax(80px,1fr)) resolves to four columns on a phone, and
+     the Cellar overview and every region page put FIVE stats in it: the three
+     empty columns were painted in the separator grey - which is the container
+     showing through the 1px gaps - and read as one slab rather than a
+     hairline. Over a region map that grey is translucent enough to read the
+     geography through, so Pauillac and St Julien appeared inside the empty
+     cell. Wrapping flex closed the hole but still broke the row in two, and
+     five figures on one line is what this row is for: they are meant to be
+     read across, not hunted for.
+
+     So nothing wraps, every cell takes an equal share, and the numbers are
+     sized against the width instead of being fixed. Five cells on a 390-point
+     phone is about 70 points each, and 10,167 with a pound sign in front of it
+     does not fit that at 18px. clamp() takes it down as the row narrows and
+     stops at 11px, which still fits the longest figure the app can print into
+     the narrowest cell it can have. The wine sheet's four stats sit in the
+     same row and simply get more room each.
+
+     minWidth 0 matters: a flex item will not shrink below its own content by
+     default, and without it the row pushes past the screen edge instead. */
+  statRow: {
+    flexShrink: 0, display: 'flex', flexWrap: 'nowrap', gap: 1, background: ink(0.09),
+    border: '1px solid ' + ink(0.09), borderRadius: 10, overflow: 'hidden',
+  },
+  stat: {
+    flex: '1 1 0', minWidth: 0, background: CARD, padding: 'clamp(6px,2vw,10px)',
+    display: 'flex', flexDirection: 'column', gap: 1,
+  },
+  statV: {
+    fontSize: 'clamp(11px,3.4vw,18px)', fontWeight: 600, letterSpacing: '-0.02em',
+    whiteSpace: 'nowrap',
+  },
+  statK: {
+    fontSize: 'clamp(7.5px,2.2vw,9.5px)', letterSpacing: '0.05em',
+    textTransform: 'uppercase', color: ink(0.5), whiteSpace: 'nowrap',
+  },
+
+  chipRow: { flexShrink: 0, display: 'flex', flexWrap: 'wrap', gap: 6 },
+  note: {
+    flexShrink: 0, fontSize: 12.5, lineHeight: 1.55, color: ink(0.58),
+    borderLeft: '2px solid ' + ink(0.16), paddingLeft: 10,
+  },
+  input: {
+    width: '100%', background: PAPER, border: '1px solid ' + ink(0.16),
+    borderRadius: 8, padding: '9px 11px', fontSize: 15,
+  },
+  label: { fontSize: 11.5, color: ink(0.55), display: 'flex', flexDirection: 'column', gap: 4 },
+
+  sheet: {
+    position: 'fixed', inset: 0, background: 'var(--scrim)', zIndex: 50,
+    display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+  },
+  sheetInner: {
+    background: 'var(--surface)', borderTopLeftRadius: 16, borderTopRightRadius: 16,
+    boxShadow: 'var(--shadow-sheet)', maxHeight: '90%',
+    display: 'flex', flexDirection: 'column', paddingBottom: 'env(safe-area-inset-bottom)',
+  },
+  sheetHead: {
+    flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10,
+    padding: '13px 16px', borderBottom: '1px solid ' + ink(0.08),
+  },
+  sheetBody: {
+    flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column',
+    gap: 13, padding: '15px 16px 24px',
+  },
+  tabs: {
+    flexShrink: 0, display: 'flex', gap: 4, padding: '6px 10px',
+    paddingBottom: 'calc(6px + env(safe-area-inset-bottom))',
+    borderTop: '1px solid ' + ink(0.08), background: 'var(--surface)',
+    position: 'relative', zIndex: 1,
+  },
+  toast: {
+    position: 'fixed', left: 16, right: 16, bottom: 'calc(66px + env(safe-area-inset-bottom))',
+    background: INK, color: PAPER, borderRadius: 9, padding: '11px 14px',
+    fontSize: 13.5, zIndex: 60, textAlign: 'center',
+  },
+  empty: {
+    flexShrink: 0, padding: '30px 4px', color: ink(0.55), fontSize: 14,
+    lineHeight: 1.65, textAlign: 'center',
+  },
+  /* Reference prose. Serif, because it is writing rather than data, and the
+     difference between what someone else says about the wine and what your
+     own cellar says about it should be visible. */
+  prose: {
+    fontFamily: "'Newsreader',Georgia,serif", fontSize: 16, lineHeight: 1.55,
+    color: ink(0.86), margin: 0,
+  },
+};
+
+/* The surface for anything that sits on top of a region map. Translucent
+   enough that the geography stays faintly continuous underneath, opaque
+   enough that percentages and prose read cleanly over it. Defined once
+   because two panels using slightly different values looks like a bug. */
+/* "a, b and c" - a list a person would say out loud. */
+function listOf(items) {
+  const a = items.filter(Boolean);
+  if (!a.length) return '';
+  if (a.length === 1) return a[0];
+  return a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+}
+
+const PLATE = 'rgba(var(--card-rgb),0.82)';
+
+const btn = kind => ({
+  border: kind === 'plain' ? '1px solid ' + ink(0.16) : 'none',
+  background: kind === 'primary' ? CLARET : kind === 'plain' ? 'transparent' : ink(0.07),
+  color: kind === 'primary' ? '#fff' : INK,
+  borderRadius: 999, padding: '9px 15px', fontSize: 13.5, fontWeight: 500,
+});
+
+const chip = on => ({
+  border: '1px solid ' + (on ? 'transparent' : ink(0.15)),
+  background: on ? INK : 'transparent',
+  color: on ? PAPER : ink(0.72),
+  borderRadius: 999, padding: '5px 12px', fontSize: 12.5, whiteSpace: 'nowrap',
+});
+
+const tabStyle = on => ({
+  flex: 1, border: 'none', borderRadius: 999, padding: '10px 0',
+  background: on ? ink(0.09) : 'transparent',
+  color: on ? INK : ink(0.55),
+  fontSize: 12.5, fontWeight: on ? 600 : 500,
+});
+
+const segStyle = on => ({
+  flex: 1, border: 'none', borderRadius: 7, padding: '8px 0',
+  background: on ? CARD : 'transparent',
+  color: on ? INK : ink(0.55),
+  fontSize: 12.5, fontWeight: on ? 600 : 500,
+  boxShadow: on ? 'var(--shadow-soft)' : 'none',
+});
+
+/* =========================================================================
+   Region maps.
+
+   Drilling into a region draws a map of it behind the page: rivers, the sea
+   or estuary where there is one, wooded ground, appellation boundaries, the
+   towns, and the names of the sub-areas. The geometry lives in maps.json
+   rather than here, because it is reference data like wines.json - large,
+   researched, and edited on a completely different rhythm from the code.
+
+   These are STYLISED. The coordinates are drawn on a 0-100 grid from what
+   published region maps show, not projected from survey data. What they get
+   right is topology: which bank an appellation sits on, the order of the
+   communes down a slope, which side of the town the good hill is. Do not
+   measure anything off them.
+
+   Appellations the cellar actually holds are drawn stronger and get a dot, so
+   the map doubles as a picture of where your bottles sit in the region.
+
+   Drawing order is a cartographer's, and it matters: wooded ground, then
+   appellation fills, then their edges, then hills, then water, then towns,
+   then type. Any other order and the labels end up under the polygons.
+========================================================================= */
+
+/* Opacities. The map has to survive being read through, so every one of these
+   was pushed up until the map was legible and then backed off until a price
+   sitting on top of it still was. Type carries furthest at low alpha, so it
+   gets the smallest numbers. */
+const NUMBERS_IN_PATH = new RegExp('-?[0-9]+(?:[.][0-9]+)?', 'g');
+
+const MAP_ALPHA = {
+  water: 0.15,
+  forest: 0.05,
+  appellation: 0.07,
+  appellationOwned: 0.15,
+  edge: 0.12,
+  hill: 0.08,
+  town: 0.18,
+  areaLabel: 0.11,
+  placeLabel: 0.12,
+  placeLabelOwned: 0.24,
+};
+
+function heldPlaces(lots) {
+  const held = new Set();
+  for (const l of lots) if (l.subRegion) held.add(fold(l.subRegion));
+  return held;
+}
+
+/* maps.json names regions in plain ASCII; the cellar calls the Rhone "Rhône".
+   Fold both sides rather than keeping two spellings in step by hand. */
+function mapFor(maps, region) {
+  if (!maps) return null;
+  const want = fold(region);
+  for (const k of Object.keys(maps)) if (fold(k) === want) return maps[k];
+  return null;
+}
+
+/* Where to hang an appellation name. The data may carry an explicit anchor;
+   otherwise take the mean of the polygon points, which for the long thin
+   strips these mostly are lands close enough to the middle. */
+function appellationAnchor(ap) {
+  if (ap.lx !== undefined && ap.ly !== undefined) return { x: ap.lx, y: ap.ly };
+  const nums = (ap.path || '').match(NUMBERS_IN_PATH);
+  if (!nums || nums.length < 4) return null;
+  let sx = 0, sy = 0, n = 0;
+  for (let i = 0; i + 1 < nums.length; i += 2) { sx += +nums[i]; sy += +nums[i + 1]; n++; }
+  return n ? { x: sx / n, y: sy / n } : null;
+}
+
+/* Decluttering.
+
+   Burgundy has 31 appellations, five towns and four district names. Drawn all
+   at once at watermark scale that is not a map, it is a thicket - the labels
+   sit on top of each other and none of them can be read. Real maps drop type
+   rather than shrink it, so this does the same: walk the labels in priority
+   order and skip any whose box overlaps one already placed.
+
+   Priority is what the reader needs first. District names orient you, so they
+   go down before anything else. Then the appellations you actually own, which
+   are the reason the map is here at all. Then towns, then the appellations you
+   do not own - those are context, and context is what should give way.
+
+   The polygon underneath a dropped label is still drawn, so the shape of the
+   region survives even where the name does not fit. */
+const LABEL_CHAR_W = 0.52;   /* width of a character as a fraction of its size */
+const LABEL_PAD = 0.8;       /* breathing room, in grid units */
+
+function declutter(candidates) {
+  const placed = [];
+  const kept = [];
+  /* A name can arrive twice - Blaye is both an appellation and the town it is
+     named after, and Bordeaux is a region, a city and a wine. Printing it
+     twice looks like a bug even when it is technically two features. First
+     one in priority order wins. */
+  const seen = new Set();
+  for (const c of candidates) {
+    const name = fold(c.text);
+    if (seen.has(name)) continue;
+    seen.add(name);
+    const w = c.text.length * c.size * LABEL_CHAR_W;
+    const half = c.anchor === 'middle' ? w / 2 : 0;
+    const box = {
+      x1: c.x - half - LABEL_PAD,
+      x2: c.x - half + w + LABEL_PAD,
+      y1: c.y - c.size - LABEL_PAD,
+      y2: c.y + LABEL_PAD,
+    };
+    let clash = false;
+    for (const p of placed) {
+      if (box.x1 < p.x2 && box.x2 > p.x1 && box.y1 < p.y2 && box.y2 > p.y1) { clash = true; break; }
+    }
+    if (clash) continue;
+    placed.push(box);
+    kept.push(c);
+  }
+  return kept;
+}
+
+const RegionMap = ({ region, map, held }) => {
+  if (!map) return null;
+  const a = MAP_ALPHA;
+  const water = map.water || [];
+  const land = map.land || [];
+  const apps = map.appellations || [];
+  const towns = map.towns || [];
+  const areas = map.areas || [];
+  const forest = land.filter(x => x.kind === 'forest');
+  const hills = land.filter(x => x.kind !== 'forest');
+
+  const candidates = [];
+  for (const ar of areas) {
+    candidates.push({
+      kind: 'area', text: ar.name, x: ar.x, y: ar.y, size: 2.6, anchor: 'middle',
+      opacity: a.areaLabel, tracking: '0.22em', upper: true,
+    });
+  }
+  for (const ap of apps) {
+    if (!held.has(fold(ap.name))) continue;
+    const p = appellationAnchor(ap);
+    if (p) candidates.push({
+      kind: 'app', text: ap.name, x: p.x + 0.4, y: p.y, size: 2.5,
+      opacity: a.placeLabelOwned, weight: 600, serif: true,
+    });
+  }
+  for (const t of towns) {
+    candidates.push({
+      kind: 'town', text: t.name, x: t.x + 2.2, y: t.y + 0.9,
+      size: t.size === 'city' ? 2.9 : 2.4,
+      opacity: a.town, weight: t.size === 'city' ? 600 : 500,
+    });
+  }
+  for (const ap of apps) {
+    if (held.has(fold(ap.name))) continue;
+    const p = appellationAnchor(ap);
+    if (p) candidates.push({
+      kind: 'app', text: ap.name, x: p.x, y: p.y, size: 2.5,
+      opacity: a.placeLabel, serif: true,
+    });
+  }
+  const labels = declutter(candidates);
+
+  return h('svg', {
+    viewBox: '0 0 100 100', preserveAspectRatio: 'xMidYMid meet',
+    'aria-hidden': 'true', focusable: 'false',
+    style: {
+      position: 'absolute', inset: 0, width: '100%', height: '100%',
+      pointerEvents: 'none', zIndex: 0, color: regionColour(region),
+    },
+  }, [
+    h('g', { key: 'forest', style: { opacity: a.forest } }, forest.map((f, i) =>
+      h('path', { key: i, d: f.path, fill: 'currentColor', stroke: 'none' }))),
+
+    /* No appellation polygons. They were drawn once and the map became a
+       quilt: forty overlapping blocks of one hue, none of them legible and
+       all of them fighting the numbers on top. The names alone, placed where
+       the polygon's centroid was, carry the same information and leave the
+       page readable. The geometry is still in maps.json - nothing has been
+       thrown away, and the anchors are computed from it. */
+
+    h('g', { key: 'hills', style: { opacity: a.hill } }, hills.map((x, i) =>
+      h('path', {
+        key: i, d: x.path, fill: 'none', stroke: 'currentColor',
+        strokeWidth: 0.5, strokeLinecap: 'round',
+      }))),
+
+    h('g', { key: 'water', style: { opacity: a.water } }, water.map((w, i) =>
+      h('path', {
+        key: i, d: w.path,
+        fill: w.kind === 'sea' ? 'currentColor' : 'none',
+        stroke: 'currentColor', strokeWidth: w.width || 2,
+        strokeLinecap: 'round', strokeLinejoin: 'round',
+      }))),
+
+    /* A ring for a city, a solid dot for a town - the distinction a printed
+       map makes, and it costs one line. The dots are always drawn; only the
+       names take part in decluttering. */
+    h('g', { key: 'towndots', style: { opacity: a.town } }, towns.map(t =>
+      h('circle', {
+        key: t.name, cx: t.x, cy: t.y, r: t.size === 'city' ? 1.5 : 0.9,
+        fill: t.size === 'city' ? 'none' : 'currentColor',
+        stroke: 'currentColor', strokeWidth: t.size === 'city' ? 0.6 : 0,
+      }))),
+
+    h('g', { key: 'owneddots' }, apps.filter(ap => held.has(fold(ap.name))).map(ap => {
+      const p = appellationAnchor(ap);
+      return p ? h('circle', {
+        key: ap.name, cx: p.x - 1.5, cy: p.y - 0.8, r: 0.75,
+        fill: 'currentColor', opacity: a.placeLabelOwned,
+      }) : null;
+    })),
+
+    h('g', { key: 'labels' }, labels.map(c => h('text', {
+      key: c.kind + ':' + c.text,
+      x: c.x, y: c.y, textAnchor: c.anchor || 'start',
+      style: {
+        fill: 'currentColor', fontSize: c.size, opacity: c.opacity,
+        fontWeight: c.weight || 400,
+        letterSpacing: c.tracking || '0.03em',
+        textTransform: c.upper ? 'uppercase' : 'none',
+        fontFamily: c.serif
+          ? "'Newsreader',Georgia,serif"
+          : "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",
+      },
+    }, c.text))),
+  ]);
+};
+
+/* =========================================================================
+   The mark.
+
+   A wine glass in a ring, then the wordmark in italic Newsreader - the same
+   face the app already loads for its prose, so the logo costs no extra font
+   and sits in the same voice as everything else.
+
+   Everything resolves through the colour variables rather than the hex values
+   of the original artwork: the ring and the wine take --claret, the glass
+   outline and the wordmark take --ink. The app is daylight-only, so nothing
+   has to invert, but a mark that reads its colours from the page is still one
+   less thing to remember if that ever changes.
+
+   Drawn on a 48 grid. The bowl is one closed path and the wine is a second
+   path clipped to the same silhouette below the waterline, rather than a
+   rectangle behind a mask - fewer elements, and the meniscus stays put when
+   the mark is scaled.
+========================================================================= */
+
+const Logo = ({ size }) => {
+  const s = size || 40;
+  return h('svg', {
+    width: s, height: s, viewBox: '0 0 48 48',
+    'aria-hidden': 'true', focusable: 'false',
+    style: { display: 'block', flexShrink: 0 },
+  }, [
+    h('circle', {
+      key: 'ring', cx: 24, cy: 24, r: 21.2,
+      fill: 'none', stroke: CLARET, strokeWidth: 1.8,
+    }),
+    /* The wine sits under the outline so the rim draws over it. */
+    h('path', {
+      key: 'wine',
+      d: 'M17.66 18.9 L18.26 22.9 C19.16 27.4 28.84 27.4 29.74 22.9 L30.34 18.9 Z',
+      fill: CLARET, stroke: 'none',
+    }),
+    h('path', {
+      key: 'bowl',
+      d: 'M16.4 11.4 L18.26 22.9 C19.16 27.4 28.84 27.4 29.74 22.9 L31.6 11.4 Z',
+      fill: 'none', stroke: INK, strokeWidth: 1.8,
+      strokeLinejoin: 'round', strokeLinecap: 'round',
+    }),
+    h('path', {
+      key: 'stem', d: 'M24 27.1 L24 34.5',
+      stroke: INK, strokeWidth: 1.8, strokeLinecap: 'round',
+    }),
+    h('path', {
+      key: 'foot', d: 'M18.8 35.3 L29.2 35.3',
+      stroke: INK, strokeWidth: 1.8, strokeLinecap: 'round',
+    }),
+    /* A lowercase c and f flanking the glass, in the italic Newsreader the
+       wordmark is set in, so the mark says the app's initials in the app's own
+       hand. Both are placed against MEASURED glyph boxes rather than by eye,
+       because the italic f is the awkward one: its top hook reaches right and
+       its tail reaches left, making it 11 units wide against the c's 6, and
+       the first version had it touching the ring on one side and lapping over
+       the bowl on the other. As set here the f clears the ring by 0.57 units
+       and the glass by 1.35. Change a size and those want re-measuring. */
+    h('text', {
+      key: 'c', x: 9.89, y: 26.5, textAnchor: 'middle',
+      style: {
+        fill: INK, fontFamily: "'Newsreader',Georgia,serif", fontStyle: 'italic',
+        fontWeight: 500, fontSize: 13,
+      },
+    }, 'c'),
+    h('text', {
+      key: 'f', x: 38.01, y: 26.5, textAnchor: 'middle',
+      style: {
+        fill: INK, fontFamily: "'Newsreader',Georgia,serif", fontStyle: 'italic',
+        fontWeight: 500, fontSize: 11,
+      },
+    }, 'f'),
+  ]);
+};
+
+/* CellarTracker's mark, beside the link that goes there: two speech bubbles,
+   "cellar" in a brick red one and "TRACKER" in a dark brown one.
+
+   Drawn here rather than fetched, for the same two reasons as everything else
+   in this folder - no third-party request, and it has to work with no
+   connection - and it is deliberately an evocation rather than a facsimile. At
+   the size this renders, what carries is two offset bubbles in their two
+   colours; the letterforms are the app's own sans, not theirs.
+
+   It is somebody else's trademark, used to say where the button goes, which is
+   what a trademark is for. Worth a thought before this app is published
+   anywhere public; the alternative is their name set as plain text, and the
+   button says "CellarTracker" underneath either way. */
+const CT_RED = '#a3282b';
+const CT_DARK = '#3a2b25';
+
+/* Laid out against measured text rather than by eye. At 11.5px bold the word
+   "cellar" is 29 units wide and "TRACKER", letterspaced at 10px, is 48 - so
+   the bubbles are 44 and 62 wide, which leaves about 8 units of air at the end
+   of each. The first attempt had TRACKER finishing 0.2 units short of its own
+   bubble's edge, which read as a mistake at any size. */
+const CellarTrackerMark = ({ height }) => {
+  const hgt = height || 30;
+  return h('svg', {
+    viewBox: '0 0 86 38', width: hgt / 38 * 86, height: hgt,
+    style: { display: 'block', flexShrink: 0 },
+    role: 'img', 'aria-label': 'CellarTracker',
+  }, [
+    /* Upper bubble, tail dropping from the left shoulder. */
+    h('path', {
+      key: 'b1', fill: CT_RED,
+      d: 'M3 0 h38 a3 3 0 0 1 3 3 v14 a3 3 0 0 1 -3 3 h-23 l-6 6 v-6 h-9 a3 3 0 0 1 -3 -3 v-14 a3 3 0 0 1 3 -3 z',
+    }),
+    h('text', {
+      key: 't1', x: 7, y: 14.5,
+      style: {
+        fill: '#fff', fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif',
+        fontSize: 11.5, fontWeight: 700, letterSpacing: '-0.01em',
+      },
+    }, 'cellar'),
+    /* Lower bubble, offset right and overlapping, tail on the right shoulder. */
+    h('path', {
+      key: 'b2', fill: CT_DARK,
+      d: 'M27 18 h56 a3 3 0 0 1 3 3 v14 a3 3 0 0 1 -3 3 h-45 l-6 -6 h-5 a3 3 0 0 1 -3 -3 v-11 a3 3 0 0 1 3 -3 z',
+    }),
+    h('text', {
+      key: 't2', x: 30, y: 32,
+      style: {
+        fill: '#fff', fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif',
+        fontSize: 10, fontWeight: 700, letterSpacing: '0.04em',
+      },
+    }, 'TRACKER'),
+  ]);
+};
+
+/* Wine-Searcher's mark: a charcoal plate, the bottle-and-lens glyph, and the
+   name in white lowercase. Drawn rather than fetched, and an evocation rather
+   than a facsimile, for the same reasons as the CellarTracker mark above -
+   including the same caveat about it being somebody else's trademark.
+
+   The glyph is the part that survives being shrunk: a bottle lying on its
+   side whose neck ends in a lens. At 22px tall the name is small, so the
+   plate carries the recognition and the words confirm it. */
+const WS_PLATE = '#3a3a3a';
+const WS_GREEN = '#5e7d20';
+const WS_TYPE = '#b3b3b3';
+
+/* Wine-Searcher's mark, stacked the way they set it: the bottle-and-lens glyph
+   over the name, on a charcoal plate. A bottle lying on its side pointing
+   right, a lens over its shoulder with the handle running up and to the left,
+   white outlines, olive-green glass.
+
+   Drawn rather than fetched, and an evocation rather than a facsimile - same
+   reasons and the same trademark caveat as the CellarTracker mark above. The
+   letterforms are this app's own sans, set light and loose, which is as close
+   as a system font gets to theirs.
+
+   The plate is a full pill, matching the maturity chip beside it, and that is
+   what sets the width. A pill's corners eat into the box at exactly the height
+   the word sits at: on an 86-unit-tall plate the curve is still 18 units in
+   from the edge at the baseline, so the 146-unit word needs 192 units of plate
+   rather than the 178 a square-cornered one needed. Everything is centred on
+   that wider box.
+
+   The viewBox is sized from the MEASURED text rather than guessed. The first
+   attempt put a 15px word in a 132-unit box that the word needed 141 of, so
+   the mark shipped reading "wine-search" with the last two letters cut off by
+   its own edge - the same mistake as TRACKER above, made twice in one day. If
+   the font size or the radius changes, re-measure the box. */
+const WineSearcherMark = ({ height }) => {
+  const hgt = height || 42;
+  return h('svg', {
+    viewBox: '0 0 192 86', width: hgt / 86 * 192, height: hgt,
+    style: { display: 'block', flexShrink: 0 },
+    role: 'img', 'aria-label': 'Wine-Searcher',
+  }, [
+    h('rect', { key: 'p', x: 0, y: 0, width: 192, height: 86, rx: 43, fill: WS_PLATE }),
+    /* Shifted with the plate, so the glyph stays over the middle of the word. */
+    h('g', { key: 'glyph', transform: 'translate(7,0)' }, [
+      /* The bottle: body, shoulder, neck, cap - one path, outlined in white so
+         it survives against the plate at any size. */
+      h('path', {
+        key: 'b', fill: WS_GREEN, stroke: '#fff', strokeWidth: 4,
+        strokeLinejoin: 'round', strokeLinecap: 'round',
+        d: 'M52 34 h50 l14 5 v0.5 h14 a3 3 0 0 1 3 3 v3 a3 3 0 0 1 -3 3 h-14 v0.5 l-14 5 h-50 '
+         + 'a5 5 0 0 1 -5 -5 v-10 a5 5 0 0 1 5 -5 z',
+      }),
+      /* The lens, sitting over the bottle's shoulder, and its handle. */
+      h('line', {
+        key: 'h', x1: 70, y1: 22, x2: 58, y2: 10,
+        stroke: '#fff', strokeWidth: 6, strokeLinecap: 'round',
+      }),
+      h('circle', { key: 'r', cx: 82, cy: 34, r: 15, fill: WS_GREEN, stroke: '#fff', strokeWidth: 4 }),
+      /* The highlight inside the lens, which is what makes it read as glass. */
+      h('path', {
+        key: 'g', d: 'M74 36 a9 6 0 0 0 16 0', fill: 'none',
+        stroke: '#fff', strokeWidth: 3, strokeLinecap: 'round',
+      }),
+    ]),
+    h('text', {
+      key: 't', x: 96, y: 74, textAnchor: 'middle',
+      style: {
+        fill: WS_TYPE, fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif',
+        fontSize: 24, fontWeight: 300, letterSpacing: '0.005em',
+      },
+    }, 'wine-searcher'),
+  ]);
+};
+
+const Wordmark = () => h('h1', {
+  style: {
+    margin: 0, flex: 1, minWidth: 0,
+    display: 'flex', alignItems: 'center', gap: 9,
+  },
+}, [
+  h(Logo, { key: 'm', size: 40 }),
+  h('span', {
+    key: 'w',
+    style: {
+      fontFamily: "'Newsreader',Georgia,serif",
+      fontStyle: 'italic', fontWeight: 500, fontSize: 25,
+      letterSpacing: '0.005em', color: INK, lineHeight: 1,
+    },
+  }, 'Corkfolio'),
+]);
+
+const Stat = ({ k, v, tone }) => h('div', { style: sx.stat }, [
+  h('div', { key: 'v', className: 'm-num', style: { ...sx.statV, color: tone || INK } }, v),
+  h('div', { key: 'k', style: sx.statK }, k),
+]);
+
+const Eyebrow = ({ children }) => h('div', { style: sx.eyebrow }, children);
+
+/* Horizontal bars rather than a treemap: on a phone a treemap of six regions
+   is six rectangles you cannot label, and the labels are the useful part. */
+const Bar = ({ label, value, of, right, colour, onClick }) => h(onClick ? 'button' : 'div', {
+  style: {
+    flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 3,
+    border: 'none', background: 'transparent', padding: 0, textAlign: 'left', width: '100%',
+  },
+  onClick,
+}, [
+  h('div', { key: 'l', style: { display: 'flex', fontSize: 12.5, gap: 8, alignItems: 'baseline' } }, [
+    h('span', {
+      key: 'a',
+      style: { flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+    }, label),
+    h('span', { key: 'b', className: 'm-num', style: { color: ink(0.55), fontSize: 11.5 } }, right),
+  ]),
+  h('div', {
+    key: 'b', style: { height: 7, borderRadius: 4, background: ink(0.07), overflow: 'hidden' },
+  }, h('div', {
+    style: {
+      width: (of ? Math.max(2, (value / of) * 100) : 0) + '%', height: '100%',
+      background: colour || CLARET, borderRadius: 4,
+    },
+  })),
+]);
+
+/* =========================================================================
+   The timeline.
+
+   Every lot is one bar spanning its drinking window, with a line for today.
+   No legend is needed to read it: a bar entirely right of the line is not
+   ready, a bar the line has passed is gone, and a bar whose right end is
+   close to the line is the one to open next.
+
+   The axis is clamped to a window around today rather than showing the true
+   full span, which on this cellar runs 2006 to 2067 and would squeeze every
+   bar into a few pixels. A bar running past either edge is drawn with a
+   squared-off open end rather than a rounded one, so a clipped window never
+   reads as a window that ends there.
+========================================================================= */
+
+const TL_NAME_WIDTH = '46%';
+
+const TimelineAxis = ({ from, to }) => {
+  const span = to - from;
+  const ticks = [];
+  for (let y = Math.ceil(from / 5) * 5; y <= to; y += 5) ticks.push(y);
+  /* Sticky, so the years stay readable all the way down a 56-row chart. A
+     timeline whose axis scrolls away stops being a timeline about halfway
+     through - you can see that a bar ends somewhere, but not when.
+
+     It needs an opaque background of its own: transparent, the rows scroll
+     up underneath the numbers and both become unreadable. The negative top
+     margin and matching padding pull the strip up over the pane's own top
+     padding, so nothing peeks out above it as it pins. */
+  return h('div', {
+    style: {
+      flexShrink: 0, display: 'flex', gap: 8, alignItems: 'flex-end',
+      height: 20, boxSizing: 'content-box',
+      position: 'sticky', top: -15, zIndex: 2,
+      marginTop: -4, paddingTop: 19, paddingBottom: 5,
+      background: 'var(--surface)',
+      borderBottom: '1px solid ' + ink(0.09),
+    },
+  }, [
+    h('div', { key: 'a', style: { width: TL_NAME_WIDTH, flexShrink: 0 } }),
+    h('div', { key: 'b', style: { flex: 1, position: 'relative', height: '100%' } }, [
+      ...ticks.map(y => h('div', {
+        key: y,
+        style: {
+          position: 'absolute', left: ((y - from) / span) * 100 + '%', bottom: 0,
+          transform: 'translateX(-50%)', fontSize: 9.5, color: ink(0.42),
+          fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap',
+        },
+      }, String(y))),
+    ]),
+  ]);
+};
+
+const TimelineRow = ({ lot, win, state, from, to, now, onClick }) => {
+  const span = to - from;
+  const clampedFrom = Math.max(from, win.from);
+  const clampedTo = Math.min(to, win.to);
+  const left = ((clampedFrom - from) / span) * 100;
+  const width = Math.max(1.5, ((clampedTo - clampedFrom) / span) * 100);
+  const openLeft = win.from < from;
+  const openRight = win.to > to;
+  return h('button', {
+    style: {
+      flexShrink: 0, display: 'flex', gap: 8, alignItems: 'center', width: '100%',
+      border: 'none', background: 'transparent', padding: '3px 0', textAlign: 'left',
+    },
+    onClick,
+  }, [
+    h('div', {
+      key: 'n',
+      style: {
+        width: TL_NAME_WIDTH, flexShrink: 0, display: 'flex', gap: 6, alignItems: 'baseline',
+        overflow: 'hidden',
+      },
+    }, [
+      h('span', {
+        key: 'd', className: 'm-state',
+        style: {
+          flexShrink: 0, width: 6, height: 6, borderRadius: 3,
+          background: STATES[state].colour, display: 'inline-block',
+        },
+      }),
+      h('span', {
+        key: 'v', className: 'm-num',
+        style: { flexShrink: 0, fontSize: 11.5, color: ink(0.5) },
+      }, lot.vintage),
+      h('span', {
+        key: 't',
+        style: {
+          fontSize: 12.5, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+        },
+      }, shortName(lot)),
+    ]),
+    h('div', {
+      key: 'b',
+      style: { flex: 1, position: 'relative', height: 14 },
+    }, [
+      /* the track */
+      h('div', {
+        key: 'tr',
+        style: {
+          position: 'absolute', inset: '5px 0', background: ink(0.055), borderRadius: 2,
+        },
+      }),
+      /* today */
+      h('div', {
+        key: 'now',
+        style: {
+          position: 'absolute', left: ((now - from) / span) * 100 + '%', top: 0, bottom: 0,
+          width: 1, background: 'rgba(var(--claret-rgb),0.55)',
+        },
+      }),
+      /* the window */
+      h('div', {
+        key: 'w',
+        style: {
+          position: 'absolute', left: left + '%', width: width + '%', top: 3, bottom: 3,
+          background: regionColour(lot.region),
+          borderRadius: 3,
+          borderTopLeftRadius: openLeft ? 0 : 3, borderBottomLeftRadius: openLeft ? 0 : 3,
+          borderTopRightRadius: openRight ? 0 : 3, borderBottomRightRadius: openRight ? 0 : 3,
+          opacity: state === 'young' ? 0.45 : state === 'past' ? 0.3 : 0.9,
+        },
+      }),
+    ]),
+  ]);
+};
+
+/* =========================================================================
+   The donut.
+
+   Bottles by region, and the way down a level. Drawn with stroke-dasharray on
+   concentric circles rather than SVG arc paths: no path arithmetic, no
+   large-arc-flag edge case when one slice is more than half the ring, and a
+   slice that rounds to nothing still gets a visible sliver.
+
+   The legend rows are the real controls - they are buttons, so they are
+   reachable by keyboard and carry the numbers. The ring is tappable too,
+   because on a phone that is what a thumb goes for.
+========================================================================= */
+
+const DONUT_R = 68;
+const DONUT_SW = 30;
+/* A hairline gap between slices, in user units of arc. Any larger and the
+   smallest slice in the cellar disappears into its own gaps. */
+const DONUT_GAP = 1.6;
+
+/* The ring is BOTTLES, and the numbers above it are cases. That split is
+   deliberate.
+
+   BBR's case size is not one number: this cellar holds 48 lots in sixes, 5 in
+   twelves and 3 in threes, so counting cases adds a twelve and a three
+   together as though they were the same thing. It is the right unit for "how
+   much have I got" - it is what BBR sells, stores and charges in, and what you
+   would say to them on the phone - so it stays in the stat row. It is the
+   wrong unit for a proportion. Measured on the August 2026 cellar the two
+   splits agree within 2.2 points, Burgundy being the widest at 16.4% of cases
+   against 18.6% of bottles, and Champagne the clearest case of the problem:
+   three bottles taking the same slice a twelve would. Small today, and a
+   function of what gets bought next rather than anything fixed, which is the
+   reason to use the denominator that cannot drift.
+
+   Bottles are not perfect either. One lot is in 150cl, and a magnum counts
+   here as one bottle while holding two bottles' worth of wine. The only
+   strictly uniform measure is volume, and "290 bottle-equivalents by region"
+   is not a thing anyone says. One lot in 56 is a footnote, not a unit. */
+
+/* The donut sits on its own plate. Drawn straight onto the region map the
+   ring picked up rivers and appellation names through the gaps between the
+   segments, and the legend percentages had type running underneath them -
+   both of them the same hue as the map, which is the worst case. A surface
+   with the page's own card colour cuts the map out from behind the one thing
+   on the page you are meant to read precisely.
+
+   The plate is translucent rather than solid, so the map still shows through
+   faintly and the page does not look like it has a hole punched in it. At
+   0.82 over a map already drawn at 0.15 the geography lands at roughly three
+   per cent - present enough to read as continuous ground, nowhere near enough
+   to compete with the percentages sitting on top of it. */
+const Donut = ({ slices, total, centreTop, centreBottom, onPick }) => {
+  const C = 2 * Math.PI * DONUT_R;
+  let acc = 0;
+  const arcs = slices.map(s => {
+    const len = total > 0 ? s.bottles / total * C : 0;
+    const arc = { s, len: Math.max(len - DONUT_GAP, 0.8), off: acc };
+    acc += len;
+    return arc;
+  });
+  return h('div', {
+    style: {
+      flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 12,
+      background: PLATE,
+      border: '1px solid ' + ink(0.07),
+      borderRadius: 12, padding: '14px 13px 6px',
+    },
+  }, [
+    h('svg', {
+      key: 'svg', viewBox: '0 0 200 200',
+      style: { width: '100%', maxWidth: 224, display: 'block', margin: '0 auto' },
+      role: 'img',
+      'aria-label': slices.map(s => s.key + ' ' + s.bottles + ' bottles').join(', '),
+    }, [
+      ...arcs.map(a => h('circle', {
+        key: a.s.key, cx: 100, cy: 100, r: DONUT_R, fill: 'none',
+        stroke: a.s.colour, strokeWidth: DONUT_SW, strokeLinecap: 'butt',
+        strokeDasharray: a.len + ' ' + (C - a.len),
+        strokeDashoffset: -a.off,
+        opacity: a.s.alpha === undefined ? 1 : a.s.alpha,
+        transform: 'rotate(-90 100 100)',
+        style: { cursor: onPick ? 'pointer' : 'default' },
+        onClick: onPick ? () => onPick(a.s.key) : null,
+      })),
+      h('text', {
+        key: 't1', x: 100, y: 96, textAnchor: 'middle',
+        style: {
+          fill: INK, fontFamily: "'Newsreader',Georgia,serif", fontSize: 30,
+          fontVariantNumeric: 'tabular-nums',
+        },
+      }, centreTop),
+      h('text', {
+        key: 't2', x: 100, y: 114, textAnchor: 'middle',
+        style: { fill: ink(0.5), fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase' },
+      }, centreBottom),
+    ]),
+    h('div', {
+      key: 'leg',
+      style: { display: 'flex', flexDirection: 'column', gap: 1 },
+    }, slices.map(s => h('button', {
+      key: s.key,
+      style: {
+        display: 'flex', alignItems: 'center', gap: 9, width: '100%',
+        border: 'none', background: 'transparent', padding: '7px 2px',
+        borderBottom: '1px solid ' + ink(0.07), textAlign: 'left', fontSize: 13,
+      },
+      onClick: onPick ? () => onPick(s.key) : null,
+    }, [
+      h('span', {
+        key: 'sw',
+        style: {
+          flexShrink: 0, width: 11, height: 11, borderRadius: 3,
+          background: s.colour, opacity: s.alpha === undefined ? 1 : s.alpha,
+        },
+      }),
+      h('span', {
+        key: 'n',
+        style: { flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+      }, s.key),
+      h('span', { key: 'c', className: 'm-num', style: { color: ink(0.55), fontSize: 12 } },
+        s.bottles + ' btl'),
+      /* 0.62 rather than the 0.4 this started at. Measured on the plate, 0.4
+         gave 2.5:1 in daylight - fine for a graphical element, nowhere near
+         the 4.5:1 a line of type wants, and this is type. 0.62 measures
+         4.7:1 in daylight and 6.1:1 in the evening, and still reads as
+         quieter than the case count beside it. */
+      h('span', {
+        key: 'p', className: 'm-num',
+        style: { color: ink(0.62), fontSize: 12, width: 34, textAlign: 'right' },
+      }, total > 0 ? Math.round(s.bottles / total * 100) + '%' : '—'),
+      onPick ? h('span', { key: 'x', style: { color: ink(0.3), fontSize: 14 } }, '›') : null,
+    ]))),
+  ]);
+};
+
+/* =========================================================================
+   App
+========================================================================= */
+
+class App extends React.Component {
+  state = {
+    lots: undefined,          /* undefined until loaded; null = never imported */
+    notes: {},
+    ref: null,                /* { wines, vintages } once the JSON has loaded */
+    maps: null,               /* region geometry from maps.json */
+    researched: null,         /* drinking windows from windows.json */
+    regionNotes: null,        /* region prose from regions.json */
+    saying: null,             /* how to pronounce a place, from regions.json */
+    refError: null,
+    tab: 'cellar',           /* cellar | windows */
+    /* Where you are in the funnel. Null and null is the whole cellar. */
+    dRegion: null, dSub: null,
+    fState: null, fQuery: '',
+    /* Which side of the bonded warehouse the list is showing. A second axis
+       from fState, not a third value of it: readiness is about a wine, this is
+       about where the bottles are, and a bottle can be both At best and at
+       home. Defaults to bond because every total in the app is about bond. */
+    fWhere: 'bond',
+    sheet: null, sheetArg: null,
+    toastMsg: null, busy: null,
+    localFile: false,        /* a cellar.local.csv sits next to index.html */
+    history: [],             /* out of bond: at home or consumed, oldest first */
+    syncCfg: null,           /* { token, repo } once sync is set up */
+    syncStatus: 'off',       /* off | syncing | ok | error */
+    syncHint: null,          /* what went wrong, in words */
+    showSyncSetup: false,
+    tokenInput: '', repoInput: '',
+  };
+
+  componentDidMount() {
+    const stored = this.load('corkfolio.lots.v1');
+    const notes = this.load('corkfolio.notes.v1') || {};
+    const history = withIds(this.load(HISTORY_KEY) || []);
+    const syncCfg = this.load(SYNC_KEY);
+
+    /* Written once, never overwritten, so the first run of a new build always
+       leaves a way back. */
+    if (!localStorage.getItem(PRE_UPGRADE_KEY)) {
+      this.save(PRE_UPGRADE_KEY, { at: Date.now(), lots: stored, notes });
+    }
+
+    this.setState({ notes, history, lots: stored || null, syncCfg: syncCfg || null });
+    this.loadReference();
+    this.probeLocalFile();
+    /* A sync on open, so a phone picked up after a laptop import is already
+       right rather than right after you remember to ask. Delayed so it never
+       competes with the first paint. */
+    if (syncCfg) setTimeout(this.syncNow, 400);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this._toastTimer);
+  }
+
+  /* The reference files ship with the app, so this is a same-origin fetch the
+     service worker has already cached. If it fails the app still works - the
+     detail sheet says the notes are unavailable rather than inventing any. */
+  async loadReference() {
+    try {
+      const [w, v, m, dw, rg] = await Promise.all([
+        fetch('./wines.json').then(r => r.json()),
+        fetch('./vintages.json').then(r => r.json()),
+        /* The maps are decoration. A failure here must not take the reference
+           notes down with them. */
+        fetch('./maps.json').then(r => r.json()).catch(() => ({ regions: {} })),
+        fetch('./windows.json').then(r => r.json()).catch(() => ({ windows: [] })),
+        fetch('./regions.json').then(r => r.json()).catch(() => ({ regions: {} })),
+      ]);
+      this.setState({
+        ref: { wines: w.wines || [], vintages: v.vintages || {} },
+        maps: (m && m.regions) || {},
+        researched: dw || { windows: [] },
+        regionNotes: (rg && rg.regions) || {},
+        saying: (rg && rg.pronunciations) || {},
+      });
+    } catch (e) {
+      this.setState({ refError: 'Reference notes could not be loaded.' });
+    }
+  }
+
+  /* A cellar.local.csv beside index.html turns the empty state into a single
+     tap. It exists because clearing storage during development meant hunting
+     through a file picker every time, and because a demo of an empty app is
+     not a demo of anything. It is in .gitignore: it is the one file that could
+     put holdings in a public repo. */
+  async probeLocalFile() {
+    try {
+      const res = await fetch('./cellar.local.csv', { method: 'GET' });
+      if (!res.ok) return;
+      const text = await res.text();
+      if (!/Description/.test(text)) return;
+      this._localText = text;
+      this.setState({ localFile: true });
+    } catch (e) { /* absent is the normal case */ }
+  }
+
+  loadLocalFile = async () => {
+    if (!this._localText) return;
+    this.setState({ busy: 'Reading the export...' });
+    await new Promise(r => setTimeout(r, 20));
+    this.ingest(this._localText, 'cellar.local.csv');
+  };
+
+  load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch (e) { return null; } }
+  save(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); return true; }
+    catch (e) { this.toast('Could not save - device storage is full.'); return false; }
+  }
+
+  toast(msg) {
+    this.setState({ toastMsg: msg });
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => this.setState({ toastMsg: null }), 3800);
+  }
+
+  readFile(file) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(String(r.result || ''));
+      r.onerror = () => reject(new Error('could not be read'));
+      r.readAsText(file);
+    });
+  }
+
+  importCellar = async (file) => {
+    if (!file) return;
+    this.setState({ busy: 'Reading the export...' });
+    try {
+      this.ingest(await this.readFile(file), file.name);
+    } catch (e) {
+      this.toast('That file ' + e.message + '.');
+      this.setState({ busy: null });
+    }
+  };
+
+  /* One path for both ways in - the file picker and cellar.local.csv - so the
+     diff reporting and the problem list cannot drift apart between them. */
+  ingest(text, sourceName) {
+    const { lots, problems } = parseCellarCsv(text);
+    if (!lots.length) {
+      this.toast(problems[0] || 'No wines found in that file.');
+      this.setState({ busy: null });
+      return;
+    }
+    const previous = this.state.lots;
+    const previousRows = (previous && previous.rows) || [];
+    const before = new Set(previousRows.map(l => l.key));
+    const after = new Set(lots.map(l => l.key));
+    const added = [...after].filter(k => !before.has(k)).length;
+    const gone = [...before].filter(k => !after.has(k)).length;
+
+    /* Bottles that were in the last export and are not in this one. The export
+       is the whole truth about what sits in bond, so a bottle that has left it
+       has come home - it has not stopped existing. */
+    const at = Date.now();
+    const left = withdrawals(previousRows, lots).map(w =>
+      this.historyEvent(w.lot, w.bottles, w.full, at));
+    const leftBottles = left.reduce((a, e) => a + e.bottles, 0);
+
+    /* An export that is stale or truncated looks exactly like a cellar someone
+       drank most of, and the difference matters far too much to guess at. Over
+       a quarter of the bottles in one import, and it asks - with the number,
+       because a confirmation that does not say what is at stake is worse than
+       none. Cancelling changes nothing at all: the holdings on the device are
+       the ones from the last import. */
+    const wasBottles = previousRows.reduce((a, l) => a + l.bottles, 0);
+    if (wasBottles && leftBottles > wasBottles * 0.25) {
+      const ok = window.confirm(
+        'This export is ' + leftBottles + ' bottles lighter than the last one, across ' +
+        left.length + (left.length === 1 ? ' wine' : ' wines') + '.\n\n' +
+        'Importing it will move those bottles to home and consumed. ' +
+        'If this is an older export than the one already loaded, cancel - nothing will change.');
+      if (!ok) {
+        this.setState({ busy: null });
+        this.toast('Import cancelled. Nothing changed.');
+        return;
+      }
+    }
+
+    const next = { rows: lots, importedAt: at, source: sourceName, problems };
+    this.setState({
+      lots: next, busy: null, sheet: null,
+      /* A fresh import should land you at the top of the funnel, not deep
+         inside a region that the new export may no longer contain. */
+      dRegion: null, dSub: null, fState: null, fQuery: '',
+    });
+    this.save('corkfolio.lots.v1', next);
+
+    if (left.length) {
+      const history = this.state.history.concat(left);
+      this.setState({ history });
+      this.save(HISTORY_KEY, history);
+    }
+
+    this.queueSync();
+
+    /* The diff is the valuable part: it says a case arrived or left without
+       you reading a single row. */
+    const bits = [lots.length + ' wines, ' + lots.reduce((a, l) => a + l.bottles, 0) + ' bottles'];
+    if (previous) {
+      if (added) bits.push(added + ' new');
+      if (leftBottles) bits.push(leftBottles + ' came home');
+      else if (gone) bits.push(gone + ' gone');
+      if (!added && !gone && !leftBottles) bits.push('no change');
+    }
+    this.toast('Imported ' + bits.join(' · '));
+  }
+
+  download(name, text, mime) {
+    const blob = new Blob([text], { type: (mime || 'text/plain') + ';charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  /* ------------------------------------------------------------ selectors */
+
+  /* Every screen asks for a window or a state constantly. These close over
+     the notes and the researched table so no call site has to remember to
+     pass them - forgetting one was how a lot could silently fall back to the
+     rule of thumb on one screen and not another. */
+  win(lot) { return windowOf(lot, this.state.notes[lot.key], this.state.researched); }
+  lotState(lot) { return stateOf(lot, this.state.notes[lot.key], this.year(), this.state.researched); }
+
+  lots() { return (this.state.lots && this.state.lots.rows) || []; }
+
+  /* Everything worth keeping about a bottle that has gone, copied rather than
+     referenced, because the lot it came from will not survive the next import.
+     The prices freeze here on purpose: a bottle you have drunk cost what it
+     cost, and a market value that kept moving afterwards would be a number
+     about a wine you no longer own. */
+  historyEvent(lot, bottles, full, at) {
+    const d = deliveredPerBottle(lot, bottles);
+    const win = this.win(lot);
+    return {
+      at, bottles, full, key: lot.key,
+      description: lot.description, vintage: lot.vintage,
+      region: lot.region, subRegion: lot.subRegion, producer: lot.producer,
+      volumeCl: lot.volumeCl, caseSize: lot.caseSize,
+      paidPerBottle: perBottle(lot),
+      marketPerBottle: marketPerBottle(lot),
+      deliveredPerBottle: d ? d.total : null,
+      windowFrom: win.from, windowTo: win.to,
+    };
+  }
+
+  /* Home and consumed, narrowed to wherever you are in the funnel. The
+     events carry the region and sub-region they had when they left, so
+     drilling into Bordeaux and switching to Home/Consumed answers "what have
+     I drunk of my Bordeaux" rather than starting again from the whole cellar. */
+  scopedHistory() {
+    const st = this.state;
+    return this.state.history.filter(e => {
+      if (st.dRegion && e.region !== st.dRegion) return false;
+      if (st.dSub && (e.subRegion || 'Not recognised') !== st.dSub) return false;
+      return true;
+    });
+  }
+
+  historyTotals() {
+    const h = this.state.history;
+    const bottles = h.reduce((a, e) => a + e.bottles, 0);
+    const paid = h.reduce((a, e) => a + (e.paidPerBottle || 0) * e.bottles, 0);
+    const delivered = h.reduce((a, e) => a + (e.deliveredPerBottle || 0) * e.bottles, 0);
+    return { bottles, paid, delivered, wines: new Set(h.map(e => e.key)).size };
+  }
+
+  /* The only way an entry leaves. BBR briefly dropping a row, or an export
+     imported out of order, invents a bottle you have not drunk, and there has
+     to be a way to say so. */
+  forgetHistory(i) {
+    const e = this.state.history[i];
+    if (!e) return;
+    if (!window.confirm('Remove ' + e.bottles + (e.bottles === 1 ? ' bottle' : ' bottles') +
+      ' of ' + e.vintage + ' ' + shortName(e) + ' from home and consumed?\n\n' +
+      'Use this when the bottles never actually left bond - an export imported out of ' +
+      'order, or a row BBR dropped and put back. It cannot be undone.')) return;
+    const history = this.state.history.slice(0, i).concat(this.state.history.slice(i + 1));
+    /* A tombstone, not just a shorter list: without one the other device still
+       holds the entry, cannot tell a removal from news, and pushes it back. */
+    const deleted = { ...this.loadDeleted(), [eventId(e)]: Date.now() };
+    this.setState({ history });
+    this.save(HISTORY_KEY, history);
+    this.save(DELETED_KEY, deleted);
+    this.queueSync();
+    this.toast('Removed from history.');
+  }
+  year() { return new Date().getFullYear(); }
+
+  /* ================================================================ views */
+
+  renderEmpty() {
+    return h('div', { style: sx.empty }, [
+      h('div', {
+        key: 'a',
+        style: { ...sx.prose, maxWidth: 330, margin: '0 auto 16px', color: ink(0.7) },
+      }, 'Corkfolio reads the “My Cellar” export from Berry Bros. and shows you what you have, when each wine is ready, and what a bottle costs once duty and VAT are paid.'),
+      h('div', {
+        key: 'b',
+        style: { display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' },
+      }, [
+        h('label', { key: 'p', style: { ...btn('primary'), display: 'inline-block' } }, [
+          'Import a BBR export',
+          h('input', {
+            key: 'i', type: 'file', accept: '.csv,text/csv', style: { display: 'none' },
+            onChange: e => { const f = e.target.files[0]; e.target.value = ''; this.importCellar(f); },
+          }),
+        ]),
+        this.state.localFile
+          ? h('button', { key: 'l', style: btn('plain'), onClick: this.loadLocalFile },
+              'Load the export in this folder')
+          : null,
+      ]),
+      h('div', {
+        key: 'c',
+        style: { fontSize: 12, color: ink(0.45), marginTop: 14, maxWidth: 300, marginLeft: 'auto', marginRight: 'auto' },
+      }, 'The file stays on this device. Nothing is uploaded.'),
+    ]);
+  }
+
+  renderWindows(shown) {
+    const y = this.year(), notes = this.state.notes;
+    const from = y - AXIS_BACK, to = y + AXIS_FORWARD;
+    const rows = shown
+      .map(lot => ({ lot, win: this.win(lot), state: this.lotState(lot) }))
+      .filter(r => r.win.from && r.win.to)
+      /* Soonest to close, first. That ordering answers "what should I drink
+         next" without anyone having to sort anything. */
+      .sort((a, b) => a.win.to - b.win.to || a.win.from - b.win.from);
+    /* A lot with no window and no vintage to estimate from cannot be drawn on
+       a year axis, so it is dropped. Say so rather than quietly showing a
+       shorter list: a missing bar is invisible, and a count is the only thing
+       that tells you the timeline is not the whole cellar. It cannot happen
+       with today's export - every lot carries a vintage, so the estimate
+       always fires - which is exactly why it has to speak up if it ever
+       does. */
+    const dropped = shown.length - rows.length;
+    const out = [];
+    out.push(h(Eyebrow, { key: 'e' }, 'Drinking windows, soonest to close'));
+    if (dropped > 0) {
+      out.push(h('div', { key: 'drop', style: sx.note },
+        dropped === 1
+          ? 'One wine is not on the timeline: no drinking window, and no vintage to estimate one from.'
+          : dropped + ' wines are not on the timeline: no drinking window, and no vintage to estimate one from.'));
+    }
+    out.push(h('div', {
+      key: 'tl',
+      style: { flexShrink: 0, display: 'flex', flexDirection: 'column' },
+    }, [
+      h(TimelineAxis, { key: 'ax', from, to }),
+      ...rows.map(r => h(TimelineRow, {
+        key: r.lot.key, lot: r.lot, win: r.win, state: r.state, from, to, now: y,
+        onClick: () => this.setState({ sheet: 'lot', sheetArg: r.lot.key }),
+      })),
+    ]));
+
+    const regions = [...new Set(shown.map(l => l.region))];
+    out.push(h('div', {
+      key: 'leg',
+      style: { flexShrink: 0, display: 'flex', flexWrap: 'wrap', gap: '4px 12px', fontSize: 11, color: ink(0.55) },
+    }, regions.map(r => h('span', {
+      key: r, style: { display: 'flex', alignItems: 'center', gap: 5 },
+    }, [
+      h('span', {
+        key: 'd',
+        style: { width: 9, height: 9, borderRadius: 2, background: regionColour(r), display: 'inline-block' },
+      }),
+      r,
+    ]))));
+
+    return out;
+  }
+
+  lotRow(lot) {
+    const notes = this.state.notes;
+    const state = this.lotState(lot);
+    const win = this.win(lot);
+    const d = deliveredPerBottle(lot, lot.bottles);
+    return h('button', {
+      key: lot.key, style: sx.row,
+      onClick: () => this.setState({ sheet: 'lot', sheetArg: lot.key }),
+    }, [
+      h('div', {
+        key: 's', className: 'm-state',
+        style: { flexShrink: 0, width: 3, borderRadius: 2, background: STATES[state].colour },
+      }),
+      h('div', { key: 'm', style: sx.rowMain }, [
+        h('div', { key: 't', style: sx.rowTitle }, lot.vintage + ' ' + shortName(lot)),
+        h('div', { key: 'd', style: sx.rowMeta }, [
+          h('span', { key: 'a' }, lot.subRegion || lot.region),
+          h('span', { key: 'b', className: 'm-num' }, lot.bottles + (lot.bottles === 1 ? ' bottle' : ' bottles')),
+          h('span', { key: 'c', className: 'm-num' },
+            win.from ? win.from + '–' + win.to + (windowIsEstimated(win) ? ' est' : '') : 'no window'),
+        ]),
+      ]),
+      h('div', { key: 'r', style: sx.rowRight }, [
+        h('div', { key: 'a', className: 'm-num', style: { fontSize: 14.5, fontWeight: 600 } },
+          d ? money(d.total) : '—'),
+        h('div', {
+          key: 'b', className: 'm-state',
+          style: { fontSize: 10, color: STATES[state].colour, fontWeight: 600 },
+        }, STATES[state].name),
+      ]),
+    ]);
+  }
+
+  /* The same shape as a wine row, so a search reads as one list, with three
+     things swapped: no maturity state, because a bottle that has gone does not
+     have one; the date it left where the drinking window would be; and the
+     price frozen at what it cost delivered rather than recomputed. Tapping it
+     opens history rather than a lot sheet - the lot itself is gone, and the
+     next import will not bring it back. */
+  historyRow(e, i) {
+    return h('button', {
+      key: 'hist-' + e.key + '-' + e.at + '-' + i, style: sx.rowHistory,
+      onClick: () => this.setState({ sheet: 'history' }),
+    }, [
+      h('div', {
+        key: 's',
+        style: { flexShrink: 0, width: 3, borderRadius: 2, background: 'var(--hist)' },
+      }),
+      h('div', { key: 'm', style: sx.rowMain }, [
+        h('div', { key: 't', style: sx.rowTitle }, e.vintage + ' ' + shortName(e)),
+        h('div', { key: 'd', style: sx.rowMeta }, [
+          h('span', { key: 'a' }, e.subRegion || e.region),
+          h('span', { key: 'b', className: 'm-num' },
+            e.bottles + (e.bottles === 1 ? ' bottle' : ' bottles')),
+          h('span', { key: 'c' }, 'left ' + whenLeft(e.at)),
+        ]),
+      ]),
+      h('div', { key: 'r', style: sx.rowRight }, [
+        h('div', { key: 'a', className: 'm-num', style: { fontSize: 14.5, fontWeight: 600 } },
+          e.deliveredPerBottle ? money(e.deliveredPerBottle) : '—'),
+        h('div', {
+          key: 'b',
+          style: { fontSize: 10, color: 'var(--hist)', fontWeight: 600, letterSpacing: '0.08em' },
+        }, 'AT HOME'),
+      ]),
+    ]);
+  }
+
+  /* ------------------------------------------------------------ GitHub sync
+
+     Ported from Memoire, whose sync has been in use for longer and whose
+     shape - pull, merge, write back only if changed, retry once on a lost
+     race - is the part worth copying. What differs is the merge, because the
+     data differs: see the block above `readPayload`. */
+
+  b64e(str) { return btoa(unescape(encodeURIComponent(str))); }
+  b64d(str) { return decodeURIComponent(escape(atob(str))); }
+
+  ghFetch(cfg, method, body) {
+    return fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + GH_FILE, {
+      method,
+      headers: { Authorization: 'Bearer ' + cfg.token, Accept: 'application/vnd.github+json' },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
+  async pull(cfg) {
+    const res = await this.ghFetch(cfg, 'GET');
+    /* 404 is the ordinary first run: the repo is there, the file is not. */
+    if (res.status === 404) return { sha: null, ...readPayload(null) };
+    if (!res.ok) throw new Error('GitHub replied ' + res.status);
+    const j = await res.json();
+    let parsed = null;
+    try { parsed = JSON.parse(this.b64d((j.content || '').replace(/\s/g, ''))); } catch (e) {}
+    return { sha: j.sha, ...readPayload(parsed) };
+  }
+
+  loadDeleted() { return this.load(DELETED_KEY) || {}; }
+
+  syncNow = async () => {
+    const cfg = this.load(SYNC_KEY);
+    if (!cfg) return;
+    if (this._syncing) { this._syncAgain = true; return; }
+    this._syncing = true;
+    this.setState({ syncStatus: 'syncing', syncHint: null });
+    try {
+      /* Twice, not more: one retry covers the other device finishing its own
+         write between our read and ours. A loop here would keep two phones
+         syncing at each other. */
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const remote = await this.pull(cfg);
+        const deleted = mergeDeleted(this.loadDeleted(), remote.deleted);
+        const lots = mergeLots(this.state.lots, remote.lots);
+        const notes = mergeNotes(this.state.notes, remote.notes);
+        const history = mergeHistory(this.state.history, remote.history, deleted);
+        const next = writePayload(lots, notes, history, deleted);
+
+        if (next !== writePayload(remote.lots, remote.notes, remote.history, remote.deleted)) {
+          const res = await this.ghFetch(cfg, 'PUT', {
+            message: 'Sync from Corkfolio',
+            content: this.b64e(next),
+            sha: remote.sha || undefined,
+          });
+          if (res.status === 409 || res.status === 412) continue;
+          if (!res.ok) throw new Error('GitHub replied ' + res.status);
+        }
+
+        if (lots) this.save('corkfolio.lots.v1', lots);
+        this.save('corkfolio.notes.v1', notes);
+        this.save(HISTORY_KEY, history);
+        this.save(DELETED_KEY, deleted);
+        this.setState({
+          lots: lots || null, notes, history,
+          syncStatus: 'ok', syncHint: null, syncedAt: Date.now(),
+        });
+        return;
+      }
+      throw new Error('GitHub replied 409');
+    } catch (e) {
+      const code = (String(e.message).match(/(\d{3})/) || [])[1];
+      const hint =
+        code === '401' || code === '403' ? 'the token has likely expired. Create a new one and reconnect'
+        : code === '404' ? 'that repo was not found. Check the token has access to it'
+        : code === '409' || code === '412' ? 'another device was syncing at the same moment. Tap Sync now to retry'
+        : 'no connection, or GitHub is unreachable';
+      this.setState({ syncStatus: 'error', syncHint: hint });
+    } finally {
+      this._syncing = false;
+      if (this._syncAgain) { this._syncAgain = false; this.queueSync(); }
+    }
+  };
+
+  /* Debounced, so an import that changes three things syncs once. */
+  queueSync() {
+    if (!this.load(SYNC_KEY)) return;
+    clearTimeout(this._syncTimer);
+    this._syncTimer = setTimeout(this.syncNow, 1500);
+  }
+
+  connectSync = async () => {
+    const token = (this.state.tokenInput || '').trim();
+    const repo = (this.state.repoInput || '').trim()
+      .replace(/^https:\/\/github\.com\//, '').replace(/\.git$/, '').replace(/\/$/, '');
+    if (!token || repo.indexOf('/') < 0) {
+      this.toast('Enter a token and a repo, written as username/corkfolio-data.');
+      return;
+    }
+    const cfg = { token, repo };
+    this.setState({ syncStatus: 'syncing' });
+    try {
+      await this.pull(cfg);
+    } catch (e) {
+      this.setState({ syncStatus: 'off' });
+      this.toast('Could not connect. Check the token and the repo name.');
+      return;
+    }
+    this.save(SYNC_KEY, cfg);
+    this.setState({ syncCfg: cfg, showSyncSetup: false, tokenInput: '', repoInput: '' });
+    this.syncNow();
+  };
+
+  /* Leaves every bottle on the device. Sync is a convenience here, not a
+     dependency - the app has never needed it to work. */
+  disconnectSync = () => {
+    if (!window.confirm('Stop syncing to ' + (this.state.syncCfg || {}).repo + '?\n\n' +
+      'The cellar, the history and anything you have written stay on this device. ' +
+      'The copy already in the repo stays there too.')) return;
+    try { localStorage.removeItem(SYNC_KEY); } catch (e) {}
+    this.setState({ syncCfg: null, syncStatus: 'off', syncHint: null });
+    this.toast('Sync turned off.');
+  };
+
+  /* =============================================================== sheets */
+
+  closeSheet = () => this.setState({ sheet: null, sheetArg: null });
+
+  sheet(title, kids) {
+    return h('div', {
+      style: sx.sheet,
+      onClick: e => { if (e.target === e.currentTarget) this.closeSheet(); },
+    }, h('div', { style: sx.sheetInner }, [
+      h('div', { key: 'h', style: sx.sheetHead }, [
+        h('div', { key: 't', style: { ...sx.title, fontSize: 17 } }, title),
+        h('button', { key: 'x', style: btn('plain'), onClick: this.closeSheet }, 'Close'),
+      ]),
+      h('div', { key: 'b', style: sx.sheetBody }, kids),
+    ]));
+  }
+
+  renderLotSheet() {
+    const lot = this.lots().find(l => l.key === this.state.sheetArg);
+    if (!lot) return null;
+    const note = this.state.notes[lot.key] || {};
+    const y = this.year();
+    const win = this.win(lot);
+    const state = this.lotState(lot);
+    const d = deliveredPerBottle(lot, lot.bottles);
+    const mk = marketPerBottle(lot);
+    const wine = this.state.ref ? matchWine(lot, this.state.ref.wines) : null;
+    const vint = this.state.ref ? matchVintage(lot, this.state.ref.vintages) : null;
+    const kids = [];
+
+    /* --- identity ---------------------------------------------------- */
+    kids.push(h('div', { key: 'id', style: { flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 6 } }, [
+      h('div', {
+        key: 'a',
+        style: { fontFamily: "'Newsreader',Georgia,serif", fontSize: 25, lineHeight: 1.15, fontWeight: 500 },
+      }, lot.vintage + ' ' + (wine ? wine.name : shortName(lot))),
+      /* How to say it, on its own line under the name, in the same italic the
+         appellation headings use - one visual language for one idea, so it is
+         recognised rather than read. Optional by design: an estate an English
+         speaker can already say has no `say` field and gets no line, which is
+         the rule that keeps the useful ones worth looking at. */
+      wine && wine.say ? h('div', {
+        key: 'say',
+        style: {
+          fontFamily: "'Newsreader',Georgia,serif", fontStyle: 'italic',
+          fontSize: 14, color: ink(0.45), letterSpacing: '0.01em', marginTop: -2,
+        },
+      }, wine.say) : null,
+      h('div', { key: 'b', style: { fontSize: 13, color: ink(0.6) } },
+        [wine ? wine.appellation : lot.subRegion, lot.region, wine ? wine.rank : null]
+          .filter(Boolean).join(' · ')),
+      /* alignItems centre because the Wine-Searcher mark is taller than the
+         rest of this row, and a flex row stretches its children by default -
+         which turned the maturity pill into a tall rounded box. */
+      h('div', { key: 'c', style: { ...sx.chipRow, marginTop: 2, alignItems: 'center' } }, [
+        h('span', {
+          key: 's', className: 'm-state',
+          style: {
+            fontSize: 11.5, fontWeight: 600, color: '#fff', background: STATES[state].colour,
+            borderRadius: 999, padding: '3px 10px',
+          },
+        }, STATES[state].name),
+        h('span', {
+          key: 'w', className: 'm-num',
+          style: { fontSize: 11.5, color: ink(0.6), padding: '3px 0' },
+        }, win.from
+          ? 'window ' + win.from + '–' + win.to +
+            ', ' + windowLabel(win)
+          : 'no window stated'),
+        /* Prices for this exact bottle, at whoever is asking least for it.
+           Sits at the right of this row rather than down with the CellarTracker
+           button because it answers a different kind of question - what is it
+           worth, not what is it like - and this row is where the app's own
+           numbers begin. marginLeft auto pushes it right when there is room and
+           the row simply wraps when there is not. */
+        h('a', {
+          key: 'ws',
+          href: wineSearcherUrl(lot, wine),
+          target: '_blank', rel: 'noopener noreferrer',
+          style: { marginLeft: 'auto', display: 'block', lineHeight: 0 },
+        }, h(WineSearcherMark, { height: 42 })),
+      ]),
+    ]));
+
+    /* --- the price that matters -------------------------------------- */
+    kids.push(h(Eyebrow, { key: 'e-p' }, 'One bottle, delivered'));
+    kids.push(h('div', { key: 'p', style: sx.card }, [
+      h('div', {
+        key: 'big', className: 'm-num',
+        style: { fontFamily: "'Newsreader',Georgia,serif", fontSize: 34, fontWeight: 500, lineHeight: 1 },
+      }, d ? money(d.total) : '—'),
+      h('div', { key: 'sub', style: { fontSize: 12.5, color: ink(0.6) } },
+        'duty paid, VAT paid, out of bond'),
+      d ? h('div', {
+        key: 'br',
+        style: { display: 'flex', flexDirection: 'column', gap: 3, marginTop: 6, fontSize: 12.5 },
+      }, reconcileToTotal([
+        ['In bond', d.ib],
+        ['Duty', d.duty],
+        ['VAT at 20%', d.vat],
+      ].concat(d.fee ? [['Part-case fee, spread', d.fee]] : []), d.total)
+        .map(([label, v]) => h('div', {
+          key: label, style: { display: 'flex', justifyContent: 'space-between', gap: 10 },
+        }, [
+          h('span', { key: 'a', style: { color: ink(0.62) } }, label),
+          h('span', { key: 'b', className: 'm-num' }, money(v)),
+        ]))) : null,
+    ]));
+
+    /* --- the holding -------------------------------------------------- */
+    kids.push(h('div', { key: 'nums', style: sx.statRow }, [
+      h(Stat, { key: 'a', k: 'Bottles', v: String(lot.bottles) }),
+      h(Stat, { key: 'b', k: 'In bond /bt', v: money(perBottle(lot)) }),
+      h(Stat, {
+        key: 'c', k: marketIsEstimated(lot) ? 'Market est.' : 'Market /bt',
+        v: money(marketOrPaid(lot)),
+      }),
+      h(Stat, {
+        key: 'd', k: 'Vs paid',
+        /* No mark means the estimate IS the price paid, and "+0%" would read
+           as a wine that has not moved rather than one nobody has priced. */
+        v: (mk && perBottle(lot)) ? pct(mk / perBottle(lot) - 1) : '—',
+        tone: (mk && perBottle(lot) && mk > perBottle(lot)) ? 'var(--st-opening)' : undefined,
+      }),
+    ]));
+    if (win.source === 'researched' && win.basis) {
+      kids.push(h('div', { key: 'wbasis', style: sx.note },
+        'Drinking window: ' + win.basis));
+    } else if (windowIsEstimated(win)) {
+      kids.push(h('div', { key: 'wbasis', style: sx.note },
+        'The export states no drinking window for this wine, and no published one has been ' +
+        'found, so this is an estimate from the vintage and the sub-region. Treat it as a hint.'));
+    }
+
+    kids.push(h('div', { key: 'fmt', style: sx.note },
+      lot.format + ', ' + lot.volumeCl + 'cl, in cases of ' + (lot.caseSize || '?') +
+      (lot.producer ? ' · ' + (note.producer || lot.producer) : '') +
+      (lot.status ? ' · ' + lot.status.toLowerCase() : '')));
+
+    /* --- reference notes --------------------------------------------- */
+    if (wine) {
+      const sections = [
+        ['The estate', wine.estate],
+        ['Who makes it', wine.producer],
+        ['How it tastes', wine.style],
+        ['Drinking it', wine.drink],
+      ];
+      for (const [label, text] of sections) {
+        if (!text) continue;
+        kids.push(h(Eyebrow, { key: 'e-' + label }, label));
+        kids.push(h('p', { key: 'p-' + label, style: sx.prose }, text));
+      }
+      if (wine.grapes) {
+        kids.push(h('div', { key: 'grapes', style: sx.note }, 'Grapes: ' + wine.grapes));
+      }
+    }
+
+    /* What everybody else thinks, which is the one thing the reference files
+       cannot hold. Sits after the estate note and before the vintage, because
+       it belongs with opinion rather than with fact - and it is a link out, so
+       it should not interrupt anything the app can answer itself. */
+    /* The mark sits inside the link rather than beside it: one tap target
+       instead of a button next to a picture that does nothing when pressed.
+       It also carries the whole explanation. A line underneath used to say
+       that this opens CellarTracker and needs a connection, which the logo
+       already says and the tab bar of the browser confirms - a caption
+       repeating what a mark has just told you is the kind of text people stop
+       reading, and then stop reading the useful ones too. */
+    kids.push(h('a', {
+      key: 'ct',
+      href: communityNotesUrl(lot, wine),
+      target: '_blank', rel: 'noopener noreferrer',
+      style: {
+        ...btn('plain'), flexShrink: 0, alignSelf: 'flex-start',
+        textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 9,
+        marginTop: 2,
+      },
+    }, [
+      h(CellarTrackerMark, { key: 'm', height: 30 }),
+      h('span', { key: 'l' }, 'Community tasting notes'),
+    ]));
+
+    if (vint) {
+      kids.push(h(Eyebrow, { key: 'e-v' }, 'The ' + lot.vintage + ' vintage in ' + lot.region));
+      kids.push(h('p', {
+        key: 'v-h',
+        style: { ...sx.prose, fontStyle: 'italic', color: ink(0.7) },
+      }, vint.headline));
+      kids.push(h('p', { key: 'v-n', style: sx.prose }, vint.note));
+      if (vint.now) kids.push(h('p', { key: 'v-w', style: { ...sx.prose, color: ink(0.72) } }, vint.now));
+    }
+
+    if (!wine || !vint) {
+      kids.push(h('div', { key: 'gap', style: sx.note },
+        this.state.refError ? this.state.refError
+          : !wine && !vint ? 'No reference notes for this wine or this vintage yet.'
+          : !wine ? 'No reference notes for this estate yet.'
+          : 'No notes for this vintage in this region yet.'));
+    }
+
+
+    return this.sheet(lot.vintage, kids);
+  }
+
+  /* What has left the cellar. Deliberately plain: a list, newest first, of
+     what went and what it had cost by the time it reached the house. No
+     market value, because the wine is drunk and a mark on it would be a
+     number about something you no longer have. */
+  renderHistorySheet() {
+    const h_ = this.state.history;
+    const t = this.historyTotals();
+    const kids = [];
+
+    kids.push(h('p', { key: 'i', style: sx.prose },
+      'Bottles that were in one export and not the next. Leaving bond means they came home, ' +
+      'so they are kept here with what they cost rather than dropped - whether they are in a ' +
+      'rack waiting or already drunk. Nothing here counts towards any total in the app, ' +
+      'because every total in the app is about what is still in bond.'));
+
+    kids.push(h('div', { key: 'nums', style: sx.statRow }, [
+      h(Stat, { key: 'a', k: 'Bottles', v: String(t.bottles) }),
+      h(Stat, { key: 'b', k: 'Wines', v: String(t.wines) }),
+      h(Stat, { key: 'c', k: 'Paid', v: money0(t.paid) }),
+      h(Stat, { key: 'd', k: 'Cost delivered', v: money0(t.delivered) }),
+    ]));
+
+    kids.push(h(Eyebrow, { key: 'e' }, 'Most recent first'));
+
+    /* Newest first for reading, but the index has to point back into the
+       stored order, which is oldest first - so it is carried, not recomputed
+       from the reversed list. */
+    const ordered = h_.map((e, i) => ({ e, i })).reverse();
+    kids.push(...ordered.map(({ e, i }) => h('div', {
+      key: e.key + '-' + e.at + '-' + i,
+      style: { ...sx.panel, gap: 4 },
+    }, [
+      h('div', { key: 't', style: sx.rowTitle }, e.vintage + ' ' + shortName(e)),
+      h('div', { key: 'm', style: sx.rowMeta }, [
+        h('span', { key: 'a' }, e.subRegion || e.region),
+        h('span', { key: 'b', className: 'm-num' },
+          e.bottles + (e.bottles === 1 ? ' bottle' : ' bottles') + (e.full ? ', the last of them' : '')),
+        h('span', { key: 'c' }, 'left ' + whenLeft(e.at)),
+      ]),
+      h('div', { key: 'p', style: { ...sx.rowMeta, marginTop: 2 } }, [
+        h('span', { key: 'a', className: 'm-num' },
+          e.paidPerBottle ? money(e.paidPerBottle) + ' a bottle in bond' : 'price paid unknown'),
+        e.deliveredPerBottle ? h('span', { key: 'b', className: 'm-num' },
+          money(e.deliveredPerBottle) + ' delivered') : null,
+      ]),
+      h('button', {
+        key: 'x',
+        style: { ...btn('plain'), alignSelf: 'flex-start', marginTop: 4, fontSize: 12 },
+        onClick: () => this.forgetHistory(i),
+      }, 'Never left - remove'),
+    ])));
+
+    return this.sheet('Home and consumed', kids);
+  }
+
+  renderSettingsSheet() {
+    const st = this.state;
+    const kids = [];
+    const lots = this.lots();
+
+    kids.push(h(Eyebrow, { key: 'e-c' }, 'The cellar'));
+    if (st.localFile) {
+      kids.push(h('button', {
+        key: 'loc', style: btn('plain'), onClick: this.loadLocalFile,
+      }, 'Load the export in this folder'));
+    }
+    kids.push(h('label', { key: 'imp', style: { ...btn('primary'), textAlign: 'center' } }, [
+      lots.length ? 'Re-import a BBR export' : 'Import a BBR export',
+      h('input', {
+        key: 'i', type: 'file', accept: '.csv,text/csv', style: { display: 'none' },
+        onChange: e => { const f = e.target.files[0]; e.target.value = ''; this.importCellar(f); },
+      }),
+    ]));
+    if (st.lots) {
+      kids.push(h('div', { key: 'n', style: sx.note },
+        'Last imported from ' + (st.lots.source || 'a file') + '. A re-import replaces the holdings and leaves anything you have set by hand alone.'));
+      if (st.lots.problems && st.lots.problems.length) {
+        kids.push(h('div', { key: 'pr', style: { ...sx.note, borderLeftColor: CLARET } },
+          'In that export: ' + st.lots.problems.join('; ')));
+      }
+    }
+
+    const cov = this.coverage();
+    if (cov.ready && lots.length) {
+      kids.push(h(Eyebrow, { key: 'e-cov' }, 'Reference coverage'));
+      if (cov.complete) {
+        kids.push(h('div', { key: 'covok', style: sx.note },
+          'Every wine in the cellar has an estate note, a vintage note and a recognised ' +
+          'appellation, and every region has an essay and a map.'));
+      } else {
+        const line = (n, what) => n ? n + ' ' + what : null;
+        kids.push(h('div', { key: 'covgaps', style: { ...sx.note, borderLeftColor: CLARET } },
+          'Missing: ' + [
+            line(cov.noEstate.length, 'without an estate note'),
+            line(cov.noVintage.length, 'region-vintages undescribed'),
+            line(cov.noRegion.length, 'regions with no essay'),
+            line(cov.noMap.length, 'regions with no map'),
+            line(cov.noSubRegion.length, 'appellations unrecognised'),
+            line(cov.estimatedWindow.length, 'drinking windows still guessed'),
+          ].filter(Boolean).join(', ') + '.'));
+        kids.push(h('button', {
+          key: 'covdl', style: btn('plain'),
+          onClick: () => this.download(
+            'corkfolio-reference-needed.txt', this.coverageBrief(cov), 'text/plain'),
+        }, 'Download what is missing'));
+        kids.push(h('div', { key: 'covhow', style: sx.note },
+          'The file names each gap, the shape of an entry and the house rules, so it can be ' +
+          'handed to a model as-is. Everything else about a new import - bottles, prices, ' +
+          'windows, the timeline - is already correct without any of this.'));
+      }
+    }
+
+    /* --- sync ---------------------------------------------------------
+       Below the cellar and the coverage report, above Danger: it is a thing
+       you set up once and then never look at, and it is not dangerous. */
+    kids.push(h(Eyebrow, { key: 'e-sync' }, 'Sync'));
+    if (st.syncCfg) {
+      kids.push(h('div', { key: 'sync-on', style: { ...sx.panel, gap: 8 } }, [
+        h('div', { key: 's', style: { fontSize: 13, color: ink(0.6) } }, [
+          'Syncing to ',
+          h('strong', { key: 'r', style: { fontWeight: 600, color: INK } }, st.syncCfg.repo),
+          '. ',
+          st.syncStatus === 'syncing' ? 'Syncing now.'
+            : st.syncStatus === 'error' ? 'Last attempt failed.'
+            : st.syncStatus === 'ok' ? 'Up to date.'
+            : 'Not synced yet this session.',
+        ]),
+        st.syncHint ? h('div', { key: 'h', style: sx.note }, 'Sync failed: ' + st.syncHint + '.') : null,
+        h('div', { key: 'b', style: { display: 'flex', gap: 8 } }, [
+          h('button', {
+            key: 'n', style: { ...btn('plain'), flex: 1 }, onClick: this.syncNow,
+          }, st.syncStatus === 'syncing' ? 'Syncing...' : 'Sync now'),
+          h('button', {
+            key: 'd',
+            style: { ...btn('plain'), flex: 1, borderColor: 'rgba(var(--claret-rgb),0.5)', color: CLARET },
+            onClick: this.disconnectSync,
+          }, 'Turn off'),
+        ]),
+      ]));
+    } else if (!st.showSyncSetup) {
+      kids.push(h('div', { key: 'sync-off', style: { ...sx.panel, gap: 8 } }, [
+        h('p', { key: 'p', style: sx.prose },
+          'Your holdings, what has come home and anything you write live on this device ' +
+          'only. ' +
+          'Sync keeps a copy in a private repository you own, so a second device sees the ' +
+          'same cellar. Nothing is shared with anyone, and the app works exactly as well ' +
+          'without it.'),
+        h('button', {
+          key: 'b', style: { ...btn('plain'), alignSelf: 'flex-start' },
+          onClick: () => this.setState({ showSyncSetup: true }),
+        }, 'Set up sync to a private repo'),
+      ]));
+    } else {
+      kids.push(h('div', { key: 'sync-form', style: { ...sx.panel, gap: 8 } }, [
+        h('p', { key: 'p', style: sx.prose },
+          'Create a repository on GitHub and make it PRIVATE. Then create a fine-grained ' +
+          'token with Contents set to read and write, on that repository and nothing else. ' +
+          'The token is kept on this device and sent to nobody but GitHub.'),
+        h('div', { key: 'w', style: sx.note },
+          'Do not use the repository the app itself is published from. That one is public, ' +
+          'and this file holds every bottle you own and what you paid for it.'),
+        h('label', { key: 'lt', style: sx.label }, [
+          h('span', { key: 'l' }, 'Access token'),
+          h('input', {
+            key: 'i', style: sx.input, type: 'password', autoComplete: 'off',
+            autoCapitalize: 'none', spellCheck: false, value: st.tokenInput,
+            onChange: e => this.setState({ tokenInput: e.target.value }),
+          }),
+        ]),
+        h('label', { key: 'lr', style: sx.label }, [
+          h('span', { key: 'l' }, 'Repository'),
+          h('input', {
+            key: 'i', style: sx.input, type: 'text', placeholder: 'username/corkfolio-data',
+            autoComplete: 'off', autoCapitalize: 'none', spellCheck: false, value: st.repoInput,
+            onChange: e => this.setState({ repoInput: e.target.value }),
+          }),
+        ]),
+        h('div', { key: 'b', style: { display: 'flex', gap: 8 } }, [
+          h('button', { key: 'c', style: { ...btn('plain'), flex: 1 }, onClick: this.connectSync },
+            'Connect and sync'),
+          h('button', {
+            key: 'x', style: { ...btn('plain'), flex: 1 },
+            onClick: () => this.setState({ showSyncSetup: false, tokenInput: '', repoInput: '' }),
+          }, 'Cancel'),
+        ]),
+      ]));
+    }
+
+    kids.push(h(Eyebrow, { key: 'e-d' }, 'Danger'));
+    kids.push(h('button', {
+      key: 'w', style: { ...btn('plain'), borderColor: 'rgba(var(--claret-rgb),0.5)', color: CLARET },
+      onClick: () => {
+        if (!window.confirm('Erase the imported cellar from this device? ' +
+          this.lots().length + ' wines. This cannot be undone, though re-importing the export restores it.')) return;
+        try { localStorage.removeItem('corkfolio.lots.v1'); } catch (e) {}
+        this.setState({ lots: null, sheet: null });
+      },
+    }, 'Erase the cellar'));
+
+    return this.sheet('Cellar and settings', kids);
+  }
+
+
+  /* ================================================================ funnel
+
+     The app is a funnel: the whole cellar, then one region, then one
+     sub-region, then one wine. Each level answers the same five questions
+     about a smaller set of bottles, and the way down is by tapping the thing
+     you want to know more about rather than by setting a filter.
+
+     Drill state is just two strings. There is no history stack because there
+     are only three levels and a breadcrumb is clearer than a back button.
+  ============================================================================ */
+
+  /* The lots at the current level, before the readiness filter. */
+  scopeLots() {
+    const st = this.state;
+    return this.lots().filter(l => {
+      if (st.dRegion && l.region !== st.dRegion) return false;
+      if (st.dSub && (l.subRegion || 'Not recognised') !== st.dSub) return false;
+      return true;
+    });
+  }
+
+  /* And after it. The readiness chips narrow what you are looking at without
+     moving you down a level. */
+  visibleLots() {
+    const st = this.state;
+    const y = this.year();
+    return this.scopeLots().filter(l =>
+      !st.fState || this.lotState(l) === st.fState);
+  }
+
+  /* The five numbers, for whatever set of lots it is handed. Cases rather than
+     only bottles because that is the unit BBR sells, stores and charges in. */
+  metrics(lots) {
+    let bottles = 0, cases = 0, inBond = 0, atMarket = 0, taxPaid = 0, estimatedBottles = 0;
+    for (const lot of lots) {
+      bottles += lot.bottles;
+      if (lot.caseSize) cases += lot.bottles / lot.caseSize;
+      const pb = perBottle(lot), mk = marketOrPaid(lot);
+      const d = deliveredPerBottle(lot, lot.bottles);
+      if (pb !== null) inBond += pb * lot.bottles;
+      if (mk !== null) atMarket += mk * lot.bottles;
+      if (marketIsEstimated(lot)) estimatedBottles += lot.bottles;
+      if (d) taxPaid += d.total * lot.bottles;
+    }
+    return { wines: lots.length, bottles, cases, inBond, atMarket, taxPaid, estimatedBottles };
+  }
+
+  /* A case count of 9.5 is real - a three-bottle lot out of a six-bottle case
+     is half a case - so it is shown rather than rounded away. */
+  caseLabel(cases) {
+    return Math.abs(cases - Math.round(cases)) < 0.05
+      ? String(Math.round(cases))
+      : cases.toFixed(1);
+  }
+
+  metricStrip(m) {
+    return [
+      h('div', { key: 'stats', style: sx.statRow }, [
+        h(Stat, { key: 'a', k: 'Bottles', v: String(m.bottles) }),
+        h(Stat, { key: 'b', k: 'Cases', v: this.caseLabel(m.cases) }),
+        h(Stat, { key: 'c', k: 'In bond', v: money0(m.inBond) }),
+        h(Stat, { key: 'd', k: 'At market', v: money0(m.atMarket) }),
+        h(Stat, { key: 'e', k: 'Duty paid', v: money0(m.taxPaid) }),
+      ]),
+    ];
+  }
+
+  breadcrumb() {
+    const st = this.state;
+    if (!st.dRegion) return null;
+    const crumbs = [
+      { label: 'All regions', go: () => this.setState({ dRegion: null, dSub: null, fState: null }) },
+      { label: st.dRegion, go: () => this.setState({ dSub: null }) },
+    ];
+    if (st.dSub) crumbs.push({ label: st.dSub, go: null });
+    return h('div', {
+      key: 'crumb',
+      style: {
+        flexShrink: 0, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6,
+        fontSize: 12.5,
+      },
+    }, crumbs.map((c, i) => [
+      i ? h('span', { key: 's' + i, style: { color: ink(0.3) } }, '›') : null,
+      c.go
+        ? h('button', {
+            key: 'c' + i,
+            style: { border: 'none', background: 'transparent', padding: 0, color: 'var(--link)', fontSize: 12.5 },
+            onClick: c.go,
+          }, c.label)
+        : h('span', { key: 'c' + i, style: { color: ink(0.55) } }, c.label),
+    ]));
+  }
+
+  /* Slices of the level below, largest first, so the donut and its legend
+     agree with the order of the holdings list underneath. */
+  slicesBelow(lots) {
+    const st = this.state;
+    const key = st.dRegion ? (l => l.subRegion || 'Not recognised') : (l => l.region);
+    const groups = new Map();
+    for (const l of lots) {
+      const k = key(l);
+      const g = groups.get(k) || { key: k, bottles: 0, region: l.region };
+      g.bottles += l.bottles;
+      groups.set(k, g);
+    }
+    /* Ordered by the thing the ring draws, so the legend reads down in the
+       same order the segments run round. Sorting by cases while drawing
+       bottles would put a three-bottle case above a larger holding. */
+    const arr = [...groups.values()].sort((a, b) => b.bottles - a.bottles);
+    /* Inside a region the segments would all be the same colour, so sub-regions
+       get graded weights of the region's hue instead - the ordering carries the
+       information, and the region stays recognisable one level down. */
+    return arr.map((g, i) => ({
+      ...g,
+      colour: st.dRegion ? regionColour(g.region) : regionColour(g.key),
+      /* Graded opacity rather than color-mix: opacity works everywhere, and
+         color-mix needs a fairly recent Safari, which is exactly the browser
+         this has to work in on a phone. */
+      alpha: st.dRegion ? Math.max(0.3, 1 - i * 0.13) : 1,
+    }));
+  }
+
+  /* Every list of wines is ordered by how much window is left, soonest first.
+     That is the order the question "what should I drink" is actually asked in,
+     and it makes the list agree with the Windows tab rather than contradicting
+     it with an alphabetical or chronological order that means nothing.
+
+     Anything with no window at all sinks to the bottom: it cannot be urgent if
+     nobody knows when it is ready. */
+  byClosingSoonest = (a, b) => {
+    const wa = this.win(a), wb = this.win(b);
+    if (!wa.to && !wb.to) return fold(a.description).localeCompare(fold(b.description));
+    if (!wa.to) return 1;
+    if (!wb.to) return -1;
+    return (wa.to - wb.to)
+      || ((wa.from || 0) - (wb.from || 0))
+      || fold(a.description).localeCompare(fold(b.description));
+  };
+
+
+
+  /* ------------------------------------------------------ reference coverage
+
+     The holdings look after themselves: import a new export and the bottles,
+     valuations, windows, timeline and donut are all correct immediately,
+     because they are computed from the file. What does NOT look after itself
+     is the written layer - the estate notes, the vintage notes, the region
+     essays, the maps. A wine from an estate the app has never heard of still
+     appears everywhere and prices correctly; it just has nothing to say about
+     itself, and it says nothing quietly.
+
+     Quietly is the problem. This turns that silence into a worklist: exactly
+     which estates, region-vintages, appellations and regions are unknown, so
+     the gap is visible the moment it appears rather than the day you happen
+     to tap the wrong wine.
+  -------------------------------------------------------------------------- */
+
+  coverage() {
+    const lots = this.lots();
+    const st = this.state;
+    const wines = (st.ref && st.ref.wines) || [];
+    const vintages = (st.ref && st.ref.vintages) || {};
+    const out = {
+      lots: lots.length,
+      noEstate: [], noVintage: [], noSubRegion: [], noRegion: [], noMap: [], estimatedWindow: [],
+      ready: !!st.ref,
+    };
+    if (!st.ref) return out;
+
+    const seenVintage = new Set();
+    const seenRegion = new Set();
+
+    for (const lot of lots) {
+      if (!matchWine(lot, wines)) out.noEstate.push(lot.vintage + ' ' + shortName(lot));
+
+      const rv = lot.region + ' ' + lot.vintage;
+      if (!matchVintage(lot, vintages) && !seenVintage.has(rv)) {
+        seenVintage.add(rv);
+        out.noVintage.push(rv);
+      }
+
+      if (!lot.subRegion) out.noSubRegion.push(lot.vintage + ' ' + shortName(lot));
+
+      if (lot.region && !seenRegion.has(lot.region)) {
+        seenRegion.add(lot.region);
+        if (!mapFor(st.regionNotes, lot.region)) out.noRegion.push(lot.region);
+        if (!mapFor(st.maps, lot.region)) out.noMap.push(lot.region);
+      }
+
+      if (windowIsEstimated(this.win(lot))) out.estimatedWindow.push(lot.vintage + ' ' + shortName(lot));
+    }
+    out.complete = !out.noEstate.length && !out.noVintage.length && !out.noSubRegion.length
+      && !out.noRegion.length && !out.noMap.length && !out.estimatedWindow.length;
+    return out;
+  }
+
+  /* A brief the next import can be handed straight to a model. It names the
+     files, the exact shape of an entry and the house rules, because the thing
+     that makes reference content go bad is not effort - it is drift in voice
+     and the slow arrival of invented facts. */
+  coverageBrief(c) {
+    const L = [];
+    L.push('CORKFOLIO - reference content still needed');
+    L.push('');
+    L.push('The app reads four reference files. Each is keyed independently, and a wine with');
+    L.push('no entry still works - it simply has nothing to say. Below is what is missing.');
+    L.push('');
+    if (c.noEstate.length) {
+      L.push('## wines.json - no estate note (' + c.noEstate.length + ')');
+      L.push('Add one object per estate to the "wines" array. Fields: slug, match (array of');
+      L.push('lowercase substrings that must ALL appear in the BBR description), name, say,');
+      L.push('appellation, rank, grapes, estate, producer, style, drink.');
+      L.push('"say" is how to pronounce the distinctive part of the name - syllables');
+      L.push('hyphenated, the stressed one capitalised, as in "oh bye-YEE". Do not spell out');
+      L.push('"Chateau" or "Domaine", and leave the field out altogether where an English');
+      L.push('speaker would get the name right unaided.');
+      c.noEstate.forEach(x => L.push('  - ' + x));
+      L.push('');
+    }
+    if (c.noVintage.length) {
+      L.push('## vintages.json - no vintage note (' + c.noVintage.length + ')');
+      L.push('Keyed vintages[region][year], with headline, note and now.');
+      c.noVintage.forEach(x => L.push('  - ' + x));
+      L.push('');
+    }
+    if (c.noRegion.length) {
+      L.push('## regions.json - region never described (' + c.noRegion.length + ')');
+      L.push('Needs headline, character, structure, interest, a notable array of');
+      L.push('{name, why}, and pronunciations for any appellation an English speaker');
+      L.push('would get wrong.');
+      c.noRegion.forEach(x => L.push('  - ' + x));
+      L.push('');
+    }
+    if (c.noMap.length) {
+      L.push('## maps.json - no map geometry (' + c.noMap.length + ')');
+      L.push('Needs water, land, appellations, towns and areas on a 0-100 grid, north up.');
+      c.noMap.forEach(x => L.push('  - ' + x));
+      L.push('');
+    }
+    if (c.noSubRegion.length) {
+      L.push('## SUBREGIONS in index.html - appellation not recognised (' + c.noSubRegion.length + ')');
+      L.push('Add [name, [match keywords]] to the SUBREGIONS table. Until then these wines');
+      L.push('group under "Not recognised" in the donut and cannot be placed on a map.');
+      c.noSubRegion.forEach(x => L.push('  - ' + x));
+      L.push('');
+    }
+    if (c.estimatedWindow.length) {
+      L.push('## windows.json - drinking window is a guess (' + c.estimatedWindow.length + ')');
+      L.push('The export states no window and none has been researched, so the app is');
+      L.push('estimating from vintage and sub-region. Entries take match, vintage, from, to,');
+      L.push('confidence, basis and sources.');
+      c.estimatedWindow.forEach(x => L.push('  - ' + x));
+      L.push('');
+    }
+    L.push('## House rules');
+    L.push('- Plain British English. No exclamation marks, no marketing language.');
+    L.push('- NEVER a critic score, a points number or a price. That is deliberate.');
+    L.push('- Durable facts only: terroir, grapes, classification, house style, how it drinks.');
+    L.push('  Avoid anything that goes stale, such as who the current winemaker is, unless');
+    L.push('  it is well established.');
+    L.push('- Where sources disagree, say so rather than picking a side.');
+    L.push('- If a fact cannot be verified, leave it out. A shorter true note beats a longer one.');
+    return L.join('\n');
+  }
+
+  /* ---------------------------------------------------- shape of a region
+
+     Both boxes are computed from the holdings rather than written down. A
+     written summary is wrong the day after the next case arrives, and the
+     whole point of these two panels is that they describe THIS cellar. The
+     only authored input is the notable list in regions.json - what a rounded
+     holding in the region would draw on - and the gaps are that list minus
+     what is owned, plus whatever the numbers themselves say.
+  ------------------------------------------------------------------------ */
+
+  regionShape(lots) {
+    const y = this.year();
+    const bottles = lots.reduce((a, l) => a + l.bottles, 0);
+    const subs = new Map();
+    const vintages = new Map();
+    const producers = new Map();
+    const wines = new Map();
+    let cost = 0, priced = 0, lo = Infinity, hi = 0;
+
+    for (const l of lots) {
+      const sub = l.subRegion || 'unnamed';
+      const s = subs.get(sub) || { bottles: 0 };
+      s.bottles += l.bottles;
+      subs.set(sub, s);
+
+      if (l.vintage) vintages.set(l.vintage, (vintages.get(l.vintage) || 0) + l.bottles);
+      const prod = (this.state.notes[l.key] || {}).producer || l.producer;
+      if (prod) producers.set(prod, (producers.get(prod) || 0) + l.bottles);
+
+      /* A vertical is the same wine in more than one vintage. */
+      const key = fold(shortName(l));
+      if (!wines.has(key)) wines.set(key, { name: shortName(l), vintages: new Set() });
+      wines.get(key).vintages.add(l.vintage);
+
+      const pb = perBottle(l);
+      if (pb !== null) { cost += pb * l.bottles; priced += l.bottles; lo = Math.min(lo, pb); hi = Math.max(hi, pb); }
+    }
+
+    const state = { closing: 0, past: 0, prime: 0, opening: 0, young: 0, unknown: 0 };
+    for (const l of lots) state[this.lotState(l)] += l.bottles;
+
+    const rank = m => [...m.entries()].sort((a, b) =>
+      (b[1].bottles !== undefined ? b[1].bottles : b[1]) - (a[1].bottles !== undefined ? a[1].bottles : a[1]));
+
+    return {
+      lots: lots.length, bottles,
+      subs: rank(subs), vintages: rank(vintages), producers: rank(producers),
+      verticals: [...wines.values()].filter(w => w.vintages.size > 1),
+      avg: priced ? cost / priced : null,
+      lo: lo === Infinity ? null : lo, hi: hi || null,
+      state, year: y,
+      drinkable: state.opening + state.prime + state.closing + state.past,
+    };
+  }
+
+  /* Sentences rather than a table: the shape of a holding is a set of
+     relationships, and a table of the same numbers is already above on the
+     page. Each line only appears if it has something to say. */
+  cellarSummary(region, lots) {
+    const s = this.regionShape(lots);
+    const out = [];
+    const pl = (n, one, many) => n + ' ' + (n === 1 ? one : (many || one + 's'));
+
+    const named = s.subs.filter(([k]) => k !== 'unnamed');
+    out.push(pl(s.lots, 'wine') + ' and ' + pl(s.bottles, 'bottle') +
+      (named.length ? ', across ' + pl(named.length, 'appellation') : '') + '.');
+
+    if (named.length) {
+      const top = named.slice(0, 3);
+      const share = top.reduce((a, x) => a + x[1].bottles, 0) / s.bottles;
+      out.push(top.length === 1
+        ? 'All of it is ' + top[0][0] + '.'
+        : 'Weighted towards ' + listOf(top.map(x => x[0])) + ', which together hold ' +
+          Math.round(share * 100) + '% of it.');
+      if (named.length > 3) {
+        const thin = named.filter(x => x[1].bottles <= 6).map(x => x[0]);
+        if (thin.length) out.push('Only a token holding in ' + listOf(thin) + '.');
+      }
+    }
+
+    if (s.vintages.length) {
+      const years = s.vintages.map(v => v[0]).sort();
+      const top = s.vintages[0];
+      out.push('Vintages run ' + years[0] + ' to ' + years[years.length - 1] +
+        ', with ' + top[0] + ' the deepest at ' + pl(top[1], 'bottle') +
+        ' (' + Math.round(top[1] / s.bottles * 100) + '%).');
+    }
+
+    if (s.avg !== null) {
+      out.push('Averaging ' + money(s.avg) + ' a bottle in bond, from ' +
+        money(s.lo) + ' to ' + money(s.hi) + '.');
+    }
+
+    const ready = s.drinkable;
+    out.push(pl(ready, 'bottle') + ' of ' + s.bottles + ' already drinkable' +
+      (s.state.closing ? ', and ' + pl(s.state.closing, 'bottle') + ' with three years or less of window left' : '') + '.');
+
+    if (s.verticals.length) {
+      out.push('Verticals of ' + listOf(s.verticals.slice(0, 4).map(v =>
+        v.name + ' (' + [...v.vintages].sort().join(', ') + ')')) + '.');
+    }
+
+    const repeat = s.producers.filter(p => p[1] >= 12).slice(0, 4).map(p => p[0]);
+    if (repeat.length) out.push('Deepest with ' + listOf(repeat) + '.');
+
+    return out;
+  }
+
+  cellarGaps(region, lots, note) {
+    const s = this.regionShape(lots);
+    const held = new Set(lots.map(l => fold(l.subRegion || '')).filter(Boolean));
+    const out = [];
+
+    /* Appellations the region is known for that this cellar has none of. */
+    const missing = ((note && note.notable) || []).filter(n => !held.has(fold(n.name)));
+    for (const m of missing.slice(0, 5)) out.push({ head: m.name, body: m.why });
+
+    /* Then what the numbers themselves say, which no list can know. */
+    if (s.vintages.length) {
+      const top = s.vintages[0];
+      const share = top[1] / s.bottles;
+      if (share > 0.33 && s.vintages.length > 2) {
+        out.push({
+          head: 'Vintage concentration',
+          body: Math.round(share * 100) + '% of this region is ' + top[0] +
+            '. A single year going wrong, or simply maturing all at once, takes a third of the holding with it.',
+        });
+      }
+    }
+
+    const later = s.state.young;
+    if (s.bottles >= 12 && later / s.bottles < 0.15) {
+      out.push({
+        head: 'Nothing held back',
+        body: 'Only ' + later + ' of ' + s.bottles + ' bottles are still short of their window. ' +
+          'Everything here is drinkable now, which means nothing is being kept for the 2030s.',
+      });
+    }
+
+    if (s.avg !== null && s.hi && s.lo && s.hi / s.lo < 2.2 && s.lots >= 6) {
+      out.push({
+        head: 'A narrow price band',
+        body: 'Everything sits between ' + money(s.lo) + ' and ' + money(s.hi) + ' a bottle. ' +
+          'No cheap weeknight bottle and nothing at the top end either.',
+      });
+    }
+
+    if (!out.length) {
+      out.push((note && note.notable && note.notable.length)
+        ? {
+            head: 'Nothing obvious',
+            body: 'This region is well spread across its appellations, its vintages and its price range.',
+          }
+        : {
+            head: 'Not assessed',
+            body: 'Corkfolio has no reference notes for ' + region + ' yet, so it has nothing to ' +
+              'compare your holding against. Silence here means the app does not know, not that ' +
+              'there is nothing to find.',
+          });
+    }
+    return out;
+  }
+
+  /* Readiness as a filter, not as a way down a level. Shared by both tabs so
+     the counts and the behaviour cannot drift apart. Returns null rather than
+     an empty row when there is only one state to show. */
+  readinessChips(lots) {
+    const st = this.state;
+    const y = this.year();
+    const counts = new Map();
+    for (const l of lots) {
+      const k = this.lotState(l);
+      counts.set(k, (counts.get(k) || 0) + l.bottles);
+    }
+    if (counts.size < 2) return null;
+    return h('div', { key: 'chips', style: sx.chipRow },
+      STATE_ORDER.filter(k => counts.has(k)).map(k => h('button', {
+        key: k, style: chip(st.fState === k),
+        onClick: () => this.setState({ fState: st.fState === k ? null : k }),
+      }, [
+        h('span', {
+          key: 'd', className: 'm-state',
+          style: {
+            display: 'inline-block', width: 7, height: 7, borderRadius: 4, marginRight: 6,
+            background: STATES[k].colour,
+          },
+        }),
+        STATES[k].name,
+        h('span', { key: 'n', className: 'm-num', style: { opacity: 0.6, marginLeft: 5 } },
+          String(counts.get(k))),
+      ])));
+  }
+
+  /* In-bond against Home/Consumed. Always one or the other, and always
+     visible even at zero, because the pair is the label for what the list
+     below is: a row of chips where nothing is selected reads as "no filter",
+     and here there is no such state. The dot is square rather than round, so
+     the eye can tell this row's two chips from the four round maturity ones
+     without reading them. */
+  whereChips(scoped) {
+    const st = this.state;
+    const bond = scoped.reduce((a, l) => a + l.bottles, 0);
+    const home = this.scopedHistory().reduce((a, e) => a + e.bottles, 0);
+    const opts = [
+      { k: 'bond', label: 'In-bond', n: bond, colour: ink(0.45) },
+      { k: 'home', label: 'Home/Consumed', n: home, colour: 'var(--hist)' },
+    ];
+    return h('div', { key: 'where', style: sx.chipRow }, opts.map(o => h('button', {
+      key: o.k, style: chip(st.fWhere === o.k),
+      /* Switching clears the readiness filter: a count taken from one set
+         means nothing about the other, and leaving "Closing" lit while the
+         list changed underneath it was the confusing version of this. */
+      onClick: () => this.setState({ fWhere: o.k, fState: null }),
+    }, [
+      h('span', {
+        key: 'd',
+        style: {
+          display: 'inline-block', width: 7, height: 7, borderRadius: 2, marginRight: 6,
+          background: o.colour,
+        },
+      }),
+      o.label,
+      h('span', { key: 'n', className: 'm-num', style: { opacity: 0.6, marginLeft: 5 } },
+        String(o.n)),
+    ])));
+  }
+
+  /* The whole cellar's drinking windows, on their own. Deliberately not tied
+     to where you are in the funnel: the question this tab answers - what is
+     ready and what is closing - is about the cellar, not about Pauillac. */
+  renderWindowsTab() {
+    const lots = this.lots();
+    const visible = this.state.fState
+      ? lots.filter(l => this.lotState(l) === this.state.fState)
+      : lots;
+    const out = [];
+    out.push(h('div', {
+      key: 'h', style: { ...sx.title, fontSize: 20, flex: 'none', flexShrink: 0 },
+    }, 'Drinking Windows'));
+    out.push(this.readinessChips(lots));
+    if (!visible.length) {
+      out.push(h('div', { key: 'none', style: sx.empty }, 'Nothing here matches that.'));
+      return out;
+    }
+    out.push(...this.renderWindows(visible));
+    return out;
+  }
+
+  /* Place names in this cellar are mostly French and mostly not pronounced the
+     way they are spelled. The respelling sits beside the heading rather than
+     in a tooltip, because the moment you want it is the moment you are looking
+     at the name - and on a phone there is no hover to reveal anything.
+
+     Absent for anywhere an English speaker already says correctly, so the line
+     stays quiet on Burgundy and Piedmont and only speaks where it helps. */
+  placeHeading(name) {
+    const say = this.state.saying ? mapFor(this.state.saying, name) : null;
+    return h('div', {
+      key: 'h',
+      style: {
+        flexShrink: 0, display: 'flex', alignItems: 'baseline',
+        flexWrap: 'wrap', gap: '0 10px',
+      },
+    }, [
+      h('span', { key: 'n', style: { ...sx.title, fontSize: 20, flex: 'none' } }, name),
+      say ? h('span', {
+        key: 's',
+        style: {
+          fontFamily: "'Newsreader',Georgia,serif", fontStyle: 'italic',
+          fontSize: 14, color: ink(0.45), letterSpacing: '0.01em',
+        },
+      }, say) : null,
+    ]);
+  }
+
+  renderFunnelPage() {
+    const st = this.state;
+    const out = [];
+    const scoped = this.scopeLots();
+    const visible = this.visibleLots();
+    const crumb = this.breadcrumb();
+    if (crumb) out.push(crumb);
+
+    out.push(this.placeHeading(st.dSub || st.dRegion || 'Cellar Overview'));
+
+    /* The numbers and the donut answer to the readiness chips, not just to the
+       drill level. With no list on this tab the chips would otherwise do
+       nothing visible; this way "Closing" redraws the split as the shape of
+       what is actually running out. */
+    out.push(...this.metricStrip(this.metrics(visible)));
+
+    if (!st.dSub) {
+      const slices = this.slicesBelow(visible);
+      const totalBottles = slices.reduce((a, s) => a + s.bottles, 0);
+      if (slices.length > 1) {
+        out.push(h(Eyebrow, { key: 'e-d' },
+          st.dRegion ? 'Bottles by sub-region' : 'Bottles by region'));
+        out.push(h(Donut, {
+          key: 'donut', slices, total: totalBottles,
+          centreTop: String(totalBottles), centreBottom: 'bottles',
+          /* A region opens another donut. A sub-region has no level below it
+             but the bottles themselves, so it hands over to the Wines tab -
+             that is the bottom of the funnel. */
+          onPick: k => st.dRegion
+            ? this.setState({ dSub: k, tab: 'wines' })
+            : this.setState({ dRegion: k }),
+        }));
+      }
+    }
+
+    /* The region essay, under the donut. Only at region level: the overview
+       has no one region to describe, and a sub-region page is already about
+       somewhere specific enough that a general essay would be noise. */
+    if (st.dRegion && !st.dSub) {
+      const note = mapFor(st.regionNotes, st.dRegion);
+      if (note) {
+        out.push(h(Eyebrow, { key: 'e-about' }, 'About ' + st.dRegion));
+        out.push(h('div', { key: 'about', style: { ...sx.card, background: PLATE } }, [
+          note.headline ? h('p', {
+            key: 'hl',
+            style: { ...sx.prose, fontStyle: 'italic', color: ink(0.66), marginBottom: 2 },
+          }, note.headline) : null,
+          ...['character', 'structure', 'interest']
+            .filter(k => note[k])
+            .map(k => h('p', { key: k, style: sx.prose }, note[k])),
+        ]));
+      }
+
+      /* What you have here, and what you have not. Both computed from the
+         holdings, so neither can go stale the day a case arrives. */
+      const summary = this.cellarSummary(st.dRegion, scoped);
+      if (summary.length) {
+        out.push(h(Eyebrow, { key: 'e-mine' }, 'In your cellar'));
+        out.push(h('div', { key: 'mine', style: { ...sx.card, background: PLATE } },
+          summary.map((line, i) => h('p', { key: i, style: sx.prose }, line))));
+      }
+
+      const gaps = this.cellarGaps(st.dRegion, scoped, note);
+      if (gaps.length) {
+        out.push(h(Eyebrow, { key: 'e-gaps' }, 'Gaps'));
+        out.push(h('div', {
+          key: 'gaps',
+          style: { ...sx.card, background: PLATE, gap: 11 },
+        }, gaps.map(g => h('div', {
+          key: g.head,
+          style: { display: 'flex', flexDirection: 'column', gap: 2 },
+        }, [
+          h('div', {
+            key: 'h',
+            style: { fontSize: 13.5, fontWeight: 600, color: CLARET },
+          }, g.head),
+          h('p', { key: 'b', style: { ...sx.prose, fontSize: 15 } }, g.body),
+        ]))));
+      }
+    }
+
+    out.push(this.readinessChips(scoped));
+
+    if (!visible.length) {
+      out.push(h('div', { key: 'none', style: sx.empty }, 'Nothing here matches that.'));
+      return out;
+    }
+
+    out.push(h('button', {
+      key: 'see', style: { ...btn('plain'), alignSelf: 'flex-start', flexShrink: 0 },
+      onClick: () => this.setState({ tab: 'wines' }),
+    }, 'See the ' + visible.length + (visible.length === 1 ? ' wine' : ' wines')));
+
+    /* History belongs here rather than buried in Settings: this is the screen
+       showing what the cellar is worth, and "what happened to that case" is a
+       question you ask while looking at a total it is deliberately left out
+       of. Whole-cellar only, and only once there is something to show - an
+       empty line saying nothing has been drunk is clutter on every screen for
+       the sake of one day. */
+    const ht = this.historyTotals();
+    if (!st.dRegion && ht.bottles) {
+      out.push(h('button', {
+        key: 'hist', style: { ...btn('plain'), alignSelf: 'flex-start', flexShrink: 0 },
+        onClick: () => this.setState({ sheet: 'history' }),
+      }, ht.bottles + (ht.bottles === 1 ? ' bottle' : ' bottles') + ' at home or consumed'));
+    }
+    return out;
+  }
+
+  /* The bottom of the funnel: the holdings themselves, carrying whatever
+     region, sub-region and readiness you arrived with. */
+  renderWinesTab() {
+    const st = this.state;
+    const out = [];
+    const scoped = this.scopeLots();
+    const visible = this.visibleLots();
+    const crumb = this.breadcrumb();
+    if (crumb) out.push(crumb);
+
+    out.push(this.placeHeading(st.dSub || st.dRegion || 'All Wines'));
+
+    out.push(this.whereChips(scoped));
+
+    /* --- what has come home ------------------------------------------- */
+    if (st.fWhere === 'home') {
+      const past = this.scopedHistory()
+        .map((e, i) => ({ e, i: this.state.history.indexOf(e) }))
+        .sort((a, b) => b.e.at - a.e.at);
+      if (!past.length) {
+        out.push(h('div', { key: 'none', style: sx.empty },
+          st.dRegion
+            ? 'Nothing from here has left bond yet.'
+            : 'Nothing has left bond yet. Bottles arrive here when they stop appearing in the export.'));
+        return out;
+      }
+      const bottles = past.reduce((a, x) => a + x.e.bottles, 0);
+      out.push(h(Eyebrow, { key: 'e-h' },
+        bottles + (bottles === 1 ? ' bottle' : ' bottles') + ', most recent first'));
+      out.push(...past.map(({ e, i }) => this.historyRow(e, i)));
+      return out;
+    }
+
+    /* --- what is still in bond ---------------------------------------- */
+    const chips = this.readinessChips(scoped);
+    if (chips) out.push(chips);
+
+    if (!visible.length) {
+      out.push(h('div', { key: 'none', style: sx.empty }, 'Nothing here matches that.'));
+      return out;
+    }
+
+    out.push(h(Eyebrow, { key: 'e-l' },
+      visible.length === scoped.length
+        ? visible.length + (visible.length === 1 ? ' wine' : ' wines')
+        : visible.length + ' of ' + scoped.length + ' wines'));
+    out.push(...visible.slice()
+      .sort(this.byClosingSoonest)
+      .map(l => this.lotRow(l)));
+    return out;
+  }
+
+  renderSearchResults() {
+    const q = fold(this.state.fQuery);
+    const term = l =>
+      fold(l.description + ' ' + (l.producer || '') + ' ' + (l.subRegion || '') + ' ' + l.vintage);
+    const hits = this.lots().filter(l => term(l).includes(q));
+
+    /* A bottle you have drunk is still a bottle you might look for - more so,
+       arguably, since the app is the only place that remembers it. So history
+       is searched too, and always sits below every live hit: the question
+       "have I got any" is answered by the cellar, and "did I have any" by what
+       follows it. It is deliberately left out of the five numbers above; those
+       count what you hold. */
+    const past = this.state.history
+      .map((e, i) => ({ e, i }))
+      .filter(({ e }) => term(e).includes(q))
+      .sort((a, b) => b.e.at - a.e.at);
+
+    const out = [];
+    out.push(h(Eyebrow, { key: 'e' },
+      hits.length ? hits.length + (hits.length === 1 ? ' wine' : ' wines') + ' match'
+        : past.length ? 'Nothing in the cellar matches'
+        : 'Nothing matches'));
+    if (!hits.length && !past.length) {
+      out.push(h('div', { key: 'n', style: sx.empty },
+        'Search looks at the wine name, the producer, the sub-region and the vintage.'));
+      return out;
+    }
+    if (hits.length) {
+      out.push(...this.metricStrip(this.metrics(hits)));
+      out.push(...hits.slice()
+        .sort(this.byClosingSoonest)
+        .map(l => this.lotRow(l)));
+    }
+    out.push(...past.map(({ e, i }) => this.historyRow(e, i)));
+    return out;
+  }
+
+  /* =============================================================== render */
+
+  render() {
+    const st = this.state;
+    if (st.lots === undefined) return h('div', { style: sx.shell });
+
+    const lots = this.lots();
+    const searching = !!st.fQuery.trim();
+    const body = [];
+
+    if (!lots.length) {
+      body.push(this.renderEmpty());
+    } else {
+      body.push(h('input', {
+        key: 'q', style: sx.input, value: st.fQuery,
+        placeholder: 'Search the cellar',
+        onChange: e => this.setState({ fQuery: e.target.value }),
+      }));
+      body.push(...(searching
+        ? this.renderSearchResults()
+        : st.tab === 'windows' ? this.renderWindowsTab()
+        : st.tab === 'wines' ? this.renderWinesTab()
+        : this.renderFunnelPage()));
+    }
+
+    return h('div', { style: sx.shell }, [
+      (st.dRegion && st.tab !== 'windows' && !searching)
+        ? h(RegionMap, {
+            key: 'wm', region: st.dRegion,
+            map: mapFor(st.maps, st.dRegion),
+            held: heldPlaces(this.scopeLots()),
+          })
+        : null,
+      h('div', { key: 'hd', style: sx.header }, [
+        h(Wordmark, { key: 't' }),
+        h('button', {
+          key: 'b', style: btn('plain'),
+          onClick: () => this.setState({ sheet: 'settings' }),
+        }, 'Settings'),
+      ]),
+      h('div', { key: 'bd', style: sx.body }, body),
+      /* The tab bar only appears once there is a cellar - with nothing
+         imported both tabs would show the same empty state. */
+      lots.length ? h('div', { key: 'tabs', style: sx.tabs },
+        [['cellar', 'Cellar'], ['wines', 'Wines'], ['windows', 'Windows']].map(([k, label]) =>
+          h('button', {
+            key: k, style: tabStyle(st.tab === k),
+            /* Cellar and Wines are two views of the same drill scope, so the
+               readiness filter carries between them - that is the funnel
+               working. Windows is the whole cellar, so its counts would not
+               match a filter set elsewhere. */
+            onClick: () => this.setState(
+              k === 'windows' || st.tab === 'windows'
+                ? { tab: k, fState: null, fQuery: '', fWhere: 'bond' }
+                : { tab: k, fQuery: '' }),
+          }, label))) : null,
+      st.busy ? h('div', { key: 'busy', style: sx.toast }, st.busy) : null,
+      st.toastMsg && !st.busy ? h('div', { key: 'toast', style: sx.toast }, st.toastMsg) : null,
+      st.sheet === 'lot' ? h('div', { key: 'sh' }, this.renderLotSheet()) : null,
+      st.sheet === 'settings' ? h('div', { key: 'sh' }, this.renderSettingsSheet()) : null,
+      st.sheet === 'history' ? h('div', { key: 'sh' }, this.renderHistorySheet()) : null,
+    ]);
+  }
+}
+
+/* ------------------------------------------------------------------- mount */
+
+ReactDOM.render(h(App), document.getElementById('root'));
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {
+      /* No worker means no offline copy. The app still runs, so this is not
+         worth interrupting anyone about - it happens on file:// by design. */
+    });
+  });
+}
+</script>
+</body>
+</html>

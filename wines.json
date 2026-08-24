@@ -1,0 +1,671 @@
+{
+  "version": 1,
+  "about": "Reference notes on the estates in this cellar. Written from general knowledge of the properties rather than transcribed from a critic, and deliberately carrying no scores. Durable facts only: appellation, classification, terroir, grape mix, house style and how the wine behaves. Match strings are ALL-of substrings tested against the folded BBR description; the entry matching the most characters wins. The optional \"say\" field is how to pronounce the distinctive part of the name, in the same notation regions.json uses for appellations: syllables hyphenated, the stressed one capitalised. It names neither \"Chateau\" nor \"Domaine\", because an English speaker can already say those, and it is left out entirely where the name needs no help - Chateau Gloria has none, on the same principle that keeps \"BUR-gun-dee\" out of the appellation list.",
+  "wines": [
+    {
+      "slug": "langoa-barton",
+      "match": [
+        "langoa barton"
+      ],
+      "name": "Château Langoa Barton",
+      "say": "lan-go-AH BAR-tun",
+      "appellation": "St Julien",
+      "rank": "Troisième Cru Classé, 1855",
+      "grapes": "Cabernet Sauvignon-led, with Merlot and a little Cabernet Franc",
+      "estate": "The Barton family bought Langoa in 1821 and have held it ever since, which makes them the longest continuous family owners of any classified Bordeaux estate. The handsome chartreuse on the estate is also where Léoville Barton is made — Léoville has vines but no château, Langoa has both, and the two wines are raised side by side in the same cellar by the same hands.",
+      "producer": "Barton family ownership, now in its ninth generation. The house approach is deliberately traditional: no chasing of ripeness, restrained new oak, and a refusal to make the wine louder than the vintage was.",
+      "style": "Classical, upright St Julien. Cedar, blackcurrant leaf and graphite rather than jam; medium-bodied by modern standards, with tannin that arrives dry and fine rather than sweet. It is the antithesis of a flattering wine when young.",
+      "drink": "Slow to open and long-lived. Langoa rewards patience and then holds a plateau for years. Mature bottles need very little air — an hour standing, decanted off any sediment shortly before pouring."
+    },
+    {
+      "slug": "leoville-poyferre",
+      "match": [
+        "leoville poyferre"
+      ],
+      "name": "Château Léoville Poyferré",
+      "say": "lay-oh-VEEL pwah-feh-RAY",
+      "appellation": "St Julien",
+      "rank": "Deuxième Cru Classé, 1855",
+      "grapes": "Cabernet Sauvignon-dominant with a substantial Merlot component, plus small parts Cabernet Franc and Petit Verdot",
+      "estate": "One of the three estates carved out of the great Léoville holding, sitting on the deep gravel bank at the northern edge of St Julien, immediately against the Pauillac boundary. Of the three Léovilles it is the most opulent, and the closest in character to its Pauillac neighbours.",
+      "producer": "Owned by the Cuvelier family since 1920, and run by Sara Lecompte Cuvelier since her uncle Didier Cuvelier retired after the 2017 vintage. A long spell of consultancy from Michel Rolland, who joined in 1994, shaped the modern style, and the wine is unapologetically rich and polished within a classed-growth frame.",
+      "style": "Dark-fruited and plush, with more Petit Verdot spice and more obvious oak than Barton or Las Cases. Velvet rather than graphite, but with real St Julien structure underneath the flesh.",
+      "drink": "Approachable earlier than most second growths, but genuinely better after a decade. Young bottles benefit from two or three hours of air."
+    },
+    {
+      "slug": "gloria",
+      "match": [
+        "gloria"
+      ],
+      "name": "Château Gloria",
+      "appellation": "St Julien",
+      "rank": "Unclassified, classed-growth in substance",
+      "grapes": "Cabernet Sauvignon and Merlot, with Petit Verdot and Cabernet Franc",
+      "estate": "Gloria is the great anomaly of the Médoc. Henri Martin assembled it parcel by parcel from the 1940s onwards, buying land from classified neighbours — Beychevelle, Ducru-Beaucaillou, Gruaud Larose, Léoville Poyferré, Saint-Pierre — so the vineyard is genuinely classed-growth terroir that carries no classification, because the 1855 list ranked châteaux rather than land and was never reopened. It was ranked Cru Bourgeois Supérieur in 1966, but Martin pulled out of the Cru Bourgeois system in 1978 and the family has stayed out of it since, so the label carries no rank at all.",
+      "producer": "Still owned by Henri Martin's descendants, the Triaud family, who also hold Château Saint-Pierre. Consistent, unshowy winemaking with no interest in making a statement.",
+      "style": "Proper St Julien at an unclassified price: cassis and cedar, medium-full, sweetly-fruited but firmly framed. It is the standing argument that classification is a historical document rather than a quality measure.",
+      "drink": "Drinkable young and better at ten to fifteen years. A long, forgiving plateau makes it the ideal case to buy in quantity."
+    },
+    {
+      "slug": "lagrange",
+      "match": [
+        "lagrange"
+      ],
+      "name": "Château Lagrange",
+      "say": "la-GRONZH",
+      "appellation": "St Julien",
+      "rank": "Troisième Cru Classé, 1855",
+      "grapes": "Cabernet Sauvignon-dominant with Merlot and a little Petit Verdot",
+      "estate": "The largest classified estate in St Julien, and one of the great modern turnarounds. Suntory bought it in 1983 when it was badly run down and invested for decades without trying to hurry the reputation back.",
+      "producer": "Suntory ownership since 1983. Rigorous, technically excellent, patient — a house that treats consistency as the objective rather than peaks.",
+      "style": "Reserved and correct rather than flamboyant. Dark fruit, tobacco leaf and a firm dry finish. Less flattering than its neighbours early on, and often better value for exactly that reason.",
+      "drink": "Needs eight to ten years to shed its reserve, then holds well. Decant young bottles generously."
+    },
+    {
+      "slug": "batailley",
+      "match": [
+        "batailley"
+      ],
+      "name": "Château Batailley",
+      "say": "ba-tie-YAY",
+      "appellation": "Pauillac",
+      "rank": "Cinquième Cru Classé, 1855",
+      "grapes": "Cabernet Sauvignon-led, with Merlot and small parts Cabernet Franc and Petit Verdot",
+      "estate": "One of the larger Pauillac fifth growths, sixty hectares of gravel over clay and sand inland from the river in the south of the appellation, towards the Batailley woods. Named for a battle of the Hundred Years War fought on the site in 1452. Owned by the Castéja family since 1961, whose négociant house Borie-Manoux distributes it.",
+      "producer": "Philippe Castéja, with his son Frédéric alongside him. Traditional in outlook, and for years the most reliably underpriced classed growth in Pauillac; recent vintages have raised the ceiling without raising the price much.",
+      "style": "Straightforward, honest Pauillac. Blackcurrant, pencil shavings, a savoury earthiness, and dry structured tannin. Never showy, never hollow.",
+      "drink": "Drinks well from about eight years and holds twenty or more. One of the cheapest ways to understand what Pauillac actually tastes like."
+    },
+    {
+      "slug": "haut-batailley",
+      "match": [
+        "haut-batailley"
+      ],
+      "name": "Château Haut-Batailley",
+      "say": "oh ba-tie-YAY",
+      "appellation": "Pauillac",
+      "rank": "Cinquième Cru Classé, 1855",
+      "grapes": "Cabernet Sauvignon and Merlot",
+      "estate": "Split from Batailley in 1942 and the smaller of the two halves. Bought by the Cazes family of Lynch-Bages in 2017, since when investment in the vineyard and cellar has been considerable.",
+      "producer": "Cazes family since 2017. The change of ownership marked a clear step up in ambition and precision.",
+      "style": "Finer-boned and more perfumed than Batailley — closer to a Margaux silhouette than a classic broad-shouldered Pauillac, with red-fruit lift over the cassis.",
+      "drink": "More approachable young than its sibling. Good from six or seven years, with a long middle life."
+    },
+    {
+      "slug": "grand-puy-lacoste",
+      "match": [
+        "grand-puy-lacoste"
+      ],
+      "name": "Château Grand-Puy-Lacoste",
+      "say": "grahn pwee la-KOST",
+      "appellation": "Pauillac",
+      "rank": "Cinquième Cru Classé, 1855",
+      "grapes": "Predominantly Cabernet Sauvignon with Merlot",
+      "estate": "On the high gravel plateau of Bages, west of the town of Pauillac — one of the most consistently admired fifth growths and a byword among collectors for classicism without inflation. A single block of vines around the château, which is unusual and helps the wine's coherence.",
+      "producer": "The Borie family, who also own Ducru-Beaucaillou. Deliberately conservative: high Cabernet, moderate new oak, no cosmetic winemaking.",
+      "style": "The archetype of pure Pauillac Cabernet — cassis, cigar box, iron and graphite, with a long dry finish. Austere in youth and famously reliable.",
+      "drink": "A wine to leave alone. It closes down for years and then opens into something considerable at fifteen-plus. Not the bottle to open on a whim."
+    },
+    {
+      "slug": "duhart-milon",
+      "match": [
+        "duhart-milon"
+      ],
+      "name": "Château Duhart-Milon",
+      "say": "doo-AR mee-LON",
+      "appellation": "Pauillac",
+      "rank": "Quatrième Cru Classé, 1855",
+      "grapes": "Cabernet Sauvignon with a significant proportion of Merlot",
+      "estate": "The neighbour of Lafite Rothschild, on the plateau to its west, and owned by Domaines Barons de Rothschild since 1962. It shares Lafite's team and much of its outlook, which is the reason its reputation has climbed steadily.",
+      "producer": "Domaines Barons de Rothschild (Lafite). Restrained, sappy, precise winemaking with an emphasis on freshness.",
+      "style": "Slender and aromatic for Pauillac, with more Merlot roundness than Grand-Puy-Lacoste and a cool graphite core. Elegant rather than powerful.",
+      "drink": "Ten years is a fair starting point; it holds well past twenty in good vintages."
+    },
+    {
+      "slug": "pagodes-de-cos",
+      "match": [
+        "pagodes de cos"
+      ],
+      "name": "Les Pagodes de Cos",
+      "say": "pa-GOD duh KOSS",
+      "appellation": "St Estèphe",
+      "rank": "Second wine of Cos d'Estournel",
+      "grapes": "Cabernet Sauvignon and Merlot, with the estate's usual small Cabernet Franc",
+      "estate": "The second wine of Cos d'Estournel, whose pagoda-topped folly on the St Estèphe ridge overlooks Lafite across the boundary. The fruit comes from the estate's younger vines and the parcels that do not make the grand vin, but from the same celebrated gravel-over-clay slope.",
+      "producer": "Cos d'Estournel. The house style is opulent and exotically spiced for St Estèphe, and the second wine carries it in miniature.",
+      "style": "Rounder and sweeter-fruited than the appellation's reputation for austerity — dark cherry, spice and mocha, with the St Estèphe grip arriving late.",
+      "drink": "Ready earlier than the grand vin and rarely needs more than a decade. A generous, immediate wine by St Estèphe standards."
+    },
+    {
+      "slug": "calon-segur",
+      "match": [
+        "calon segur"
+      ],
+      "name": "Château Calon Ségur",
+      "say": "ka-LON say-GOOR",
+      "appellation": "St Estèphe",
+      "rank": "Troisième Cru Classé, 1855",
+      "grapes": "Cabernet Sauvignon and Merlot, historically with more Merlot than its neighbours",
+      "estate": "The northernmost classified estate of the Médoc, and the source of the most-quoted line in Bordeaux: the Marquis de Ségur, who also owned Lafite and Latour, put a heart on the label because his own was at Calon. Sold in 2012, ending well over a century of Gasqueton family ownership, and comprehensively rebuilt since, with a clear rise in quality.",
+      "producer": "Owned since 2012 by the insurer Suravenir, part of Crédit Mutuel Arkéa, with Laurent Dufau as director and substantial investment in vineyard and cellar. Modern precision applied to a traditionally sturdy wine.",
+      "style": "Deep, dark and structured, with the cool iron-and-cassis signature of St Estèphe and a rich mid-palate that softens the appellation's edges.",
+      "drink": "A genuinely long-lived wine that wants twelve to fifteen years. Younger bottles need aggressive aeration."
+    },
+    {
+      "slug": "issan",
+      "match": [
+        "issan"
+      ],
+      "name": "Château d'Issan",
+      "say": "dee-SAHN",
+      "appellation": "Margaux",
+      "rank": "Troisième Cru Classé, 1855",
+      "grapes": "Cabernet Sauvignon and Merlot, roughly balanced",
+      "estate": "The most beautiful property in the Médoc — a genuine moated château of the seventeenth century — on the low gravel closest to the river at Cantenac. Its motto, regum mensis arisque deorum, claims a place at the tables of kings and the altars of the gods, which is either charming or insufferable depending on the bottle.",
+      "producer": "The Cruse family, owners since 1945, with Emmanuel Cruse as managing director. Jacky and Françoise Lorenzetti bought a half share in 2013, and the investment since has lifted the wine's consistency.",
+      "style": "Perfumed and gentle Margaux: violets, redcurrant and a silky texture, with tannin that is fine rather than firm. Charm over power.",
+      "drink": "One of the earlier-drinking third growths, often good at eight to ten years, and it ages gracefully rather than dramatically."
+    },
+    {
+      "slug": "brane-cantenac",
+      "match": [
+        "brane-cantenac"
+      ],
+      "name": "Château Brane-Cantenac",
+      "say": "brahn kon-tuh-NAK",
+      "appellation": "Margaux",
+      "rank": "Deuxième Cru Classé, 1855",
+      "grapes": "Cabernet Sauvignon-dominant with a large Merlot component, plus small parts Cabernet Franc, Petit Verdot and Carmenère",
+      "estate": "On the Cantenac plateau, on a gravel bank light enough that the wine has always been about perfume rather than weight. Owned by the Lurton family since 1956, and one of the properties most transformed by careful parcel selection over the past two decades.",
+      "producer": "Henri Lurton, who took charge in 1992. Thoughtful, analytical viticulture, and one of the very few Médoc estates with a surviving parcel of Carmenère, vinified separately and blended in small quantity since 2011.",
+      "style": "Aromatic and lifted — rose petal, red fruit, tobacco — with a fine-grained, almost translucent texture. The Margaux of scent rather than muscle.",
+      "drink": "Approachable at eight years and best from twelve. Reward for patience is aromatic complexity rather than added weight."
+    },
+    {
+      "slug": "giscours",
+      "match": [
+        "giscours"
+      ],
+      "name": "Château Giscours",
+      "say": "zhee-SKOOR",
+      "appellation": "Margaux",
+      "rank": "Troisième Cru Classé, 1855",
+      "grapes": "Cabernet Sauvignon-led with Merlot",
+      "estate": "A very large estate in the south of the appellation at Labarde, with a park, a lake dug to modify the microclimate, and a cricket pitch. The size means vintage variation matters more here than at smaller neighbours.",
+      "producer": "Dutch ownership since the 1990s, with sustained replanting and selection. A wine that has become markedly more precise over the last fifteen years.",
+      "style": "The sturdiest of the Margaux third growths — darker, firmer and more structured than d'Issan, with more obvious tannin and less perfume. Closer to a Pauillac in build.",
+      "drink": "Wants ten years minimum, and repays fifteen. Decant young bottles for two hours or more."
+    },
+    {
+      "slug": "angludet",
+      "match": [
+        "angludet"
+      ],
+      "name": "Château d'Angludet",
+      "say": "dahn-gloo-DAY",
+      "appellation": "Margaux",
+      "rank": "Unclassified; historically a Cru Bourgeois",
+      "grapes": "Cabernet Sauvignon, Merlot and a notable share of Petit Verdot",
+      "estate": "Home of the Sichel family, the British-Bordelais négociant dynasty who are also co-owners of Palmer. It was a Cru Bourgeois Exceptionnel in 1932, but the Sichels have not used the label for two decades and the estate sits outside the current classification. The vines are genuine Margaux gravel all the same, one large parcel at Arsac with further plantings in the Cantenac sector, and it has long been regarded as punching above its rank.",
+      "producer": "The Sichel family, who live on the property. Unfussy, traditional, and priced as though nobody is watching.",
+      "style": "Fresh, medium-bodied and floral, with a savoury edge and firm Petit Verdot backbone. Not a grand wine, and not pretending to be — a very good everyday claret.",
+      "drink": "Drinks from five or six years and is at its best before fifteen. A weeknight Margaux."
+    },
+    {
+      "slug": "alter-ego",
+      "match": [
+        "alter ego"
+      ],
+      "name": "Alter Ego de Palmer",
+      "say": "AL-tair EH-go duh pal-MAIR",
+      "appellation": "Margaux",
+      "rank": "Second wine of Château Palmer",
+      "grapes": "Merlot and Cabernet Sauvignon in near-equal measure, with Petit Verdot",
+      "estate": "Not a second wine in the usual sense. When Palmer created Alter Ego in 1998 the stated intention was a different interpretation of the same vineyard rather than a lesser selection from it — more Merlot, less extraction, earlier drinking. The vineyard is the great gravel bank at Cantenac that Palmer shares with Château Margaux itself.",
+      "producer": "Château Palmer, biodynamically farmed since the mid-2010s. Thomas Duroux has run the estate through its whole modern rise.",
+      "style": "Palmer's violet-and-dark-fruit perfume in a suppler frame. Silky, aromatic, less imposing, and unmistakably from the same soil.",
+      "drink": "Designed to drink earlier — good at six to eight years — but the structured vintages will run for twenty-five. Structured years and perfumed years behave quite differently, so a vertical here is genuinely instructive."
+    },
+    {
+      "slug": "clinet",
+      "match": [
+        "clinet"
+      ],
+      "name": "Château Clinet",
+      "say": "klee-NAY",
+      "appellation": "Pomerol",
+      "rank": "Pomerol has no classification",
+      "grapes": "Merlot-dominant with Cabernet Sauvignon and a little Cabernet Franc",
+      "estate": "On the Pomerol plateau proper — the clay-and-gravel button at the centre of the appellation that it shares with Pétrus, Lafleur, Trotanoy and l'Église-Clinet. That neighbourhood is the whole argument for the wine: identical terroir to bottles costing five or ten times as much.",
+      "producer": "Ronan Laborde, whose family bought the estate in 1998 and who has run it since 2003. Notably, and unusually, the pricing has been kept deliberately friendly.",
+      "style": "Concentrated but polished Pomerol: black cherry, plum, truffle and a velvet texture over surprisingly firm structure. More Cabernet than most of its neighbours, which gives it spine.",
+      "drink": "Hedonistic years drink beautifully from six or seven; classical years shut down and want twelve or more. Worth knowing which you have opened."
+    },
+    {
+      "slug": "beau-sejour-becot",
+      "match": [
+        "beau-sejour becot"
+      ],
+      "name": "Château Beau-Séjour Bécot",
+      "say": "boh say-ZHOOR bay-KOH",
+      "appellation": "St Émilion",
+      "rank": "Premier Grand Cru Classé",
+      "grapes": "Merlot-led with Cabernet Franc and a little Cabernet Sauvignon",
+      "estate": "On the limestone plateau at the western edge of the St Émilion town, with cellars quarried out of the rock beneath the vines. The estate was famously demoted in 1986 after buying neighbouring land and reinstated in 1996 — a reminder that the classification is a political document as well as a qualitative one.",
+      "producer": "The Bécot family, now the third generation. Limestone-driven, fresher and less oak-marked than the appellation's modernist wing.",
+      "style": "Bright red and black fruit over a chalky mineral spine, with fine tannin and real lift. Limestone St Émilion rather than the plush clay style.",
+      "drink": "Good from eight years, better at twelve to fifteen, and the freshness carries it a long way."
+    },
+    {
+      "slug": "troplong-mondot",
+      "match": [
+        "troplong mondot"
+      ],
+      "name": "Château Troplong Mondot",
+      "say": "troh-LON mon-DOH",
+      "appellation": "St Émilion",
+      "rank": "Premier Grand Cru Classé",
+      "grapes": "Merlot-dominant with Cabernet Sauvignon and Cabernet Franc",
+      "estate": "One of the highest points in St Émilion, on the plateau above Pavie with clay-limestone soils and a molasse subsoil. It kept its Premier Grand Cru Classé rank in the 2022 classification, when Angélus, Ausone and Cheval Blanc had all withdrawn from the system.",
+      "producer": "Owned by the reinsurance group SCOR since 2017, with Aymeric de Gironde running it. That change brought a deliberate move away from the very ripe, high-alcohol style of the previous decade towards freshness and earlier picking.",
+      "style": "Post-2017 vintages are noticeably more restrained: dark fruit with real acidity, savoury herbs and a firm mineral finish rather than opulence.",
+      "drink": "The newer style needs less time than the old one but still wants eight to ten years. Older vintages from the ripe era drink earlier and shorter."
+    },
+    {
+      "slug": "larcis-ducasse",
+      "match": [
+        "larcis ducasse"
+      ],
+      "name": "Château Larcis Ducasse",
+      "say": "lar-SEE doo-KASS",
+      "appellation": "St Émilion",
+      "rank": "Premier Grand Cru Classé",
+      "grapes": "Merlot-led with Cabernet Franc",
+      "estate": "A south-facing amphitheatre on the côte immediately below and adjoining Pavie — one of the finest single slopes on the right bank, with limestone at the top and clay lower down. The exposure is the point: it ripens reliably and early on a steep, well-drained hillside.",
+      "producer": "The Gratiot-Attmane family, owners since 1893. The modern renaissance was driven by Nicolas Thienpont and Stéphane Derenoncourt from 2002 onwards; Thienpont retired in 2024 and David Suire, who had worked alongside him here for years, now directs the estate with the next generation of the owning family.",
+      "style": "Precise, mineral and quite structured for St Émilion. Dark fruit with a graphite-and-stone finish; more Pavie-like restraint than plush right-bank flesh.",
+      "drink": "A slow starter that wants a decade and rewards fifteen years. En primeur stock will not be bottled for a couple of years yet."
+    },
+    {
+      "slug": "berliquet",
+      "match": [
+        "berliquet"
+      ],
+      "name": "Château Berliquet",
+      "say": "bair-lee-KAY",
+      "appellation": "St Émilion",
+      "rank": "Grand Cru Classé",
+      "grapes": "Merlot-led with Cabernet Franc",
+      "estate": "A small estate on the limestone plateau and côte just west of the town, next to Canon and Magdelaine. Bought in 2017 by the Wertheimer family, owners of Chanel, who already held Canon and Rauzan-Ségla — an ownership change that put serious resource behind a historically underperforming property.",
+      "producer": "Chanel's Bordeaux team, sharing the Canon winemaking approach. Investment since 2017 has been substantial and the trajectory is clearly upward.",
+      "style": "Fine-boned, fresh and chalky, with red fruit and a savoury limestone finish. Less flesh than plateau-clay St Émilion, more transparency.",
+      "drink": "Drinks well from six or seven years. Not a wine that needs a decade, and a considerable bargain relative to its neighbours."
+    },
+    {
+      "slug": "laroque",
+      "match": [
+        "laroque"
+      ],
+      "name": "Château Laroque",
+      "say": "la-ROK",
+      "appellation": "St Émilion",
+      "rank": "Grand Cru Classé",
+      "grapes": "Overwhelmingly Merlot, with a little Cabernet Franc",
+      "estate": "One of the largest estates in St Émilion, on the limestone plateau at Saint-Christophe-des-Bardes to the north-east of the town, with a genuine eighteenth-century château. Owned by the Beaumartin family.",
+      "producer": "David Suire, who arrived from Larcis Ducasse for the 2015 vintage and has driven a rapid rise in quality — Laroque is now one of the appellation's most-cited value estates rather than a sleepy classed growth. Since 2024 he has directed Larcis Ducasse as well.",
+      "style": "Generous Merlot fruit held up by limestone freshness. Plummy and open-textured but with a clean, mineral finish and moderate oak.",
+      "drink": "Accessible from five or six years and good for fifteen. Among the most drinkable classed growths on the right bank."
+    },
+    {
+      "slug": "haut-bailly-ii",
+      "match": [
+        "haut-bailly ii"
+      ],
+      "name": "Haut-Bailly II",
+      "say": "oh bye-YEE",
+      "appellation": "Pessac-Léognan",
+      "rank": "Second wine of Château Haut-Bailly",
+      "grapes": "Cabernet Sauvignon and Merlot",
+      "estate": "The second wine of Haut-Bailly, renamed from La Parde de Haut-Bailly in 2018 to make the parentage explicit. Same gravel croupe at Léognan, younger vines and the parcels outside the grand vin selection.",
+      "producer": "Château Haut-Bailly, under American ownership since 1998 with continuous investment. Véronique Sanders has run the estate throughout its modern era.",
+      "style": "A scaled-down version of the house's finesse: red and black fruit, gentle cedar, fine tannin, and none of the heaviness that the second wines of bigger estates can carry.",
+      "drink": "Drinks early and well — four to eight years is its sweet spot. A genuinely useful weeknight Pessac."
+    },
+    {
+      "slug": "haut-bailly",
+      "match": [
+        "haut-bailly"
+      ],
+      "name": "Château Haut-Bailly",
+      "say": "oh bye-YEE",
+      "appellation": "Pessac-Léognan",
+      "rank": "Cru Classé de Graves",
+      "grapes": "Cabernet Sauvignon-led with Merlot, plus an old block of mixed varieties",
+      "estate": "On a single deep gravel rise at Léognan, and unusual in retaining a four-hectare parcel of vines dating from the 1890s, six varieties interplanted in the rows as they would have been then, which goes into the grand vin every year. Red wine only — no white, unlike most of its neighbours.",
+      "producer": "The Wilmers family since 1998, with Véronique Sanders as director. A house whose reputation rests on consistency and texture rather than power.",
+      "style": "The most silken wine in Pessac-Léognan. Red fruit, smoke, warm gravel and a texture often described as cashmere; refined rather than imposing.",
+      "drink": "Charming young and considerably more interesting at twelve to fifteen years, when the smoky earthiness arrives."
+    },
+    {
+      "slug": "domaine-de-chevalier",
+      "match": [
+        "chevalier"
+      ],
+      "name": "Domaine de Chevalier",
+      "say": "shuh-val-YAY",
+      "appellation": "Pessac-Léognan",
+      "rank": "Cru Classé de Graves",
+      "grapes": "Cabernet Sauvignon-dominant with Merlot, Cabernet Franc and Petit Verdot",
+      "estate": "A clearing in the pine forest at Léognan, which makes it markedly cooler than the estates nearer the city and gives frost risk in spring. Famous equally for its tiny production of one of the great white Bordeaux, though the red is the volume wine.",
+      "producer": "The Bernard family since 1983. Olivier Bernard has run it throughout, with a reputation for meticulous, low-intervention work.",
+      "style": "Cool-climate Bordeaux: dark fruit, woodsmoke, bracken and graphite, with fresh acidity and slender, precise tannin. Savoury rather than sweet.",
+      "drink": "Needs ten years to come together and then holds for a very long time. Magnums slow the whole curve down further."
+    },
+    {
+      "slug": "malartic-lagraviere",
+      "match": [
+        "malartic-lagraviere"
+      ],
+      "name": "Château Malartic-Lagravière",
+      "say": "ma-lar-TEEK la-grav-YAIR",
+      "appellation": "Pessac-Léognan",
+      "rank": "Cru Classé de Graves",
+      "grapes": "Cabernet Sauvignon-led with Merlot, Cabernet Franc and Petit Verdot",
+      "estate": "At Léognan on classic Graves gravel, and one of only six estates classified for both red and white. Bought by the Belgian Bonnie family in 1997 and rebuilt from a low base with considerable money and no shortcuts.",
+      "producer": "The Bonnie family. Modern, precise and increasingly confident; the wine has been quietly outperforming its price for a decade.",
+      "style": "Firm and structured, with dark fruit, tobacco and a graphite finish. Less silky than Haut-Bailly, less smoky than Chevalier — the most conventionally claret-shaped of the three.",
+      "drink": "Wants eight to ten years and holds twenty. Reliable rather than dramatic, which is the point."
+    },
+    {
+      "slug": "beaucastel",
+      "match": [
+        "beaucastel"
+      ],
+      "name": "Château de Beaucastel",
+      "say": "boh-kas-TEL",
+      "appellation": "Châteauneuf-du-Pape",
+      "rank": "One of the reference estates of the southern Rhône",
+      "grapes": "All thirteen permitted varieties, with an unusually high proportion of Mourvèdre",
+      "estate": "In the north-east of the appellation on the galets roulés — the field of rounded quartzite cobbles that store heat and drain completely. Beaucastel is defined by two things: the highest Mourvèdre content of any major estate, and organic farming since the 1950s, decades before it was fashionable.",
+      "producer": "The Perrin family, now the fifth generation. Traditional in outlook but not doctrinaire: the grapes are entirely destemmed and briefly flash-heated on arrival before fermentation, and the wine then gets a long élevage in old wood.",
+      "style": "The most savoury and the least fruity of the great Châteauneufs — leather, game, dried herbs, iodine and black olive over dark fruit. Mourvèdre gives it grip and a wild edge that some read as barnyard.",
+      "drink": "Difficult and closed for its first decade, then transforms between years ten and twenty. This is not a wine to open early; it genuinely changes character rather than merely softening."
+    },
+    {
+      "slug": "vieux-telegraphe",
+      "match": [
+        "vieux telegraphe"
+      ],
+      "name": "Domaine du Vieux Télégraphe, La Crau",
+      "say": "vyuh tay-lay-GRAF, la KROH",
+      "appellation": "Châteauneuf-du-Pape",
+      "rank": "One of the reference estates of the southern Rhône",
+      "grapes": "Grenache-dominant with Mourvèdre and Syrah",
+      "estate": "The La Crau plateau in the south-east of the appellation is the estate's single great asset — the deepest, stoniest galets in Châteauneuf, on a high terrace that ripens Grenache slowly and evenly. The name comes from a signalling telegraph station built on the hill in the 1790s.",
+      "producer": "The Brunier family. Daniel and Frédéric, the fifth generation, took over in 1980, and their children joined from 2015 as the sixth. Traditional, large-format wood, no new oak, and a house style that has barely moved in forty years.",
+      "style": "The classical benchmark: kirsch and raspberry over garrigue, leather and warm stone, with a distinct saline mineral finish that comes from the plateau. Structured but never heavy.",
+      "drink": "Approachable at six or seven years, at its best between ten and twenty. The most food-friendly of the great Châteauneufs."
+    },
+    {
+      "slug": "pegau",
+      "match": [
+        "pegau"
+      ],
+      "name": "Domaine du Pégaü, Cuvée Réservée",
+      "say": "pay-GOH, koo-VAY ray-zair-VAY",
+      "appellation": "Châteauneuf-du-Pape",
+      "rank": "Traditionalist reference estate",
+      "grapes": "Grenache-dominant with Syrah and Mourvèdre",
+      "estate": "Parcels spread across the appellation, vinified with an old-school hand: whole bunches, concrete, long ageing in very old foudres, and no new oak whatsoever. The Cuvée Réservée is the estate's principal wine rather than an entry level.",
+      "producer": "The Féraud family, with Laurence Féraud making the wine. Unapologetically traditional — the wines are sometimes rustic and always characterful.",
+      "style": "Powerful, earthy and animal: dried cherry, leather, garrigue, tapenade and woodsmoke. Higher-toned and wilder than Vieux Télégraphe, with real tannic weight.",
+      "drink": "Built for the very long haul — twenty to thirty years in strong vintages. Young bottles are difficult; give them years rather than hours."
+    },
+    {
+      "slug": "usseglio-imperiale",
+      "match": [
+        "usseglio"
+      ],
+      "name": "Domaine Raymond Usseglio, Cuvée Impériale",
+      "say": "oo-SEL-yoh, koo-VAY am-pay-ree-AL",
+      "appellation": "Châteauneuf-du-Pape",
+      "rank": "Family domaine, old-vine cuvée",
+      "grapes": "Very old-vine Grenache, effectively pure",
+      "estate": "Francis Usseglio came from Italy to Châteauneuf in 1931; his son Raymond set up under his own name in 1964, and the domaine is now in its third generation. Cuvée Impériale comes from the estate's oldest Grenache, planted in 1902, and is made in small quantity.",
+      "producer": "Stéphane Usseglio. Careful, modern-traditional winemaking with restrained oak that lets very old Grenache speak.",
+      "style": "Pure old-vine Grenache: intense kirsch and raspberry liqueur, sweet spice, lavender and a silky, high-alcohol warmth held together by fine tannin.",
+      "drink": "Generous early and holds a long plateau. Grenache of this age is more about texture and perfume than structure, so it does not need a decade."
+    },
+    {
+      "slug": "rostaing-ampodium",
+      "match": [
+        "rostaing",
+        "ampodium"
+      ],
+      "name": "Domaine René Rostaing, Ampodium",
+      "say": "ross-TANG, am-POH-dee-um",
+      "appellation": "Côte-Rôtie",
+      "rank": "Reference northern Rhône domaine",
+      "grapes": "Syrah, with the Côte-Rôtie option of a little Viognier",
+      "estate": "Ampodium is the estate's assemblage across the appellation — the Roman name for Ampuis, the village at the foot of the terraced slopes. Côte-Rôtie is worked by hand on schist terraces so steep that mechanisation is impossible.",
+      "producer": "Pierre Rostaing, following his father René. Whole-bunch inclusion, restrained extraction, and old wood rather than new — a house that makes fragrant Côte-Rôtie rather than powerful.",
+      "style": "The savoury signature in its purest form: bacon fat, black olive, violets, white pepper and iron over red-black fruit. Medium-bodied, taut, mineral.",
+      "drink": "Ampodium is the earliest-drinking wine in the range — good from four or five years and best inside about twelve. Do not cellar it as though it were a single-vineyard cuvée."
+    },
+    {
+      "slug": "montille-taillepieds",
+      "match": [
+        "montille",
+        "taillepieds"
+      ],
+      "name": "Domaine de Montille, Volnay Les Taillepieds 1er Cru",
+      "say": "mon-TEE-yuh, vol-NAY tie-PYAY",
+      "appellation": "Volnay",
+      "rank": "Premier Cru",
+      "grapes": "Pinot Noir",
+      "estate": "Taillepieds sits mid-slope in Volnay on thin, stony, very active limestone — the name means roughly cut feet, for the sharp rock. It is the premier cru that most clearly gives Volnay's mineral, bony structure rather than its perfume.",
+      "producer": "Domaine de Montille, with Étienne de Montille following his father Hubert. The house is known for whole-bunch use, restrained extraction, low new oak and a deliberately structured, slow-developing style.",
+      "style": "Volnay at its most skeletal and mineral: red cherry, rose, crushed stone and a firm acid-and-tannin frame. Not a plump Burgundy.",
+      "drink": "Needs six to eight years to open and then holds a long plateau. Serve cool — around 15°C — and it will not need decanting."
+    },
+    {
+      "slug": "montille-pommard-cras",
+      "match": [
+        "montille",
+        "les cras"
+      ],
+      "name": "Domaine de Montille, Pommard Les Cras",
+      "say": "mon-TEE-yuh, po-MAR lay KRAH",
+      "appellation": "Pommard",
+      "rank": "Village lieu-dit",
+      "grapes": "Pinot Noir",
+      "estate": "Les Cras is a named village parcel in the south of Pommard, at the top of the lieu-dit between the premiers crus Les Combes Dessus and Le Clos Micot, on gravelly soil over the red clay that is typical of the commune. The name comes from the rocky ground. Pommard is the broad-shouldered neighbour to Volnay's finesse, and Montille's holding here is a half-hectare.",
+      "producer": "Domaine de Montille. The same restrained, whole-bunch, low-oak approach as their Volnay, which suits Pommard's natural weight particularly well.",
+      "style": "Darker and firmer than the Volnay — black cherry, earth, iron and a chewy structure — but with Montille's characteristic freshness cutting through the middle.",
+      "drink": "Wants eight years or more. Pommard is the Burgundy that most repays patience and most punishes impatience."
+    },
+    {
+      "slug": "montille-beaune-perrieres",
+      "match": [
+        "montille",
+        "perrieres"
+      ],
+      "name": "Domaine de Montille, Beaune Les Perrières 1er Cru",
+      "say": "mon-TEE-yuh, BOHN pair-YAIR",
+      "appellation": "Beaune",
+      "rank": "Premier Cru",
+      "grapes": "Pinot Noir",
+      "estate": "Les Perrières — the quarries — sits high on the Beaune slope on very stony ground. Beaune's premiers crus are among the best value in the Côte de Beaune precisely because the name carries no glamour.",
+      "producer": "Domaine de Montille. Restrained and structured, as across the range.",
+      "style": "Bright and stony, with red cherry, dried herbs and a saline mineral finish. Lighter-framed than their Pommard and more open than the Volnay.",
+      "drink": "Good from four or five years, best inside a dozen. A useful summer red served cool."
+    },
+    {
+      "slug": "rossignol-trapet-teurons",
+      "match": [
+        "rossignol-trapet"
+      ],
+      "name": "Domaine Rossignol-Trapet, Beaune Les Teurons 1er Cru",
+      "say": "ross-een-YOL tra-PAY, tuh-RON",
+      "appellation": "Beaune",
+      "rank": "Premier Cru",
+      "grapes": "Pinot Noir",
+      "estate": "Les Teurons is one of the best sites on the Beaune hill, mid-slope on limestone scree. The domaine is better known for its Gevrey holdings, which makes its Beaune a quiet bargain.",
+      "producer": "Rossignol-Trapet, biodynamic since the 2000s, run by the brothers Nicolas and David. Whole-bunch, gentle extraction, and a light hand with oak.",
+      "style": "Fragrant and red-fruited with a fine chalky grip and considerable energy. Transparent, cool-toned Burgundy rather than a rich one.",
+      "drink": "Drinks well from four years and holds ten or more. Serve cool."
+    },
+    {
+      "slug": "bitouzet-prieur-pitures",
+      "match": [
+        "bitouzet-prieur"
+      ],
+      "name": "Domaine Bitouzet-Prieur, Volnay Pitures 1er Cru",
+      "say": "bee-too-ZAY pree-UR, pee-TOOR",
+      "appellation": "Volnay",
+      "rank": "Premier Cru",
+      "grapes": "Pinot Noir",
+      "estate": "Pitures lies at the northern end of Volnay against the Pommard boundary, and shows it — a little more flesh and grip than the classic Volnay perfume. A small family domaine of the old Volnay school.",
+      "producer": "Bitouzet-Prieur, a long-standing Volnay family holding both red and white parcels. Understated, traditional, and consistently underpriced.",
+      "style": "Red cherry and violets with a firmer, earthier frame than mid-slope Volnay. Fine tannin, real freshness.",
+      "drink": "Six to twelve years is the window. Serve cool and give it half an hour in the glass rather than a decanter."
+    },
+    {
+      "slug": "jadot-saint-georges",
+      "match": [
+        "jadot"
+      ],
+      "name": "Louis Jadot, Nuits-St Georges Les Saint-Georges 1er Cru",
+      "say": "zha-DOH, lay san ZHORZH",
+      "appellation": "Nuits-St Georges",
+      "rank": "Premier Cru — the one that gave the village its name",
+      "grapes": "Pinot Noir",
+      "estate": "Les Saint-Georges is the greatest site in Nuits and has been under vine since at least the first millennium; it is the vineyard the village added to its own name, and the long-standing candidate for promotion to grand cru. A gentle, south-east-facing slope of limestone scree over clay at the southern end of the commune, towards Premeaux.",
+      "producer": "Louis Jadot, whose scale disguises how good the top cuvées are. Whole-bunch fermentation and a firm, structured house style under a long line of gifted winemakers.",
+      "style": "The most serious face of Nuits: dark cherry, iron, earth and liquorice, with substantial tannin and a broad frame. Muscular rather than perfumed.",
+      "drink": "Genuinely needs a decade, and holds twenty-five. Jadot's grands crus and top premiers crus are among the slowest-developing wines in Burgundy."
+    },
+    {
+      "slug": "leroux-gevrey",
+      "match": [
+        "benjamin leroux"
+      ],
+      "name": "Benjamin Leroux, Gevrey-Chambertin",
+      "say": "luh-ROO, zhev-RAY shom-bair-TAN",
+      "appellation": "Gevrey-Chambertin",
+      "rank": "Village",
+      "grapes": "Pinot Noir",
+      "estate": "A village Gevrey assembled from bought fruit and rented parcels. Gevrey is the largest and most structured of the Côte de Nuits communes, and its village wines carry more of the grand cru character than most.",
+      "producer": "Benjamin Leroux, formerly of Comte Armand, who set up his own négociant-domaine in 2007 and has become one of the most respected addresses in Beaune. Meticulous parcel work, gentle extraction, restrained oak.",
+      "style": "Dark cherry and blackberry with the Gevrey signature of earth, iron and a firm savoury finish. More muscular than the Côte de Beaune reds and quite tightly wound young.",
+      "drink": "Good from four or five years and better at eight. Village Gevrey from a serious hand outlives most people's expectations of it."
+    },
+    {
+      "slug": "ramonet-monthelie",
+      "match": [
+        "ramonet"
+      ],
+      "name": "Jean-Claude Ramonet, Monthélie 1er Cru",
+      "say": "ra-mo-NAY, mon-tay-LEE",
+      "appellation": "Monthélie",
+      "rank": "Premier Cru",
+      "grapes": "Pinot Noir",
+      "estate": "Monthélie sits behind and above Volnay, sharing much of its geology at slightly higher and cooler elevation. It has never been fashionable, which is exactly why a premier cru from a great name arrives at a village price.",
+      "producer": "The Ramonet family are among the most celebrated names in Chassagne-Montrachet, overwhelmingly for white wine. A red Monthélie from this address is an oddity and a bargain.",
+      "style": "Bright, cool and red-fruited — cranberry and cherry with a stony, slightly wild edge and light tannin. A chilled-red kind of Burgundy.",
+      "drink": "Drink young to middling: three to eight years. Serve properly cool, around 14°C, and it is transformed."
+    },
+    {
+      "slug": "david-moreau-santenay",
+      "match": [
+        "david moreau"
+      ],
+      "name": "David Moreau, Santenay Cuvée S",
+      "say": "mo-ROH, son-tuh-NAY",
+      "appellation": "Santenay",
+      "rank": "Village",
+      "grapes": "Pinot Noir",
+      "estate": "Santenay is the last commune at the southern end of the Côte de Beaune, where the slope turns and the limestone changes. Historically a source of rustic wine, it is now one of the last places in the Côte d'Or where good young growers can afford land.",
+      "producer": "David Moreau, who took over part of his grandparents' parcels and made his first vintage in 2009. Organic farming, ambient yeasts, a proportion of whole bunches and restrained new oak. Cuvée S is named for his grandmother Simone, and comes from the Les Cornières and Les Charmes parcels.",
+      "style": "Fresh and crunchy, with red cherry, a herbal lift and fine chalky tannin. Modern, transparent, unmanipulated Burgundy at the cheap end.",
+      "drink": "Drink from two or three years to about eight. A good-value everyday red Burgundy, not a keeper."
+    },
+    {
+      "slug": "giovanni-rosso-cerretta",
+      "match": [
+        "giovanni rosso",
+        "cerretta"
+      ],
+      "name": "Giovanni Rosso, Barolo Cerretta",
+      "say": "jo-VAN-nee ROSS-oh, cheh-RET-ta",
+      "appellation": "Barolo",
+      "rank": "Single vineyard, Serralunga d'Alba",
+      "grapes": "Nebbiolo",
+      "estate": "Cerretta is a steep, high, south-east-facing cru on the Serralunga ridge, on the compact Lequio-formation marls that make Serralunga the most structured and long-lived commune in Barolo. It is a neighbour to the vineyards behind some of the most famous names in the zone.",
+      "producer": "Davide Rosso, who has taken the family estate to the front rank since the early 2000s. Long macerations, large old Slavonian oak, no new-oak signature.",
+      "style": "Classical, austere Serralunga Nebbiolo: rose petal, tar, sour cherry, liquorice and dried herbs, with formidable acidity and drying tannin. Pale in colour and enormous in structure.",
+      "drink": "Wants a decade at minimum and runs for thirty years. Young bottles need hours of air; mature ones need almost none."
+    },
+    {
+      "slug": "giovanni-rosso-serralunga",
+      "match": [
+        "giovanni rosso",
+        "serralunga"
+      ],
+      "name": "Giovanni Rosso, Barolo del Comune di Serralunga d'Alba",
+      "say": "jo-VAN-nee ROSS-oh, seh-ra-LOON-ga",
+      "appellation": "Barolo",
+      "rank": "Commune blend, Serralunga d'Alba",
+      "grapes": "Nebbiolo",
+      "estate": "A blend across the estate's Serralunga holdings rather than a single cru — the traditional Barolo idea of a village wine, and the best possible introduction to what the commune tastes like.",
+      "producer": "Davide Rosso. Same approach as the single vineyards, with slightly shorter ageing.",
+      "style": "Serralunga structure in a more approachable frame: tar and roses, sour cherry, orange peel and firm acid-tannin grip, but less monolithic than Cerretta.",
+      "drink": "Six to eight years before it is comfortable, and good for twenty. Decant young bottles for two or three hours."
+    },
+    {
+      "slug": "ciabot-berton-roggeri",
+      "match": [
+        "ciabot berton"
+      ],
+      "name": "Ciabot Berton, Barolo Roggeri",
+      "say": "CHA-bot bair-TON, ro-JEH-ree",
+      "appellation": "Barolo",
+      "rank": "Single vineyard, La Morra",
+      "grapes": "Nebbiolo",
+      "estate": "Roggeri is a cru in La Morra, on the Tortonian blue-grey marls of the western side of the Barolo zone — softer, sandier and more perfumed than Serralunga's soils. La Morra is the commune of scent rather than structure.",
+      "producer": "The Oberto family, a small, unshowy La Morra estate working in a traditional register with large old wood and long macerations.",
+      "style": "Perfumed and red-fruited: rose, wild strawberry, aniseed and a fine dusty tannin. Approachable by Barolo standards without losing the sour-cherry acidity.",
+      "drink": "Good from six or seven years, and best inside about fifteen. The La Morra style rewards earlier drinking than Serralunga."
+    },
+    {
+      "slug": "bollinger-cote-aux-enfants",
+      "match": [
+        "cote aux enfants"
+      ],
+      "name": "Bollinger, Coteaux Champenois La Côte aux Enfants",
+      "say": "la coat oh zon-FON",
+      "appellation": "Coteaux Champenois",
+      "rank": "Still red wine from a single Champagne cru",
+      "grapes": "Pinot Noir",
+      "estate": "La Côte aux Enfants is a steep, south-facing Bollinger parcel at Aÿ, a grand cru village of the Grande Vallée de la Marne. Coteaux Champenois is the appellation for the region's rare still wines — chalk-grown Pinot Noir at the northern limit of ripeness, made only in vintages warm enough to justify it.",
+      "producer": "Bollinger, using the same fruit that would otherwise go into their Champagne. Small production, oak-aged, and treated as a serious wine rather than a curiosity.",
+      "style": "Pale, taut and unmistakably chalky. Redcurrant, wild strawberry, a saline mineral bite and very light tannin. Closer to a cool Burgundy than to anything else, with a sharpness that is entirely the point.",
+      "drink": "Best from four to ten years. Serve genuinely cool — 13 to 14°C — and it works where a heavier red would not, which makes it a warm-weather red."
+    },
+    {
+      "slug": "daumas-gassac",
+      "match": [
+        "daumas gassac"
+      ],
+      "name": "Mas de Daumas Gassac, Rouge",
+      "say": "mass duh doh-MAH ga-SAK",
+      "appellation": "St Guilhem-le-Désert, Languedoc",
+      "rank": "The estate that proved the Languedoc could make serious wine",
+      "grapes": "Cabernet Sauvignon-dominant with a long tail of other varieties",
+      "estate": "Aimé Guibert planted here in the 1970s after the geographer Henri Enjalbert identified a deep glacial powder soil in the Gassac valley as comparable to the best terroirs of the Côte d'Or. The estate is high, cool and surrounded by garrigue, and it deliberately made Cabernet in a region that was then producing bulk wine — a genuine act of provocation that changed the Languedoc's self-image.",
+      "producer": "The Guibert family. Idiosyncratic and uninterested in fashion; the blend includes small quantities of a great many varieties collected from around the world.",
+      "style": "Neither Bordeaux nor Languedoc. Cassis and wild herbs, a cool stony centre, firm tannin and a distinctly savoury, scrubland edge. More structured and less sunny than its latitude suggests.",
+      "drink": "Difficult young, and genuinely rewarding at ten to twenty years. It has a long track record of ageing far better than anyone expected."
+    }
+  ]
+}

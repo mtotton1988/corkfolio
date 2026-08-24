@@ -1,0 +1,67 @@
+{
+  "windows": [
+    {
+      "match": ["pommard", "les cras", "montille"],
+      "vintage": "2015",
+      "from": 2021,
+      "to": 2035,
+      "confidence": "direct",
+      "basis": "Justerini and Brooks publish a drinking window of 2021 to 2036 for this exact bottling and call it ready but youthful, while Stephen Tanzer's cask note for Vinous stressed early Pommard tightness and slightly dry tannins, so the end date is pulled in a year from the merchant view.",
+      "sources": [
+        "https://www.justerinis.com/fine-wines/france/burgundy/domaine-de-montille/pommard-les-cras/2015",
+        "https://vinous.com/wines/domaine-de-montille-pommard-les-cras/2015"
+      ]
+    },
+    {
+      "match": ["daumas gassac", "rouge"],
+      "vintage": "2015",
+      "from": 2020,
+      "to": 2034,
+      "confidence": "direct",
+      "basis": "The estate's own page for the 2015 red sets out maturity at seven to fourteen years and plenitude at fourteen to twenty-one years, and Decanter judged the 2015 already drinkable but likely to match the long-lived 2010, whereas Berry Bros critic windows for the weaker 2013 and 2014 stopped around 2025 to 2030.",
+      "sources": [
+        "https://www.daumas-gassac.com/en/millesime/mas-de-daumas-gassac-red-2015/",
+        "https://www.decanter.com/premium/mas-de-daumas-gassac-red-wines-profile-388642/",
+        "https://www.bbr.com/products-20138026534-2013-mas-de-daumas-gassac-rouge-st-guilhem-le-desert-cite-d-aniane-languedoc"
+      ]
+    },
+    {
+      "match": ["barolo", "roggeri", "ciabot berton"],
+      "vintage": "2016",
+      "from": 2024,
+      "to": 2036,
+      "confidence": "direct",
+      "basis": "Wine Enthusiast gives 2022 to 2031 for this wine, James Suckling said it needed at least four years from the vintage, and the estate claims a minimum ten-year cellar life for Roggeri, so the window starts at the later opening date and runs past the Wine Enthusiast close to reflect the structure of the 2016 vintage.",
+      "sources": [
+        "https://www.wineenthusiast.com/buying-guide/ciabot-berton-2016-roggeri-barolo/",
+        "https://vinous.com/wines/ciabot-berton-barolo-roggeri/2016",
+        "https://www.ciabotberton.it/en/our-wines/barolo-roggeri/"
+      ]
+    },
+    {
+      "match": ["monthelie", "1er cru", "ramonet"],
+      "vintage": "2020",
+      "from": 2025,
+      "to": 2036,
+      "confidence": "appellation-norm",
+      "basis": "No published window exists for the Ramonet bottling, so this is a norm for a 2020 Monthelie premier cru red, sitting between Berry Bros giving 2026 to 2043 for the Comtes Lafon Les Duresses and only 2021 to 2025 for the Montille village wine, with Jasper Morris suggesting Cote de Beaune villages open from 2024 or 2025 and better premiers crus run ten to fifteen years.",
+      "sources": [
+        "https://www.bbr.com/products-20201026957-2020-monthelie-les-duresses-1er-cru-domaine-des-comtes-lafon-burgundy",
+        "https://www.bbr.com/products-20208018458-2020-monthelie-rouge-domaine-de-montille-burgundy",
+        "https://www.burgundy-report.com/burgundy-report-extra/12-2021/2020-red-burgundy/"
+      ]
+    },
+    {
+      "match": ["larcis ducasse"],
+      "vintage": "2025",
+      "from": 2031,
+      "to": 2060,
+      "confidence": "direct",
+      "basis": "Wine Cellar Insider gives 2030 to 2065 with peak maturity twelve to thirty-five years from the vintage, and merchant listings repeat an opening date of 2030, but since the wine is en primeur and will not be delivered until about 2027 or 2028 the start is set a little later and the close is trimmed to the peak range rather than the outer limit.",
+      "sources": [
+        "https://www.thewinecellarinsider.com/wine-tasting-note/?vintage=2025&wine=Chateau+Larcis+Ducasse",
+        "https://www.millesima-usa.com/chateau-larcis-ducasse-2025.html"
+      ]
+    }
+  ]
+}

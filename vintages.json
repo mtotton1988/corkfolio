@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "about": "Vintage character by region, written from general knowledge rather than transcribed from a critic, and carrying no scores. 'Now' notes describe how the year is generally drinking as of 2026 and are the part most likely to date.",
+  "vintages": {
+    "Bordeaux": {
+      "2000": {
+        "headline": "The millennium vintage, and it earned the hype",
+        "note": "A genuinely excellent, evenly ripe year across both banks. April brought more than double the usual rain, and May, June and much of July were cool and damp with mildew pressure, but almost no rain fell between late July and late September and August and September were hot and dry. Classically structured rather than opulent — high but fine tannin, real freshness, and no excess alcohol by modern standards.",
+        "now": "Fully mature and drinking beautifully. Most classed growths are in the middle of their plateau and this is a year to open rather than to hold, though critics differ on the very top wines, which some think still have a decade or more in reserve."
+      },
+      "2009": {
+        "headline": "Hot, ripe and hedonistic",
+        "note": "A warm, dry, generous year that produced the ripest, sweetest-fruited Bordeaux in a generation. Low acidity, high alcohol, plush tannin — flattering from the moment it was in barrel, and the antithesis of the 2010 that followed it.",
+        "now": "Drinking wonderfully and has been for years. Longevity is the open question and critics genuinely disagree: the low acidity suggests these will fade before the 2010s, while the top wines have so far shown little sign of tiring. Drink with confidence rather than saving."
+      },
+      "2010": {
+        "headline": "The structural twin of 2009, and the longer-lived one",
+        "note": "Equally ripe but with far higher acidity and tannin from a dry growing season with cool nights and real water stress. The most concentrated and structured Bordeaux of the modern era, and considerably less charming young than 2009.",
+        "now": "Only just entering its window at sixteen years. The best wines are still tight. Everything except the lightest wines has a long life ahead."
+      },
+      "2012": {
+        "headline": "A difficult year, and a right-bank one",
+        "note": "A cold wet spring — April alone brought more than double the usual rain — an uneven, drawn-out flowering, and then a late harvest run against rain, with heavy falls in the Médoc at the end of September and downpours through October. August was hot and dry, so Merlot ripened well before the weather broke. The right bank, and Pomerol in particular, fared markedly better than the Cabernet-dependent Médoc, where Cabernet Sauvignon was still short of ripeness at the end of September.",
+        "now": "At its peak now and not built to go much further. A perfectly good drinking vintage bought at the right price, and exactly the kind of year to open rather than admire."
+      },
+      "2014": {
+        "headline": "Saved by a remarkable September",
+        "note": "A damp July and an unusually cool August, followed by an exceptionally warm, dry, sunny September and October that rescued the vintage — an Indian summer of the sort Bordeaux prays for. A June hailstorm cost some northern Médoc estates a large part of their crop. Fresh, classical, medium-weight wines with good Cabernet definition, particularly in the northern Médoc, which caught less rain and leans hardest on late-ripening Cabernet Sauvignon.",
+        "now": "Well into its window at twelve years. Fresh, sappy and correct rather than grand, and priced accordingly. A good year for drinking while the great years wait."
+      },
+      "2015": {
+        "headline": "Ripe and generous, best in Margaux and the right bank",
+        "note": "A hot, dry June and July, then rain from late August and through the harvest that fell very unevenly — roughly 115mm in the northern Médoc against under 50mm in the far south. Wines are rich, sweetly-fruited and open-textured. Margaux and Pessac-Léognan, both on the drier side, excelled, as did the right bank; the northern Médoc was less consistent because of diluting rain close to picking, although St-Julien still showed well.",
+        "now": "Already drinking well at eleven years — this is the flattering half of the 2015/2016 pair. Many wines are at or approaching their best, and few need holding for structure."
+      },
+      "2016": {
+        "headline": "Great, classical, and slow",
+        "note": "An extraordinary year: an extremely wet first half, with January alone taking more than twice its normal rain, then a near-rainless run of roughly twelve weeks from late June, hot days with much cooler nights, welcome rain on 13 September to refresh the reds, and a long, late ripening. The result is fully ripe fruit with very high but exceptionally fine tannin and high acidity. Widely rated at the level of 2010 and 2005, with better balance than either.",
+        "now": "Still young at ten years, and most classed growths are only opening. This is the vintage to leave alone; the structure that makes it great also makes it unrewarding early."
+      },
+      "2017": {
+        "headline": "Frost-shortened and uneven",
+        "note": "A severe April frost cut the crop to its smallest in more than twenty-five years, hitting low-lying, damp plots hardest while slopes and gravel rises with air movement largely escaped. The damage was very unevenly spread: Pauillac, St-Julien and St-Estèphe came through with little more than superficial harm, while much of St-Émilion, the lower parts of Pomerol, Moulis, and vineyards in Margaux and Pessac-Léognan were badly hit. Where the fruit survived, the wines are fresh and pretty rather than concentrated — a classic mid-weight year.",
+        "now": "Drinking now and through the next several years. Never a vintage for the long haul, and priced as the overlooked year between 2016 and 2018."
+      },
+      "2018": {
+        "headline": "A year of two halves, and considerable power",
+        "note": "Relentless mildew pressure through a wet spring, then one of the hottest, driest summers on record. Yields were low and the wines are extremely ripe, dark and high in alcohol, with massive but generally ripe tannin.",
+        "now": "Beginning to open but the structure is formidable. The best need another five to ten years. The risk in the vintage is heaviness rather than dilution."
+      },
+      "2019": {
+        "headline": "The best balance of the three hot years",
+        "note": "Hot again, with heat spikes in June and July, but cooler nights and better-timed rain than 2018 gave fresher, more precise wines with lower alcohol. Widely considered the most classical and best-balanced of the 2018-2019-2020 run, and released at attractive prices.",
+        "now": "Approachable already for the lesser wines, with the classed growths wanting another five years. A year to buy for drinking rather than for status."
+      },
+      "2020": {
+        "headline": "Third of the hot trio, and the most compact",
+        "note": "Another dry, warm year: some fifty days without meaningful rain from mid-June, one of the driest Julys on record, and very small, in places dehydrated berries. A cool, wet June brought heavy mildew pressure and real losses at some estates, and the mid-August storms were extremely localised — parts of the northern Médoc took around 120mm while parts of St-Émilion saw barely 10mm. The wines are dense, deeply coloured and quite tannic, with high alcohol — concentrated rather than expansive, and noticeably less consistent than 2019.",
+        "now": "Still closed. The best wines need a decade; the second wines and lesser appellations are drinking now."
+      },
+      "2022": {
+        "headline": "Extreme heat, unexpectedly fresh results",
+        "note": "One of the hottest and driest years on record in Bordeaux. Hail on 20 June touched around 10,000 hectares — north of St-Estèphe, the far south of the Médoc, Bourg, Fronsac and some generic land further east — and forest fires near Landiras and Arcachon in July raised fears of smoke taint that largely came to nothing. Harvest was among the earliest ever. Even so the wines came in with surprising freshness and remarkably fine tannin: the vines adapted rather than shutting down, which nobody quite predicted.",
+        "now": "Very young. Fine and deeply structured, and although the tannin is polished enough that the wines are already pleasant to taste, the serious bottles are the better part of a decade from saying anything interesting."
+      },
+      "2025": {
+        "headline": "En primeur — not yet bottled",
+        "note": "Purchased as a future while still in barrel. The 2025s were shown in Bordeaux in April 2026 and released over the following weeks; en primeur wine is normally delivered about two years after the campaign, so a 2025 will physically arrive in bond in late 2027 or during 2028.",
+        "now": "Nothing to drink and nothing to assess. Corkfolio shows it as a holding with no market price, which is exactly what it is."
+      }
+    },
+    "Burgundy": {
+      "2014": {
+        "headline": "A fine, fresh red vintage, badly overshadowed",
+        "note": "Hail again in the Côte de Beaune — the storm of 28 June cost producers in Volnay, Pommard, Meursault and Beaune around half their crop on average — but a cool summer followed by a warm, dry, sunny September gave taut, high-acid, precise reds. It was overlooked at release because the whites were so celebrated and because 2015 followed immediately.",
+        "now": "In a good place at twelve years — the freshness has held and the fruit has softened. One of the best-value drinking vintages in red Burgundy."
+      },
+      "2015": {
+        "headline": "Hot, concentrated and atypically dense",
+        "note": "A very warm dry summer produced the ripest, darkest, most concentrated red Burgundies in decades — small berries, thick skins, low acidity. Impressive but not typical, and the tannin in the top wines is considerable.",
+        "now": "Some wines are open and generous; the most structured are still closed. Whole-bunch, low-extraction houses came through this vintage far better than the extractive ones."
+      },
+      "2018": {
+        "headline": "Very warm, very generous",
+        "note": "A large crop in a hot dry year — unusual, since heat normally means small yields. The wines are ripe, sweet-fruited and soft, with low acidity and gentle tannin. Charming, and not long-distance.",
+        "now": "Drinking well now and best in the near term. Not a vintage to hold, particularly at village level."
+      },
+      "2019": {
+        "headline": "Ripe but balanced, small crop",
+        "note": "April frost, intense summer heat and some sunburn cut yields sharply, and the surviving fruit ripened fully while retaining acidity. The result is concentrated, structured wine that is more balanced than 2018 and more classical than 2015.",
+        "now": "Beginning to open at village and premier cru level. A strong vintage worth holding some back from."
+      },
+      "2020": {
+        "headline": "Early, hot, and surprisingly fresh",
+        "note": "The earliest harvest on record, with picking under way in the Mâconnais in mid-August and some estates finished by the end of the month. Very small berries, the deepest colour yet measured and tannin levels on a par with 2015, and yet the reds retained good acidity.",
+        "now": "Still young. Village wines are approachable; premier cru wants another three to five years."
+      },
+      "2022": {
+        "headline": "Hot and dry, generous yields, easy charm",
+        "note": "A warm year with a decent crop, giving open, fruit-forward, immediately likeable reds without the density of 2019 or 2015. A drinker's vintage rather than a collector's.",
+        "now": "Too young to be at its best, but already pleasant. Will be good drinking from about 2027."
+      }
+    },
+    "Rhône": {
+      "2010": {
+        "headline": "A great southern Rhône year, and a structured one",
+        "note": "A wet spring then a dry season with cool nights gave exceptional balance — full ripeness with high acidity and firm tannin — while coulure cut Grenache yields heavily and added to the concentration. Widely regarded as one of the finest Châteauneuf vintages of the modern era, commonly bracketed with 2001, and built for the very long term.",
+        "now": "Drinking well at sixteen years and still gaining, and the most structured estates will run for another fifteen or twenty."
+      },
+      "2015": {
+        "headline": "Ripe, dense and tannic",
+        "note": "A hot dry summer with useful late-August rain. Powerful, deeply coloured wines with substantial tannin — more structured than 2016 and less immediately charming.",
+        "now": "Approachable now, though the top wines still want several more years. Grenache-dominant cuvées are readier than Mourvèdre-heavy ones."
+      },
+      "2016": {
+        "headline": "The charmer, and possibly the better wine",
+        "note": "A near-perfect growing season that gave both ripeness and freshness. Aromatically expressive, silky-textured and beautifully balanced — more seductive than 2015 with no loss of concentration.",
+        "now": "Drinking beautifully already and will hold for many years. If you own both 2015 and 2016, open the 2016 first for pleasure and keep the 2015 for structure."
+      },
+      "2019": {
+        "headline": "Hot and dry, and strong in both north and south",
+        "note": "A very warm year with real drought stress and a heatwave from late June into July that burned some fruit. The northern Rhône handled it well, Côte-Rôtie best of all — it caught a little more rain than its neighbours — producing ripe but fresh Syrah with the savoury signature intact, while Hermitage came out richer and more powerful. The south was not the weak half: Châteauneuf had useful rain in mid-July and mid-August and yields back to normal, and the wines are concentrated and well balanced. The failures in the vintage are localised and heat-related rather than a matter of north against south.",
+        "now": "Approachable now in the north, especially the earlier-drinking cuvées, and the best wines from both north and south will keep for fifteen years or more."
+      }
+    },
+    "Piedmont": {
+      "2016": {
+        "headline": "A great classical Barolo vintage",
+        "note": "A long, even season: a cool spring that delayed flowering, then a summer slightly warmer than average but low in humidity, and a warm, dry August and September with wide day-night swings — textbook conditions for Nebbiolo. No frost and no heat spike, and apart from one violent July hailstorm the season ran smoothly. The wines have full ripeness with very high acidity and fine, abundant tannin, and are routinely spoken of alongside 2010 and 2004.",
+        "now": "Still tightly wound at ten years. The serious crus are only now reaching the point where opening one makes sense, and many will want considerably longer; Serralunga wants more time than La Morra."
+      },
+      "2019": {
+        "headline": "Classical, structured, slightly overlooked",
+        "note": "Not the cool year it is sometimes described as. A dry start, heavy May rain, then very intense heat between late June and early July that burned some fruit, and a September hailstorm that mostly hit La Morra. What defines the vintage is the finish: a dry October with mild days and cool nights, and picking running to around 20 October. Alcohol came in half a point to a point below average, and the wines are fresh, high in acid and quite tannic in the traditional mould. Critics rate it highly, generally just behind 2016 and arguably more typical.",
+        "now": "Very young. Commune-level wines will be approachable around 2027-2028; single crus need well beyond that."
+      }
+    },
+    "Champagne": {
+      "2016": {
+        "headline": "Difficult in the vineyard, good in the glass",
+        "note": "The most complicated season Champagne had seen in decades. Late April frost destroyed a large share of the potential crop, worst of all in the Côte des Bars; rain from May through July brought mildew that took a good deal more; and mid-July hail added to the damage. The harvest came in around a third down, among the smallest since the 1980s. A hot, dry, sunny late summer then rescued quality, and Pinot Noir came through better than Chardonnay — which is what matters for the rare still red wines of Coteaux Champenois, where full Pinot ripeness is not a given.",
+        "now": "Drinking well now. Coteaux Champenois reds are light-bodied and high in acid and are not built like vintage Champagne; the category is too young and too small for any settled view on how long the better bottlings hold, so treat this as a wine to drink rather than to cellar, and taste as you go."
+      }
+    },
+    "Languedoc-Roussillon": {
+      "2015": {
+        "headline": "Warm, ripe and structured",
+        "note": "A hot dry year across the south of France, though with real regional variation: the western Languedoc and Roussillon were in a third successive year of drought with sustained heat and no cool spells, while the east had heavy late-spring rain, summer storms and a cooler September. July and August were long and dry but without extreme heat or hot nights, which helped preserve acidity, and older deep-rooted Grenache and Syrah coped far better than young vines. At the cooler, higher sites the heat translated into structure rather than jamminess.",
+        "now": "In its window now at eleven years. Only the most structured cuvées from the better sites still have real time ahead of them, and those are often underestimated."
+      }
+    }
+  }
+}

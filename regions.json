@@ -1,0 +1,255 @@
+{
+ "version": 1,
+ "about": "What each region is and why it is worth caring about. Written for this app from general knowledge of the places, carrying no scores. Durable material only: geology, grapes, how the region organises itself, and the argument at the centre of it. Pronunciations are respellings with the stressed syllable capitalised, given only where an English speaker would not already get it right - the silent t in Montrachet, the ss in Aloxe, the swallowed l in Pauillac. The notable list per region is what a rounded holding there would draw on; the app subtracts what you own from it to work out the gaps.",
+ "regions": {
+  "Bordeaux": {
+   "headline": "Two banks, one river, and an argument about gravel",
+   "character": "Everything in Bordeaux follows from where the gravel is. The Médoc, on the left bank of the Gironde, sits on deep beds of stones dumped by glacial rivers — they drain hard, hold the day's heat into the night, and ripen Cabernet Sauvignon, which needs every hour it can get. That gives the left bank its signature: cassis and cedar over a firm, dry, graphite-edged structure that is austere young and unfolds over decades. Cross to the right bank and the soil turns to clay and limestone, which is cold and wet and would leave Cabernet green, so Merlot leads instead. The wines come out rounder, darker-fruited, plusher, and drinkable years earlier.",
+   "structure": "The 1855 classification ranked sixty-odd left-bank châteaux into five growths, and has been amended exactly once in a century and a half. It ranked the estates, not the land, which is the source of most of the interesting value in the region: a wine like Gloria sits on genuinely classed-growth soil bought parcel by parcel from classified neighbours, and carries no rank at all because the list was closed before it existed. St-Émilion runs a separate classification that is revised roughly every ten years and has become quarrelsome enough that three of its most famous estates have walked out of it. Pomerol, the most expensive dirt on the right bank, has never had a classification of any kind.",
+   "interest": "Bordeaux is the largest fine-wine region on earth and the most thoroughly priced, which makes it the one where a careful buyer can most reliably do better than the market. The famous names carry a premium for the name. The interesting question is always which neighbour sits on the same gravel, makes wine to the same standard, and happens to have been left off a list drawn up in 1855.",
+   "notable": [
+    {
+     "name": "Pauillac",
+     "why": "the most structured Cabernet in the Medoc, and the longest-lived"
+    },
+    {
+     "name": "St Julien",
+     "why": "Pauillac's structure with Margaux's manners; the safest bet on the left bank"
+    },
+    {
+     "name": "St Estephe",
+     "why": "the coolest, firmest, slowest commune of the four"
+    },
+    {
+     "name": "Margaux",
+     "why": "the perfumed one - violets and silk rather than muscle"
+    },
+    {
+     "name": "Pessac-Leognan",
+     "why": "gravel and woodsmoke just outside the city, and the only place doing serious white"
+    },
+    {
+     "name": "St Emilion",
+     "why": "limestone plateau and clay slopes, Merlot-led, two quite different styles"
+    },
+    {
+     "name": "Pomerol",
+     "why": "the plateau clay that makes the richest Merlot in Bordeaux, and has no classification"
+    },
+    {
+     "name": "Sauternes",
+     "why": "botrytis dessert wine that ages for fifty years; almost nobody buys it any more, which is the opportunity"
+    },
+    {
+     "name": "Graves",
+     "why": "the original Bordeaux vineyard, south of the city, and consistently the cheapest classed wine"
+    }
+   ]
+  },
+  "Burgundy": {
+   "headline": "One grape, one slope, and several hundred arguments about where the good bit stops",
+   "character": "Burgundy is almost entirely Pinot Noir and Chardonnay, which means the region has removed grape variety as a variable and made everything about place. The Côte d'Or is a single limestone escarpment about fifty kilometres long, facing east, and the differences that matter happen across a few hundred metres of it. Too high and the soil is thin and the wine is lean. Too low and it is deep and fertile and the wine is dilute. The band in between is where the grand crus are, and it is often only a few rows wide. Red Burgundy at its best is not powerful — it is red-fruited, savoury, structured by acid rather than tannin, and transparent in a way that lets you taste the difference between two vineyards that share a wall.",
+   "structure": "The hierarchy runs regional, village, premier cru, grand cru, and unlike Bordeaux it classifies the land rather than the producer. That sounds more rational and creates its own problem: a grand cru vineyard is shared between dozens of owners, because Napoleonic inheritance law split every holding among all the children, generation after generation. Domaine de la Romanée-Conti aside, most famous vineyards are farmed by many hands of wildly varying ability. So in Burgundy the grower matters at least as much as the vineyard, and a village wine from a great domaine routinely outclasses a premier cru from an indifferent one.",
+   "interest": "Nowhere else is the link between a specific patch of ground and what is in the glass so fine-grained or so well documented — the boundaries were largely mapped by Cistercian monks who spent four centuries tasting their way across the hill. The catch is scarcity: the whole Côte d'Or is smaller than the vineyard area of a single large Bordeaux commune, demand is global, and prices at the top have left the merely wealthy behind. The value has moved to the overlooked villages — Monthélie, Santenay, Marsannay, the Hautes-Côtes — where a good grower on modest ground still sells at a sane price.",
+   "notable": [
+    {
+     "name": "Gevrey-Chambertin",
+     "why": "the biggest, firmest wines of the Cote de Nuits"
+    },
+    {
+     "name": "Morey-St Denis",
+     "why": "between Gevrey and Chambolle and priced as though it were neither"
+    },
+    {
+     "name": "Chambolle-Musigny",
+     "why": "the most perfumed and delicate red Burgundy there is"
+    },
+    {
+     "name": "Vosne-Romanee",
+     "why": "the spice and the silk, and the highest prices in the world"
+    },
+    {
+     "name": "Nuits-St Georges",
+     "why": "iron, earth and structure; the least charming and the most food-shaped"
+    },
+    {
+     "name": "Aloxe-Corton",
+     "why": "the one grand cru hill in the Cote de Beaune, and the least fashionable"
+    },
+    {
+     "name": "Beaune",
+     "why": "premier cru at village prices because the name carries no glamour"
+    },
+    {
+     "name": "Pommard",
+     "why": "the broad-shouldered one, and the one that most repays patience"
+    },
+    {
+     "name": "Volnay",
+     "why": "Pommard's neighbour and its opposite: bone structure, red fruit, no weight"
+    },
+    {
+     "name": "Monthelie",
+     "why": "behind Volnay, cooler and higher, and permanently overlooked"
+    },
+    {
+     "name": "Santenay",
+     "why": "the southern end, where a good young grower can still afford land"
+    },
+    {
+     "name": "Chassagne-Montrachet",
+     "why": "better known for white, and its reds are correspondingly cheap"
+    }
+   ]
+  },
+  "Rhône": {
+   "headline": "Two regions that share a river and almost nothing else",
+   "character": "The northern Rhône is a narrow granite gorge where Syrah grows on terraces too steep for machinery, and it makes one of the most distinctive red wines in the world: black olive, bacon fat, violets, cracked pepper and iron, medium-bodied and taut rather than heavy. That savoury signature comes partly from the grape, partly from whole-bunch fermentation, and partly from the cold nights. Then the vineyards stop for about fifty kilometres. When they resume in the south the landscape has opened out, the soil is rounded stones over clay, and Grenache leads a blend of up to thirteen varieties — riper, warmer, higher in alcohol, kirsch and garrigue and leather rather than pepper and iron.",
+   "structure": "The north is tiny and cru-based: Côte-Rôtie, Condrieu, Hermitage, Crozes-Hermitage, Cornas and St-Joseph, each with its own name and no internal hierarchy. Hermitage is a single hill you can walk across in twenty minutes. The south is vast and led by Châteauneuf-du-Pape, which in the 1920s wrote the rules that became the model for the entire French appellation system. Below it sit Gigondas, Vacqueyras and a ladder of villages that has been steadily promoting its better members for decades.",
+   "interest": "The north is the more serious wine and the harder buy: production is minuscule, the great names have been discovered, and the terraces cannot be expanded. But the appellation boundaries are drawn tight, and the ground immediately outside them is often the same rock — which is where the value sits. The south is the opposite problem, a large region of uneven ambition where the difference between a bulk producer and a serious estate is enormous and not always reflected in the price.",
+   "notable": [
+    {
+     "name": "Cote-Rotie",
+     "why": "the most aromatic Syrah in France - bacon fat, violets, white pepper"
+    },
+    {
+     "name": "Hermitage",
+     "why": "one hill, and the most concentrated and longest-lived Syrah of all"
+    },
+    {
+     "name": "Cornas",
+     "why": "Hermitage's wild cousin: darker, rougher, and a fraction of the price"
+    },
+    {
+     "name": "St Joseph",
+     "why": "the long thin one; enormous variation, and the good growers are underpriced"
+    },
+    {
+     "name": "Crozes-Hermitage",
+     "why": "the flat land around the hill, and the cheapest way into northern Syrah"
+    },
+    {
+     "name": "Chateauneuf-du-Pape",
+     "why": "Grenache on galets, thirteen permitted varieties, warmth and garrigue"
+    },
+    {
+     "name": "Gigondas",
+     "why": "the Dentelles at altitude - Chateauneuf's structure with more freshness"
+    }
+   ]
+  },
+  "Piedmont": {
+   "headline": "A grape that refuses to be flattering, and rewards you for waiting",
+   "character": "Nebbiolo is pale, almost translucent, and tastes nothing like it looks. It carries very high acidity and very high tannin with hardly any colour, and smells of tar and roses, sour cherry, dried herbs and orange peel. Young, it can be punishing — the tannin arrives before the fruit and dries the mouth out. Given a decade it turns into something extraordinary and quite unlike anything else. It also refuses to grow well anywhere outside a small stretch of hills around Alba, which has kept the region honest.",
+   "structure": "Barolo and Barbaresco are the two great zones, both Nebbiolo, divided by the town of Alba. Barbaresco to the north-east is a little warmer and lower, and its wines come round sooner. Barolo to the south-west splits again on geology: the Serralunga side has compact marls that give the most structured and long-lived wines in the region, while La Morra on the western side has softer, sandier soils and makes the perfumed ones. Since 2010 the single vineyards have been formally mapped and named, which was the region's belated answer to Burgundy.",
+   "interest": "Piedmont is where the traditional-versus-modern argument was fought hardest — long macerations and old Slavonian casks against short ferments and new French barriques — and the settlement, mostly in favour of the traditionalists, has left a generation of growers making very good wine at prices that have not yet caught up with the Côte d'Or. It remains the best value in classical, age-worthy, food-shaped red wine anywhere in Europe.",
+   "notable": [
+    {
+     "name": "Barolo",
+     "why": "the most structured Nebbiolo; Serralunga for power, La Morra for perfume"
+    },
+    {
+     "name": "Barbaresco",
+     "why": "lower and warmer than Barolo, comes round sooner, costs less"
+    }
+   ]
+  },
+  "Champagne": {
+   "headline": "The northern edge of ripeness, farmed to make a virtue of it",
+   "character": "Champagne exists because grapes barely ripen there. The chalk subsoil is hundreds of metres deep, drains perfectly and reflects light back at the vines, and the growing season is short and cold enough that the fruit comes in with ferocious acidity and little sugar. As a still wine that is austere to the point of unpleasant; put it through a second fermentation in bottle and the acidity becomes the backbone that carries everything else. Chardonnay brings citrus and chalk, Pinot Noir body and red fruit, Meunier flesh and early charm.",
+   "structure": "The region is organised around a division that exists almost nowhere else: the great houses mostly do not own their vineyards, and the growers who own the vineyards mostly do not make the wine. A house style is built by blending across dozens of villages and several vintages, which is why non-vintage Champagne tastes the same every year by design. Against that sit the grower-producers, who make wine only from what they farm, and whose bottles taste of one place and one season. The villages themselves are ranked as grand cru and premier cru — a rating of the whole commune, not of individual plots.",
+   "interest": "The still red wines of Coteaux Champenois are the region's odd footnote and the most direct way to taste what the chalk actually does, since there is no bubble, no dosage and no blending to hide behind. They are only made in years warm enough to ripen Pinot Noir properly, which used to be rare and is becoming less so — one of the few places where a warming climate is opening something up rather than closing it down.",
+   "notable": [
+    {
+     "name": "Montagne de Reims",
+     "why": "Pinot Noir on chalk - the body in a blend"
+    },
+    {
+     "name": "Vallee de la Marne",
+     "why": "Meunier country, the flesh and the early charm"
+    },
+    {
+     "name": "Cote des Blancs",
+     "why": "Chardonnay only, and the most age-worthy chalk in the region"
+    },
+    {
+     "name": "Coteaux Champenois",
+     "why": "the still wines, made only in years ripe enough to bother"
+    }
+   ]
+  },
+  "Languedoc-Roussillon": {
+   "headline": "France's biggest vineyard, thirty years into reinventing itself",
+   "character": "The Languedoc sweeps along the Mediterranean from the Rhône delta to Spain and grows more wine than any comparable area on earth. For most of the twentieth century almost all of it was cheap and forgettable. What changed was altitude: growers moved off the hot coastal plain and up into the hills — the Terrasses du Larzac, Pic Saint-Loup, Faugères — where nights are cold, the growing season is long, and Syrah, Grenache, Mourvèdre and Carignan produce wines with real structure and the scent of the garrigue scrubland that surrounds them.",
+   "structure": "The appellation map is younger and messier than the rest of France, because most of these boundaries were drawn in the last forty years and are still being argued over. Several of the best estates sit outside the appellation system entirely, labelling as simple IGP because they want to plant varieties the rules forbid. The result is that the label tells you much less here than it does in Bordeaux or Burgundy, and the producer's name tells you almost everything.",
+   "interest": "This is the region where the gap between reputation and reality is widest, which for a buyer is the whole point. The pioneering estates proved decades ago that the hills could make serious wine, and the prices still carry the memory of the bulk-wine era. It is also the most experimental corner of French wine, precisely because the rules arrived late and bind loosely.",
+   "notable": [
+    {
+     "name": "Terrasses du Larzac",
+     "why": "high, cold nights, the most serious reds in the Languedoc"
+    },
+    {
+     "name": "Pic St Loup",
+     "why": "a limestone ridge and the freshest Syrah in the south"
+    },
+    {
+     "name": "Faugeres",
+     "why": "schist, which gives a mineral edge nothing else here has"
+    },
+    {
+     "name": "St Chinian",
+     "why": "schist and limestone side by side, two styles under one name"
+    },
+    {
+     "name": "Minervois",
+     "why": "north of the Aude, warm and generous, wildly variable"
+    },
+    {
+     "name": "Corbieres",
+     "why": "the biggest appellation and the widest quality range in France"
+    },
+    {
+     "name": "St Guilhem-le-Desert",
+     "why": "the Gassac valley - cool glacial soils where Cabernet actually works"
+    }
+   ]
+  }
+ },
+ "pronunciations": {
+  "Rhone": "ROHN",
+  "Languedoc-Roussillon": "long-DOC roo-see-YON",
+  "Languedoc": "long-DOC",
+  "Pessac-Leognan": "peh-SAK lay-oh-NYAHN",
+  "St Julien": "san zhoo-lee-AN",
+  "St Estephe": "san tess-TEF",
+  "St Emilion": "sant ay-meel-YON",
+  "Pomerol": "POM-eh-rol",
+  "Pauillac": "poy-YAK",
+  "Margaux": "mar-GOH",
+  "Graves": "GRAHV",
+  "Sauternes": "soh-TAIRN",
+  "Gevrey-Chambertin": "zhev-RAY shom-bair-TAN",
+  "Nuits-St Georges": "nwee san ZHORZH",
+  "Vosne-Romanee": "vone ro-ma-NAY",
+  "Chambolle-Musigny": "shom-BOL moo-zeen-YEE",
+  "Morey-St Denis": "mo-RAY san duh-NEE",
+  "Beaune": "BONE",
+  "Volnay": "vol-NAY",
+  "Pommard": "PO-mar",
+  "Monthelie": "mon-tay-LEE",
+  "Meursault": "mur-SOH",
+  "Chassagne-Montrachet": "sha-SAN-yuh mon-ra-SHAY",
+  "Puligny-Montrachet": "poo-lee-NYEE mon-ra-SHAY",
+  "Santenay": "sont-NAY",
+  "Aloxe-Corton": "a-LOSS kor-TON",
+  "Chateauneuf-du-Pape": "sha-toh-NUF doo PAP",
+  "Cote-Rotie": "coat ro-TEE",
+  "Crozes-Hermitage": "crohz air-mee-TAHZH",
+  "Hermitage": "air-mee-TAHZH",
+  "Cornas": "kor-NAHSS",
+  "Barolo": "ba-RO-lo",
+  "Barbaresco": "bar-ba-RESS-ko",
+  "Coteaux Champenois": "ko-TOH shom-pen-WAH",
+  "St Guilhem-le-Desert": "san gee-EM luh day-ZAIR"
+ }
+}

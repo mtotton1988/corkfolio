@@ -1,0 +1,15 @@
+{
+  "name": "Corkfolio",
+  "short_name": "Corkfolio",
+  "description": "See what is in your cellar, when it is ready, and what a bottle costs delivered.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f2ec",
+  "theme_color": "#f6f2ec",
+  "icons": [
+    { "src": "./app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

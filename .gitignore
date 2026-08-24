@@ -1,0 +1,16 @@
+# Your cellar must never reach a public repo.
+#
+# If a file named cellar.local.csv sits next to index.html, the app offers a
+# one-tap "Load the export in this folder" button on its empty state. That is
+# a convenience for running the app locally - it saves hunting through a file
+# picker every time you clear storage - and it is the only file that could
+# leak your holdings, so it is ignored here rather than relied on to be
+# remembered.
+cellar.local.csv
+
+# Scratch folders used while testing the importer.
+_seed/
+
+# Archived earlier versions live one directory up, but ignore them if they
+# ever get copied in here.
+*.bak

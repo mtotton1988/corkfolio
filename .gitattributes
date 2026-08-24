@@ -1,0 +1,18 @@
+# Line endings are pinned to LF, everywhere, for everyone.
+#
+# Git for Windows sets core.autocrlf=true on init, which would rewrite this
+# whole working copy to CRLF the first time git touched it - a full-file diff
+# on every file, hiding the one line that actually changed. There is no build
+# step here: the file that is edited is the file that is served, so it should
+# be byte-identical on every machine that checks it out.
+#
+# index.html deliberately contains no unprintable characters - the combining
+# accents and the byte-order mark are built with String.fromCharCode precisely
+# so nothing invisible can be mangled in transit. Pinning eol keeps that
+# promise across platforms.
+* text=auto eol=lf
+
+# Binaries git must never touch.
+*.png binary
+*.woff2 binary
+*.csv -text
