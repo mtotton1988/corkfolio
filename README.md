@@ -6,8 +6,17 @@ See what you have, and learn about it.
 
 ## Start here
 
-**State of the build, 24 August 2026.** Working and complete enough to use. Not yet
-deployed, not yet in git, not yet opened on a phone.
+**State of the build, 24 August 2026.** Deployed, installed, and in use.
+
+- **Live at https://mtotton1988.github.io/corkfolio/**, served from the public repo
+  `mtotton1988/corkfolio` by GitHub Pages.
+- **Installed on a phone** from the home screen, which is what it was built for.
+- **Syncing** to the private repo `mtotton1988/corkfolio-data`, one `cellar.json`.
+
+Which means the three things this README spent a week calling untested are now tested by
+being used: the manifest and the worker on a real device, sync against real GitHub, and the
+layout on a real phone. The last of those immediately found something the emulator had not
+- see *Two chips, no counts* below.
 
 Since 23 August: the sub-region table was widened from France-and-Piedmont to the
 classic BBR range and measured against the whole BBX catalogue, which turned up a
@@ -153,6 +162,8 @@ in-bond, because a row of chips with none selected reads as "no filter" and here
 no such state. Their dots are square where the maturity dots are round, so the two rows can
 be told apart without reading them.
 
+### Two chips, no counts
+
 **The readiness chips carry no count on this tab**, and the tab has no heading of its own.
 Both went to give the list its screen back. On an iPhone with Display Zoom set to Larger
 Text the viewport is 320 points, and the furniture above the list came to 329 of the 693
@@ -242,8 +253,23 @@ The app is public; your cellar is not. Nothing in the repo contains a bottle or 
 The reference files are general knowledge about wine — the sort of thing a reference book
 holds — which is why they can be public. Holdings live in browser storage and nowhere else.
 
-**There is no git repo yet.** The folder syncs via OneDrive, which is how it reaches
-another machine today. Initialising git and pushing is an open item.
+**Two repos, and they must never be confused.** `mtotton1988/corkfolio` is public, because
+that is the price of Pages serving the app for free, and holds only code and the wine
+reference prose. `mtotton1988/corkfolio-data` is private and holds `cellar.json` and nothing
+else. Pointing sync at the public one would publish every bottle and price, and git would
+remember it after deletion.
+
+The repo root is this folder, not the one above it. The parent holds the BBR exports and
+the v0 backups; a repo initialised one level up would have published the cellar on the first
+push.
+
+Commits are made with a **repo-local** `user.name` and `user.email`. This machine's global
+git identity belongs to somebody else, and the first push was rejected outright -
+`Permission to mtotton1988/corkfolio.git denied to jacob-kalnins` - because Git Credential
+Manager had his GitHub credential cached. The remote is therefore written as
+`https://mtotton1988@github.com/...` with `credential.https://github.com.username` set
+locally, which tells GCM which account to use here and leaves his alone. Any other repo on
+this machine will hit the same wall and needs the same one-line fix.
 
 ## Use on iPhone
 
@@ -799,8 +825,6 @@ you do not own.
 
 ### Not yet tested
 
-- **iPhone install and offline on a real device.** The manifest and worker are conventional
-  and copied from a working app, but have never been through a home-screen install.
 - **A real device.** The screens have now been photographed at 320, 390 and 483 points
   wide: the funnel, a region page with its map, Wines, Windows, and the wine sheet.
   That found two things the DOM could not (the stat row, and the map labels colliding with
@@ -812,22 +836,18 @@ you do not own.
 
 ## Open items
 
-1. **No git repo.** Initialise, push to a public repo, enable Pages. Check `.gitignore` covers
-   `cellar.local.csv` before the first commit.
-2. **New regions get grey.** `REGION_COLOUR` has five entries and a fallback, so two regions
+1. **New regions get grey.** `REGION_COLOUR` has five entries and a fallback, so two regions
    the app has never met are the same colour as each other in the donut. The palette has
    room for about three more hues, not for thirty: blue, wine-red, rust, vine-green and
    straw gold are already spoken for, and a sixth and seventh that are genuinely
    distinguishable at the size of the smallest slice are the practical limit. Which three
    depends on what gets bought next.
-3. **Sync has never talked to real GitHub.** Everything up to the network boundary is
-   tested against a stub. The first connection is the test that matters.
-4. **Neither outbound URL is verified.** `CT_SEARCH` and `WS_FIND` are written from
+2. **Neither outbound URL is verified.** `CT_SEARCH` and `WS_FIND` are written from
    knowledge. CellarTracker answered an automated check with a bot wall, and Wine-Searcher
    with a press-and-hold challenge, so neither path could be tested from here - which is
    the same reason scraping either was rejected years ago. Tap both once on a real phone.
    If either lands somewhere unhelpful, that one constant is the fix.
-5. **The `Region` strings for everything outside France are unverified.** `SUBREGIONS` and
+3. **The `Region` strings for everything outside France are unverified.** `SUBREGIONS` and
    `ESTIMATED_SPANS` now carry Tuscany, Rioja, Douro, Mosel, Napa Valley and the rest,
    spelled the way the BBX catalogue writes them in a description tail; `REGION_COLOUR`
    still holds five, which is item 3. The cellar export's own `Region` column has only
@@ -835,7 +855,7 @@ you do not own.
    word. The reference-coverage
    report says so the first time a bottle arrives — an unrecognised region is exactly what
    it is built to notice.
-6. **The quiet greys are under 4.5:1.** Bottle counts in the donut legend measure 3.78:1;
+4. **The quiet greys are under 4.5:1.** Bottle counts in the donut legend measure 3.78:1;
    that is `ink(0.55)`, the app's standard secondary grey, used in ten places. The same grey
    on a history tile measures **3.51:1**, because the wine wash is darker than a card. The
    pronunciation line, which is `ink(0.45)`, measures **2.78:1** — the lowest piece of type
@@ -844,15 +864,15 @@ you do not own.
    is why it is here rather than done; a single adjustment to the grey scale fixes every
    instance. The chevron ending a legend row is `ink(0.3)` at 1.91:1, but that is an
    affordance on an already-labelled button rather than type.
-7. **Map labels collide with the interface.** The rule is that anything sitting over a map
+5. **Map labels collide with the interface.** The rule is that anything sitting over a map
    uses `PLATE`; the breadcrumb and the section eyebrows do not. Measuring all 17 Bordeaux
    labels against what covers them, "Dordogne" and "Margaux" sit directly under "BOTTLES BY
    SUB-REGION" and "Pomerol" under the breadcrumb, with nothing between them. `declutter()`
    stops labels colliding with each other and knows nothing about the interface on top. The
    map is also drawn behind the Wines tab, where labels surface in the gaps between cards.
    Two ways out: plate the eyebrow and the breadcrumb, or stop the map short of them.
-8. **Sub-region pages have no essay.** Only regions do. A natural extension.
-9. **`notes` is still write-nothing.** The shape is fixed, the importer reads it and the
+6. **Sub-region pages have no essay.** Only regions do. A natural extension.
+7. **`notes` is still write-nothing.** The shape is fixed, the importer reads it and the
    sync merges it, but no UI writes to it yet. A pinned drinking window is the one that
    would earn its keep first: it already beats BBR's, and it is the only kind of note that
    changes what the app tells you to pull.
