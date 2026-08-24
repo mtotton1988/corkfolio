@@ -15,38 +15,56 @@ See what you have, and learn about it.
 
 Which means the three things this README spent a week calling untested are now tested by
 being used: the manifest and the worker on a real device, sync against real GitHub, and the
-layout on a real phone. The last of those immediately found something the emulator had not
-- see *Two chips, no counts* below.
+layout on a real phone. The last of those immediately found something no emulator had shown
+- see *Two chips, no counts*.
 
-Since 23 August: the sub-region table was widened from France-and-Piedmont to the
-classic BBR range and measured against the whole BBX catalogue, which turned up a
-producer-inference bug and fixed it; the Windows tab says out loud when it cannot place
-a lot; and the donut legend's percentages were dark enough to read.
+### What 24 August added
 
-**The app was also looked at, for the first time.** Every check before 24 August was made
-against the DOM. The first screenshot found a layout bug in the first screen — see *The
-stat row that would not stay on one line* under *Traps* — which is roughly what you would
-expect from a build that had never been seen.
+A long day, and the list is long, so it is grouped rather than chronological. Each has its
+own section further down.
 
-**The donut counts bottles as of 24 August**, not cases, because a BBR case is 3, 6 or 12
-bottles. The stat row still counts cases. See *The ring is bottles*.
+**Deployment.** Git repo, public app repo, Pages, the private data repo, sync connected on
+two devices. The first push was rejected because another account's credential was cached on
+this machine - see *Deploy on GitHub Pages*.
 
-**The mark now carries the app's initials**, and the home-screen icon is the app's own
-rather than Memoire's. See *The mark, and the icon*.
+**Reference data.** The sub-region table went from 33 entries covering France and Piedmont
+to **192** covering the classic BBR range, measured against all 6,123 distinct wines in the
+BBX catalogue rather than the 56 in the cellar. That measurement found a producer-inference
+bug the narrow table had hidden: growers named after their village - Colin-Morey,
+Jobard-Morey - were being stripped out as Morey-St Denis, leaving the appellation standing
+as the producer. 0 of 6,123 now, down from 8. `ESTIMATED_SPANS` grew with it, because a
+vintage Port on the generic five-to-twenty years would have been badly wrong.
 
-**Estate pronunciations arrived on 24 August**, under the name on the wine sheet, matching
-what the appellations already had.
+**Home and consumed.** A bottle in one export and not the next has left bond, so it now
+moves into its own key with its price frozen instead of vanishing. It counts bottles rather
+than wines, because pulling six of twelve is how a cellar is actually drunk. Search finds it
+and puts it below every live hit. An import that would move more than a quarter of the
+cellar there stops and asks first.
 
-**Sync arrived on 24 August**, to a private GitHub repo, off by default. See *Sync*.
+**Two links out**, both to things a reference file cannot be: CellarTracker's community
+notes on each wine sheet, and Wine-Searcher's price for that bottle at the top right of it.
+Links rather than requests - the app still fetches nothing but its own files.
 
-**History arrived on 24 August**, and is now called *Home and consumed*. A bottle that was in one export and not the next has been
-pulled from bond for drinking, so it now moves into history with what it cost instead of
-disappearing. See *Where the drunk bottles go*.
+**Things measured rather than eyeballed.** The donut counts bottles, not cases, because a
+BBR case is 3, 6 or 12 and the ring is a proportion. The stat row is one line at any width,
+with the type sized by `clamp()`. The donut legend's percentages went from 2.46:1 to 4.70:1.
+The Wines tab
+gave a wine of screen back at 320 points, where the furniture had been 47% of the display,
+and nearly six at 390.
 
-**Two things were taken out on 24 August, by request.** The evening palette, along with the
-Appearance control in Settings: one set of colours is one set to get right. And the delivery
-charge, along with its field — there is no delivery charge to pay, so it was a question with
-no answer and a line on every price breakdown that always read zero.
+**The app was looked at, for the first time.** Every check before today was made against the
+DOM. The first screenshot found a layout bug in the first screen; the first real phone found
+another that no emulator had shown. Both are under *Traps*.
+
+**Smaller things.** Estate pronunciations under the name on 43 of 44 wine sheets. The mark
+carries the app's initials and the home-screen icon is the app's own rather than Memoire's.
+Tapping the mark goes home from anywhere. `windows.json` was missing from the worker's
+precache list, so a fresh install that went offline early lost its researched drinking
+windows.
+
+**Two things taken out, by request.** The evening palette and its Appearance control: one
+set of colours is one set to get right. And the delivery charge, which had no answer to
+give and put a line reading zero on every price breakdown.
 
 **To run it:**
 
@@ -58,22 +76,35 @@ Open `http://localhost:8731`. A file called `cellar.local.csv` sits beside `inde
 so the empty state offers **Load the export in this folder** — one tap and you have the
 real cellar. That file is gitignored and must never reach a public repo.
 
-**If the app looks stale after an edit, suspect the caches before the edit.** There are
-three stacked: the service worker, the browser HTTP cache, and whatever the page has
-already parsed. This cost real time twice. Unregister the worker and delete the caches:
+**If the app looks stale after an edit, suspect the plumbing before the edit.** Two
+different things have now impersonated a failed edit. First the caches - three stacked: the
+service worker, the browser HTTP cache, and whatever the page has already parsed. Then the
+local server dying: `python -m http.server` had quietly stopped, every fetch was returning
+**504**, and the page kept rendering from memory, which reads exactly like an edit that did
+not save. Check the server responds before you doubt the file, then unregister the worker
+and delete the caches:
 
 ```javascript
 navigator.serviceWorker.getRegistrations().then(r => r.forEach(x => x.unregister()));
 caches.keys().then(k => k.forEach(n => caches.delete(n)));
 ```
 
-**What is done:** the funnel, three tabs, the wine sheet with delivered prices, 44 estate
-notes, 27 vintage notes, 6 region essays, 6 researched maps, 5 researched drinking
-windows, 35 pronunciations, 192 sub-regions, the logo, the reference-coverage report.
+**What is done:** the funnel, three tabs, the wine sheet with delivered prices, home and
+consumed, sync, the two links out, 44 estate notes, 27 vintage notes, 6 region essays, 6
+researched maps, 5 researched drinking windows, 192 sub-regions, 35 appellation and 43
+estate pronunciations, the mark and the icon, the reference-coverage report.
 
-**What is open** is at the bottom of this file under *Open items*. The two that matter
-most: nothing has been tested on an actual iPhone, and neither outbound link URL has been
-verified.
+**What is open** is at the bottom of this file under *Open items* - seven of them, none
+blocking. The two worth doing first both need a phone rather than a keyboard: **tap the two
+outbound links**, because CellarTracker and Wine-Searcher both block automated checks so
+their URLs are written from knowledge and never tested; and **try Display Zoom on Standard**
+rather than Larger Text, which roughly doubles the wines on screen and beats anything left to
+do in code.
+
+**Where to pick up.** `notes` is the interesting one: the shape is fixed, the importer reads
+it, the sync merges it, and nothing writes to it. A drinking window pinned by hand is the
+first thing that would earn its keep, because it is the only kind of note that changes what
+the app tells you to pull.
 
 **Archived, one directory up, outside the deployed folder:**
 `corkfolio-v0-four-screens.html.bak` and `corkfolio-v0-README.md.bak` — the earlier
