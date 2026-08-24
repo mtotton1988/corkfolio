@@ -142,6 +142,16 @@ wrong — and nothing else.
 
 A funnel, three levels deep, on three tabs.
 
+**Tapping the mark goes home.** From anywhere - a sub-region, the Windows tab, a search, a
+sheet left open - the Corkfolio mark in the header returns you to the top of the funnel: the
+Cellar tab, the whole cellar, no readiness filter, no search, the in-bond side, nothing
+open. It resets all of it on purpose. Leaving a filter lit or a word in the search box would
+put you somewhere you did not ask to be, which is worse than not moving at all.
+
+The breadcrumb only ever walked one level up, and from the Windows tab or a search there was
+no way back at all. The mark stays an `h1` with a button inside it: a heading you can press
+is not a button, and a button inside a heading is both.
+
 **Cellar** is the funnel. The whole cellar, then one region, then one sub-region. Each
 level answers the same five questions about a smaller set of bottles — bottles, cases,
 value in bond, value at market, and the cost duty paid — and the way down is by tapping

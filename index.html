@@ -1804,10 +1804,24 @@ const WineSearcherMark = ({ height }) => {
   ]);
 };
 
-const Wordmark = () => h('h1', {
+/* The mark is the way home. Tapping it goes to the top of the funnel from
+   anywhere - which is what every app with a logo in its header has taught
+   people to expect, and this one had no equivalent: the breadcrumb only walks
+   one level up, and nothing at all returned you from the Windows tab or from
+   a search.
+
+   It stays an h1, because it is still the page's heading, with a button
+   inside it doing the work. A heading you can press is not a button; a button
+   inside a heading is both. */
+const Wordmark = ({ onHome }) => h('h1', {
+  style: { margin: 0, flex: 1, minWidth: 0 },
+}, h('button', {
+  onClick: onHome,
+  'aria-label': 'Corkfolio - back to the whole cellar',
   style: {
-    margin: 0, flex: 1, minWidth: 0,
     display: 'flex', alignItems: 'center', gap: 9,
+    border: 'none', background: 'transparent', padding: 0,
+    margin: 0, textAlign: 'left', font: 'inherit', color: 'inherit',
   },
 }, [
   h(Logo, { key: 'm', size: 40 }),
@@ -1819,7 +1833,7 @@ const Wordmark = () => h('h1', {
       letterSpacing: '0.005em', color: INK, lineHeight: 1,
     },
   }, 'Corkfolio'),
-]);
+]));
 
 const Stat = ({ k, v, tone }) => h('div', { style: sx.stat }, [
   h('div', { key: 'v', className: 'm-num', style: { ...sx.statV, color: tone || INK } }, v),
@@ -2693,6 +2707,17 @@ class App extends React.Component {
   /* =============================================================== sheets */
 
   closeSheet = () => this.setState({ sheet: null, sheetArg: null });
+
+  /* Everything back to the top: the Cellar tab, the whole cellar rather than
+     a region, no readiness filter, no search, the in-bond side, and any sheet
+     shut. Anything less than all of it leaves you somewhere you did not ask
+     to be - a filter still lit, or a search box still holding a word - which
+     is worse than not moving at all. */
+  goHome = () => this.setState({
+    tab: 'cellar', dRegion: null, dSub: null,
+    fState: null, fQuery: '', fWhere: 'bond',
+    sheet: null, sheetArg: null,
+  });
 
   sheet(title, kids) {
     return h('div', {
@@ -3909,7 +3934,7 @@ class App extends React.Component {
           })
         : null,
       h('div', { key: 'hd', style: sx.header }, [
-        h(Wordmark, { key: 't' }),
+        h(Wordmark, { key: 't', onHome: this.goHome }),
         h('button', {
           key: 'b', style: btn('plain'),
           onClick: () => this.setState({ sheet: 'settings' }),
