@@ -145,13 +145,30 @@ of gaps. Tapping a sub-region hands over to the Wines tab.
 **Wines** is the holdings themselves, carrying whatever region, sub-region and readiness
 you arrived with. Always ordered by how much drinking window is left, soonest first.
 
-Two chips at the top say which side of the bonded warehouse you are looking at: **In-bond**
-and **Home/Consumed**, each with its bottle count. They are a second axis rather than two
+One row of chips at the top. First **In-bond** and **Home/Consumed**, each with its bottle
+count, then the readiness chips, then the number of wines at the right-hand end. They are a second axis rather than two
 more readiness states - readiness is about a wine, this is about where the bottles are, and
 a bottle can be both At best and at home. One of the two is always active, defaulting to
 in-bond, because a row of chips with none selected reads as "no filter" and here there is
 no such state. Their dots are square where the maturity dots are round, so the two rows can
 be told apart without reading them.
+
+**The readiness chips carry no count on this tab**, and the tab has no heading of its own.
+Both went to give the list its screen back. On an iPhone with Display Zoom set to Larger
+Text the viewport is 320 points, and the furniture above the list came to 329 of the 693
+points on screen - 47%, leaving under four wines visible. Removing the "All Wines" heading
+(the tab bar already says Wines), folding the count into the chip row, and dropping the
+counts off six chips whose labels totalled 706 points against a 343-point row took that to
+210 points at 390, or 25%, and from 3.9 wines visible to 9.6.
+
+The heading comes back the moment you drill into a region, where it names the place and
+carries its pronunciation and is worth the room. The counts are still on the Cellar screen,
+where the numbers are the point rather than the filter.
+
+Merging the two chip rows into one, on its own, saved nothing: six labelled chips wrap to
+three lines however they are grouped once they need twice the width of the row. It is the
+labels that cost, not the containers - which is only obvious after measuring, and was
+predicted wrongly before.
 
 Switching sides clears the readiness filter: a count taken from one set says nothing about
 the other, and leaving "Closing" lit while the list changed underneath it was the confusing

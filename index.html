@@ -3537,8 +3537,20 @@ class App extends React.Component {
       counts.set(k, (counts.get(k) || 0) + l.bottles);
     }
     if (counts.size < 2) return null;
-    return h('div', { key: 'chips', style: sx.chipRow },
-      STATE_ORDER.filter(k => counts.has(k)).map(k => h('button', {
+    return h('div', { key: 'chips', style: sx.chipRow }, this.readinessChipList(lots));
+  }
+
+  /* The chips themselves, unwrapped, so the Wines tab can put them in a row
+     shared with the location pair while the Cellar tab keeps its own. */
+  readinessChipList(lots) {
+    const st = this.state;
+    const counts = new Map();
+    for (const l of lots) {
+      const k = this.lotState(l);
+      counts.set(k, (counts.get(k) || 0) + l.bottles);
+    }
+    if (counts.size < 2) return [];
+    return STATE_ORDER.filter(k => counts.has(k)).map(k => h('button', {
         key: k, style: chip(st.fState === k),
         onClick: () => this.setState({ fState: st.fState === k ? null : k }),
       }, [
@@ -3549,10 +3561,14 @@ class App extends React.Component {
             background: STATES[k].colour,
           },
         }),
+        /* No bottle count on these. Six labelled chips came to 706 points of
+           width against the 343 a phone row has, which wraps to three lines
+           however they are grouped - and three lines of filters above a list
+           of four visible wines is the wrong way round. The counts live on the
+           Cellar screen, where the numbers are the point; here the chip is a
+           filter, and the list underneath says how many. */
         STATES[k].name,
-        h('span', { key: 'n', className: 'm-num', style: { opacity: 0.6, marginLeft: 5 } },
-          String(counts.get(k))),
-      ])));
+      ]));
   }
 
   /* In-bond against Home/Consumed. Always one or the other, and always
@@ -3561,6 +3577,33 @@ class App extends React.Component {
      and here there is no such state. The dot is square rather than round, so
      the eye can tell this row's two chips from the four round maturity ones
      without reading them. */
+  /* The two location chips and the four readiness chips are ONE wrapping row,
+     not two stacked ones. At 320 points - which is what an iPhone reports with
+     Display Zoom set to Larger Text - two rows wrapped to three lines and the
+     furniture above the list came to 47% of the screen, leaving under four
+     wines visible. One row wraps to two lines and reads better besides: these
+     are all filters on the same list, and stacking them implied a hierarchy
+     that is not there. The count goes on the end of the same row rather than
+     taking a line of its own. */
+  filterChips(scoped, visible) {
+    return h('div', {
+      key: 'chips',
+      style: { ...sx.chipRow, alignItems: 'center' },
+    }, [
+      ...this.whereChips(scoped),
+      ...(this.state.fWhere === 'home' ? [] : this.readinessChipList(scoped)),
+      visible ? h('span', {
+        key: 'n',
+        style: {
+          fontSize: 10.5, letterSpacing: '0.12em', textTransform: 'uppercase',
+          color: ink(0.5), fontWeight: 600, marginLeft: 'auto', paddingLeft: 4,
+        },
+      }, visible.length === scoped.length
+        ? visible.length + (visible.length === 1 ? ' wine' : ' wines')
+        : visible.length + ' of ' + scoped.length) : null,
+    ]);
+  }
+
   whereChips(scoped) {
     const st = this.state;
     const bond = scoped.reduce((a, l) => a + l.bottles, 0);
@@ -3569,7 +3612,7 @@ class App extends React.Component {
       { k: 'bond', label: 'In-bond', n: bond, colour: ink(0.45) },
       { k: 'home', label: 'Home/Consumed', n: home, colour: 'var(--hist)' },
     ];
-    return h('div', { key: 'where', style: sx.chipRow }, opts.map(o => h('button', {
+    return opts.map(o => h('button', {
       key: o.k, style: chip(st.fWhere === o.k),
       /* Switching clears the readiness filter: a count taken from one set
          means nothing about the other, and leaving "Closing" lit while the
@@ -3586,7 +3629,7 @@ class App extends React.Component {
       o.label,
       h('span', { key: 'n', className: 'm-num', style: { opacity: 0.6, marginLeft: 5 } },
         String(o.n)),
-    ])));
+    ]));
   }
 
   /* The whole cellar's drinking windows, on their own. Deliberately not tied
@@ -3756,9 +3799,13 @@ class App extends React.Component {
     const crumb = this.breadcrumb();
     if (crumb) out.push(crumb);
 
-    out.push(this.placeHeading(st.dSub || st.dRegion || 'All Wines'));
+    /* No heading at the top level: the tab bar already says Wines, and at 320
+       points that line was 30 of the 47% of screen the furniture was eating.
+       Drilled into a region it stays, because there it names the place and
+       carries its pronunciation, which is worth the room. */
+    if (st.dSub || st.dRegion) out.push(this.placeHeading(st.dSub || st.dRegion));
 
-    out.push(this.whereChips(scoped));
+    out.push(this.filterChips(scoped, st.fWhere === 'home' ? null : visible));
 
     /* --- what has come home ------------------------------------------- */
     if (st.fWhere === 'home') {
@@ -3780,18 +3827,11 @@ class App extends React.Component {
     }
 
     /* --- what is still in bond ---------------------------------------- */
-    const chips = this.readinessChips(scoped);
-    if (chips) out.push(chips);
-
     if (!visible.length) {
       out.push(h('div', { key: 'none', style: sx.empty }, 'Nothing here matches that.'));
       return out;
     }
 
-    out.push(h(Eyebrow, { key: 'e-l' },
-      visible.length === scoped.length
-        ? visible.length + (visible.length === 1 ? ' wine' : ' wines')
-        : visible.length + ' of ' + scoped.length + ' wines'));
     out.push(...visible.slice()
       .sort(this.byClosingSoonest)
       .map(l => this.lotRow(l)));
