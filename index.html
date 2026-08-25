@@ -197,6 +197,9 @@ const ink = a => 'rgba(var(--ink-rgb),' + a + ')';
 
 const PRE_UPGRADE_KEY = 'corkfolio.preupgrade.v1';
 const HISTORY_KEY = 'corkfolio.history.v1';
+/* Which home export was last read. Provenance only - the entries
+   themselves live in history, and this is what Settings reports. */
+const HOME_SOURCE_KEY = 'corkfolio.home-source.v1';
 const DELETED_KEY = 'corkfolio.history-deleted.v1';
 const SYNC_KEY = 'corkfolio.sync.v1';
 
@@ -2157,6 +2160,8 @@ class App extends React.Component {
     sheet: null, sheetArg: null,
     toastMsg: null, busy: null,
     localFile: false,        /* a cellar.local.csv sits next to index.html */
+    homeFile: false,         /* and a home.local.csv beside it */
+    homeSource: null,        /* which home export was last read */
     history: [],             /* out of bond: at home or consumed, oldest first */
     syncCfg: null,           /* { token, repo } once sync is set up */
     syncStatus: 'off',       /* off | syncing | ok | error */
@@ -2169,6 +2174,7 @@ class App extends React.Component {
     const stored = this.load('corkfolio.lots.v1');
     const notes = this.load('corkfolio.notes.v1') || {};
     const history = withIds(this.load(HISTORY_KEY) || []);
+    const homeSource = this.load(HOME_SOURCE_KEY);
     const syncCfg = this.load(SYNC_KEY);
 
     /* Written once, never overwritten, so the first run of a new build always
@@ -2177,9 +2183,10 @@ class App extends React.Component {
       this.save(PRE_UPGRADE_KEY, { at: Date.now(), lots: stored, notes });
     }
 
-    this.setState({ notes, history, lots: stored || null, syncCfg: syncCfg || null });
+    this.setState({ notes, history, homeSource, lots: stored || null, syncCfg: syncCfg || null });
     this.loadReference();
     this.probeLocalFile();
+    this.probeHomeFile();
     /* A sync on open, so a phone picked up after a laptop import is already
        right rather than right after you remember to ask. Delayed so it never
        competes with the first paint. */
@@ -2231,6 +2238,35 @@ class App extends React.Component {
       this.setState({ localFile: true });
     } catch (e) { /* absent is the normal case */ }
   }
+
+  async probeHomeFile() {
+    try {
+      const res = await fetch('./home.local.csv');
+      if (!res.ok) return;
+      const text = await res.text();
+      if (!/Description/.test(text)) return;
+      this._homeText = text;
+      this.setState({ homeFile: true });
+    } catch (e) { /* absent is the normal case */ }
+  }
+
+  loadHomeFile = async () => {
+    if (!this._homeText) return;
+    this.setState({ busy: 'Reading the home cellar...' });
+    await new Promise(r => setTimeout(r, 20));
+    this.ingestHome(this._homeText, 'home.local.csv');
+  };
+
+  importHome = async (file) => {
+    if (!file) return;
+    this.setState({ busy: 'Reading the home cellar...' });
+    try {
+      this.ingestHome(await this.readFile(file), file.name);
+    } catch (e) {
+      this.toast('That file ' + e.message + '.');
+      this.setState({ busy: null });
+    }
+  };
 
   loadLocalFile = async () => {
     if (!this._localText) return;
@@ -2344,6 +2380,95 @@ class App extends React.Component {
     this.toast('Imported ' + bits.join(' · '));
   }
 
+
+  /* --------------------------------------------------- the home cellar export
+
+     A second export, "my-home-cellar-view", listing what is at home rather
+     than in bond. It is the same schema as the bond export and has the same
+     Current Status of "In bond" on every row - BBR does not distinguish, so
+     the FILE is the signal and no column in it is.
+
+     This is a better source than the inference it sits beside. Diffing two
+     bond exports can only say a bottle went missing between two dates; the
+     home export says plainly what is at home, including everything that left
+     before the app existed. The eleven wines in the first one are exactly the
+     lots that were unaccounted for on day one.
+
+     Two rules make it safe to import as often as you like:
+
+     REPLACED, NOT ACCUMULATED. Home-export entries carry origin 'home' and
+     every import drops the previous set before adding the new one. The file is
+     the whole truth about what is at home, the same way the bond export is the
+     whole truth about what is in bond, so it is a snapshot and not a log. Two
+     imports of the same file leave exactly one set of entries.
+
+     NEVER TOUCHES `lots`. Nothing here can reach the totals, the donut, the
+     timeline or the readiness states, because those all read `lots` and this
+     writes to `history`. Structural rather than a rule to remember.
+
+     The date is null and stays null. The file says a bottle is at home; it
+     does not say when it left. whenLeft() already renders that as "at some
+     point", which is the honest answer and better than a made-up date that
+     would also change every time the file was re-imported.
+  ------------------------------------------------------------------------- */
+
+  ingestHome(text, sourceName) {
+    const { lots, problems } = parseCellarCsv(text);
+    if (!lots.length) {
+      this.toast(problems[0] || 'No wines found in that file.');
+      this.setState({ busy: null });
+      return;
+    }
+
+    /* A tombstoned entry stays gone. Someone removed it by hand for a reason,
+       and a re-import quietly resurrecting it would make the removal feel
+       broken - the same reason deletes travel between devices at all. */
+    const dead = this.loadDeleted();
+    const inBond = new Set(this.lots().map(l => l.key));
+    const fresh = [];
+    let suppressed = 0;
+    for (const lot of lots) {
+      /* "The last of them" only if none of that lot is still in bond. Twelve
+         bought and six pulled home share one lot key - the price is the same -
+         so the same key can legitimately appear in both files, and calling
+         those six the last of them would be wrong. */
+      const e = this.historyEvent(lot, lot.bottles, !inBond.has(lot.key), null, 'home');
+      if (dead[eventId(e)]) { suppressed++; continue; }
+      fresh.push(e);
+    }
+
+    const kept = this.state.history.filter(e => e.origin !== 'home');
+    const replaced = this.state.history.length - kept.length;
+
+    /* A lot can honestly be in both files: twelve bottles bought, six pulled
+       home, six still in bond, one price and therefore one lot key. That is
+       not a conflict. What IS worth saying is when the same lot has also been
+       inferred as withdrawn from a bond diff, because then the same bottles
+       may be counted twice - once from the guess and once from the file. */
+    const homeKeys = new Set(fresh.map(e => e.key));
+    const alsoInferred = kept.filter(e => homeKeys.has(e.key)).length;
+
+    const history = kept.concat(fresh);
+    this.setState({ history, busy: null, sheet: null });
+    this.save(HISTORY_KEY, history);
+    this.save(HOME_SOURCE_KEY, { at: Date.now(), source: sourceName, wines: fresh.length });
+    this.queueSync();
+
+    const bottles = fresh.reduce((a, e) => a + e.bottles, 0);
+    const bits = [fresh.length + (fresh.length === 1 ? ' wine' : ' wines') + ', ' + bottles + ' bottles at home'];
+    if (replaced) bits.push('replacing ' + replaced);
+    if (suppressed) bits.push(suppressed + ' left removed');
+    this.toast('Home cellar: ' + bits.join(' · '));
+
+    if (alsoInferred) {
+      /* Said separately and after, because it is a thing to look at rather
+         than a result. */
+      setTimeout(() => this.toast(
+        alsoInferred + (alsoInferred === 1 ? ' wine' : ' wines') +
+        ' also has an entry from a bond diff. Check Home and consumed for a double count.'), 4200);
+    }
+  }
+
   download(name, text, mime) {
     const blob = new Blob([text], { type: (mime || 'text/plain') + ';charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -2370,11 +2495,15 @@ class App extends React.Component {
      The prices freeze here on purpose: a bottle you have drunk cost what it
      cost, and a market value that kept moving afterwards would be a number
      about a wine you no longer own. */
-  historyEvent(lot, bottles, full, at) {
+  historyEvent(lot, bottles, full, at, origin) {
     const d = deliveredPerBottle(lot, bottles);
     const win = this.win(lot);
     return {
       at, bottles, full, key: lot.key,
+      /* Absent means inferred from a bond diff, which is what every entry
+         written before the home export existed was. Additive, so those stay
+         valid without being touched. */
+      ...(origin ? { origin } : {}),
       description: lot.description, vintage: lot.vintage,
       region: lot.region, subRegion: lot.subRegion, producer: lot.producer,
       volumeCl: lot.volumeCl, caseSize: lot.caseSize,
@@ -2566,7 +2695,8 @@ class App extends React.Component {
           h('span', { key: 'a' }, e.subRegion || e.region),
           h('span', { key: 'b', className: 'm-num' },
             e.bottles + (e.bottles === 1 ? ' bottle' : ' bottles')),
-          h('span', { key: 'c' }, 'left ' + whenLeft(e.at)),
+          h('span', { key: 'c' },
+          e.origin === 'home' ? 'from the home export' : 'left ' + whenLeft(e.at)),
         ]),
       ]),
       h('div', { key: 'r', style: sx.rowRight }, [
@@ -2924,15 +3054,44 @@ class App extends React.Component {
      market value, because the wine is drunk and a mark on it would be a
      number about something you no longer have. */
   renderHistorySheet() {
-    const h_ = this.state.history;
-    const t = this.historyTotals();
-    const kids = [];
+    const st = this.state;
+    /* Opened from a region page, the sheet shows that region. The line that
+       opened it counted a scope, and a sheet that then showed the whole cellar
+       would contradict the number just tapped.
 
+       The index into the FULL array is carried through the filter, because
+       removing an entry by hand splices the stored list and a position in a
+       filtered view would point at the wrong wine. */
+    const scoped = st.dRegion || st.dSub;
+    const rows = st.history
+      .map((e, i) => ({ e, i }))
+      .filter(({ e }) => {
+        if (st.dRegion && e.region !== st.dRegion) return false;
+        if (st.dSub && (e.subRegion || 'Not recognised') !== st.dSub) return false;
+        return true;
+      });
+    const h_ = rows.map(r => r.e);
+    const t = {
+      bottles: h_.reduce((a, e) => a + e.bottles, 0),
+      wines: new Set(h_.map(e => e.key)).size,
+      paid: h_.reduce((a, e) => a + (e.paidPerBottle || 0) * e.bottles, 0),
+      delivered: h_.reduce((a, e) => a + (e.deliveredPerBottle || 0) * e.bottles, 0),
+    };
+    const kids = [];
+    if (scoped) {
+      kids.push(h('div', { key: 'scope', style: sx.note },
+        'Showing ' + (st.dSub || st.dRegion) + ' only. The whole cellar is behind the same ' +
+        'line on the overview.'));
+    }
+
+    const fromHome = h_.filter(e => e.origin === 'home').length;
     kids.push(h('p', { key: 'i', style: sx.prose },
-      'Bottles that were in one export and not the next. Leaving bond means they came home, ' +
-      'so they are kept here with what they cost rather than dropped - whether they are in a ' +
-      'rack waiting or already drunk. Nothing here counts towards any total in the app, ' +
-      'because every total in the app is about what is still in bond.'));
+      'Bottles that are out of bond - in a rack waiting, or already drunk. Nothing here counts ' +
+      'towards any total in the app, because every total in the app is about what is still in ' +
+      'bond.' + (fromHome
+        ? ' Most of these come from the home cellar export, which says plainly what is at home. ' +
+          'The rest were noticed going missing between two bond exports.'
+        : ' They were noticed going missing between two bond exports.')));
 
     kids.push(h('div', { key: 'nums', style: sx.statRow }, [
       h(Stat, { key: 'a', k: 'Bottles', v: String(t.bottles) }),
@@ -2946,7 +3105,7 @@ class App extends React.Component {
     /* Newest first for reading, but the index has to point back into the
        stored order, which is oldest first - so it is carried, not recomputed
        from the reversed list. */
-    const ordered = h_.map((e, i) => ({ e, i })).reverse();
+    const ordered = rows.slice().reverse();
     kids.push(...ordered.map(({ e, i }) => h('div', {
       key: e.key + '-' + e.at + '-' + i,
       style: { ...sx.panel, gap: 4 },
@@ -2956,7 +3115,8 @@ class App extends React.Component {
         h('span', { key: 'a' }, e.subRegion || e.region),
         h('span', { key: 'b', className: 'm-num' },
           e.bottles + (e.bottles === 1 ? ' bottle' : ' bottles') + (e.full ? ', the last of them' : '')),
-        h('span', { key: 'c' }, 'left ' + whenLeft(e.at)),
+        h('span', { key: 'c' },
+          e.origin === 'home' ? 'from the home export' : 'left ' + whenLeft(e.at)),
       ]),
       h('div', { key: 'p', style: { ...sx.rowMeta, marginTop: 2 } }, [
         h('span', { key: 'a', className: 'm-num' },
@@ -3000,6 +3160,32 @@ class App extends React.Component {
           'In that export: ' + st.lots.problems.join('; ')));
       }
     }
+
+    /* Its own section rather than another button under "The cellar", because
+       the two files answer different questions and only one of them feeds the
+       totals. Putting them together invited exactly the mistake of importing
+       the home export as the cellar. */
+    kids.push(h(Eyebrow, { key: 'e-home' }, 'The home cellar'));
+    if (st.homeFile) {
+      kids.push(h('button', {
+        key: 'hloc', style: btn('plain'), onClick: this.loadHomeFile,
+      }, 'Load the home export in this folder'));
+    }
+    kids.push(h('label', { key: 'himp', style: { ...btn('plain'), textAlign: 'center' } }, [
+      st.homeSource ? 'Re-import a home cellar export' : 'Import a home cellar export',
+      h('input', {
+        key: 'i', type: 'file', accept: '.csv,text/csv', style: { display: 'none' },
+        onChange: e => { const f = e.target.files[0]; e.target.value = ''; this.importHome(f); },
+      }),
+    ]));
+    kids.push(h('div', { key: 'hn', style: sx.note },
+      st.homeSource
+        ? 'Last read from ' + st.homeSource.source + ', ' + st.homeSource.wines +
+          (st.homeSource.wines === 1 ? ' wine' : ' wines') +
+          '. A re-import replaces those entries rather than adding to them, so importing the ' +
+          'same file twice changes nothing. It never touches the totals.'
+        : 'The “my-home-cellar-view” export lists what is at home rather than in bond. It goes ' +
+          'straight to Home and consumed and counts towards no total in the app.'));
 
     const cov = this.coverage();
     if (cov.ready && lots.length) {
@@ -3801,15 +3987,21 @@ class App extends React.Component {
     /* History belongs here rather than buried in Settings: this is the screen
        showing what the cellar is worth, and "what happened to that case" is a
        question you ask while looking at a total it is deliberately left out
-       of. Whole-cellar only, and only once there is something to show - an
-       empty line saying nothing has been drunk is clutter on every screen for
-       the sake of one day. */
-    const ht = this.historyTotals();
-    if (!st.dRegion && ht.bottles) {
+       of.
+
+       Scoped to wherever you are in the funnel, not whole-cellar. It was
+       whole-cellar while history was nearly empty and the difference did not
+       show; the home cellar export filled it, and a Rhone page saying nothing
+       about the thirty Rhone bottles at home was simply wrong. Still only
+       drawn when there is something to say, so it costs nothing on a region
+       with none. */
+    const scopedHist = this.scopedHistory();
+    const scopedBottles = scopedHist.reduce((a, e) => a + e.bottles, 0);
+    if (scopedBottles) {
       out.push(h('button', {
         key: 'hist', style: { ...btn('plain'), alignSelf: 'flex-start', flexShrink: 0 },
         onClick: () => this.setState({ sheet: 'history' }),
-      }, ht.bottles + (ht.bottles === 1 ? ' bottle' : ' bottles') + ' at home or consumed'));
+      }, scopedBottles + (scopedBottles === 1 ? ' bottle' : ' bottles') + ' at home or consumed'));
     }
     return out;
   }

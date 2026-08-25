@@ -29,7 +29,7 @@
    Editing index.html alone needs no bump: the page is fetched network-first.
 ============================================================================ */
 
-const CACHE = 'corkfolio-v7';
+const CACHE = 'corkfolio-v8';
 
 const PRECACHE = [
   './',
