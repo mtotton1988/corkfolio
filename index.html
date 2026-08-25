@@ -2161,7 +2161,8 @@ class App extends React.Component {
     regionNotes: null,        /* region prose from regions.json */
     saying: null,             /* how to pronounce a place, from regions.json */
     refError: null,
-    tab: 'cellar',           /* cellar | windows */
+    tab: 'cellar',
+    mode: 'bond',            /* bond | home - which side of the cellar the funnel is over */           /* cellar | windows */
     /* Where you are in the funnel. Null and null is the whole cellar. */
     dRegion: null, dSub: null,
     fState: null, fQuery: '',
@@ -4088,39 +4089,147 @@ class App extends React.Component {
     ]);
   }
 
+
+  /* ------------------------------------------------------ consumption mode
+
+     The same funnel, over what has left bond instead of what is still in it.
+     A donut of what you have drunk answers a different question from a donut
+     of what you hold - not "where is my money" but "what do I actually reach
+     for" - and the two are worth comparing side by side, which is why it is a
+     toggle under the ring rather than a fourth tab.
+
+     What changes in consumption mode, and why:
+
+     THE NUMBERS ARE FROZEN. Bottles, wines, what was paid, what it cost
+     delivered. No "at market" and no "duty paid", because both are questions
+     about a decision still to be made and there is no decision left here.
+
+     NO READINESS CHIPS. A bottle that has gone is not closing or at best. The
+     window it had is on its own page; as a filter across consumption it would
+     mean nothing.
+
+     NO "IN YOUR CELLAR" OR "GAPS". Both are about the live holding - what it
+     covers, what to buy next. The region essay stays, because a region is
+     what it is whether you own any or not.
+
+     The drill works identically, because history entries carry the region and
+     sub-region they had when they left.
+  ------------------------------------------------------------------------- */
+
+  homeMetrics(entries) {
+    let bottles = 0, paid = 0, delivered = 0;
+    for (const e of entries) {
+      bottles += e.bottles;
+      paid += (e.paidPerBottle || 0) * e.bottles;
+      delivered += (e.deliveredPerBottle || 0) * e.bottles;
+    }
+    return { bottles, wines: new Set(entries.map(e => e.key)).size, paid, delivered };
+  }
+
+  homeMetricStrip(m) {
+    return [
+      h('div', { key: 'stats', style: sx.statRow }, [
+        h(Stat, { key: 'a', k: 'Bottles', v: String(m.bottles) }),
+        h(Stat, { key: 'b', k: 'Wines', v: String(m.wines) }),
+        h(Stat, { key: 'c', k: 'Paid', v: money0(m.paid) }),
+        h(Stat, { key: 'd', k: 'Delivered', v: money0(m.delivered) }),
+      ]),
+    ];
+  }
+
+  /* Same shape as slicesBelow, over entries rather than lots, so the Donut
+     needs no idea which it is being handed. */
+  homeSlicesBelow(entries) {
+    const st = this.state;
+    const key = st.dRegion ? (e => e.subRegion || 'Not recognised') : (e => e.region);
+    const groups = new Map();
+    for (const e of entries) {
+      const k = key(e);
+      const g = groups.get(k) || { key: k, bottles: 0, region: e.region };
+      g.bottles += e.bottles;
+      groups.set(k, g);
+    }
+    const arr = [...groups.values()].sort((a, b) => b.bottles - a.bottles);
+    return arr.map((g, i) => ({
+      ...g,
+      colour: st.dRegion ? regionColour(g.region) : regionColour(g.key),
+      alpha: st.dRegion ? Math.max(0.3, 1 - i * 0.13) : 1,
+    }));
+  }
+
+  /* The toggle. Only drawn once something has actually left bond - before
+     that it is a control with one usable position, which is furniture. */
+  modeToggle() {
+    const st = this.state;
+    if (!st.history.length) return null;
+    const opts = [['bond', 'In bond'], ['home', 'At home']];
+    return h('div', {
+      key: 'mode',
+      style: {
+        flexShrink: 0, display: 'flex', gap: 3, background: ink(0.06),
+        borderRadius: 9, padding: 3, alignSelf: 'flex-start',
+      },
+    }, opts.map(([k, label]) => h('button', {
+      key: k,
+      style: {
+        border: 'none', borderRadius: 7, padding: '7px 15px',
+        background: st.mode === k ? CARD : 'transparent',
+        color: st.mode === k ? INK : ink(0.55),
+        fontSize: 12.5, fontWeight: st.mode === k ? 600 : 500,
+        boxShadow: st.mode === k ? 'var(--shadow-soft)' : 'none',
+      },
+      /* The drill is cleared on the way across. A region with bottles in bond
+         may have none at home, and landing on an empty page having tapped a
+         segment that was there a moment ago reads as a bug. */
+      onClick: () => this.setState({ mode: k, dRegion: null, dSub: null, fState: null }),
+    }, label)));
+  }
+
   renderFunnelPage() {
     const st = this.state;
     const out = [];
+    const home = st.mode === 'home';
     const scoped = this.scopeLots();
     const visible = this.visibleLots();
+    const entries = this.scopedHistory();
     const crumb = this.breadcrumb();
     if (crumb) out.push(crumb);
 
-    out.push(this.placeHeading(st.dSub || st.dRegion || 'Cellar Overview'));
+    out.push(this.placeHeading(st.dSub || st.dRegion ||
+      (home ? 'At Home and Consumed' : 'Cellar Overview')));
 
     /* The numbers and the donut answer to the readiness chips, not just to the
        drill level. With no list on this tab the chips would otherwise do
        nothing visible; this way "Closing" redraws the split as the shape of
        what is actually running out. */
-    out.push(...this.metricStrip(this.metrics(visible)));
+    out.push(...(home
+      ? this.homeMetricStrip(this.homeMetrics(entries))
+      : this.metricStrip(this.metrics(visible))));
 
     if (!st.dSub) {
-      const slices = this.slicesBelow(visible);
+      const slices = home ? this.homeSlicesBelow(entries) : this.slicesBelow(visible);
       const totalBottles = slices.reduce((a, s) => a + s.bottles, 0);
       if (slices.length > 1) {
         out.push(h(Eyebrow, { key: 'e-d' },
-          st.dRegion ? 'Bottles by sub-region' : 'Bottles by region'));
+          (home ? 'Drunk by ' : 'Bottles by ') + (st.dRegion ? 'sub-region' : 'region')));
         out.push(h(Donut, {
           key: 'donut', slices, total: totalBottles,
           centreTop: String(totalBottles), centreBottom: 'bottles',
           /* A region opens another donut. A sub-region has no level below it
              but the bottles themselves, so it hands over to the Wines tab -
-             that is the bottom of the funnel. */
+             that is the bottom of the funnel. In consumption mode there is no
+             live lot to hand over to, so it stays and lists what went. */
           onPick: k => st.dRegion
-            ? this.setState({ dSub: k, tab: 'wines' })
+            ? this.setState(home ? { dSub: k } : { dSub: k, tab: 'wines' })
             : this.setState({ dRegion: k }),
         }));
+      } else if (home && !slices.length) {
+        out.push(h('div', { key: 'nohome', style: sx.empty },
+          'Nothing from here has left bond yet.'));
       }
+      /* Under the ring, as the way to compare the two shapes. */
+      const tog = this.modeToggle();
+      if (tog) out.push(tog);
     }
 
     /* The region essay, under the donut. Only at region level: the overview
@@ -4142,15 +4251,18 @@ class App extends React.Component {
       }
 
       /* What you have here, and what you have not. Both computed from the
-         holdings, so neither can go stale the day a case arrives. */
-      const summary = this.cellarSummary(st.dRegion, scoped);
+         holdings, so neither can go stale the day a case arrives - and both
+         are about the live holding, so neither belongs in consumption mode.
+         The essay above does, because a region is what it is whether you own
+         any of it or not. */
+      const summary = home ? [] : this.cellarSummary(st.dRegion, scoped);
       if (summary.length) {
         out.push(h(Eyebrow, { key: 'e-mine' }, 'In your cellar'));
         out.push(h('div', { key: 'mine', style: { ...sx.card, background: PLATE } },
           summary.map((line, i) => h('p', { key: i, style: sx.prose }, line))));
       }
 
-      const gaps = this.cellarGaps(st.dRegion, scoped, note);
+      const gaps = home ? [] : this.cellarGaps(st.dRegion, scoped, note);
       if (gaps.length) {
         out.push(h(Eyebrow, { key: 'e-gaps' }, 'Gaps'));
         out.push(h('div', {
@@ -4169,7 +4281,20 @@ class App extends React.Component {
       }
     }
 
-    out.push(this.readinessChips(scoped));
+    /* No readiness chips over consumption: a bottle that has gone is not
+       closing or at best, and as a filter it would mean nothing. */
+    if (!home) out.push(this.readinessChips(scoped));
+
+    if (home) {
+      const bottles = entries.reduce((a, e) => a + e.bottles, 0);
+      if (bottles) {
+        out.push(h('button', {
+          key: 'see', style: { ...btn('plain'), alignSelf: 'flex-start', flexShrink: 0 },
+          onClick: () => this.setState({ sheet: 'history' }),
+        }, 'See the ' + bottles + (bottles === 1 ? ' bottle' : ' bottles')));
+      }
+      return out;
+    }
 
     if (!visible.length) {
       out.push(h('div', { key: 'none', style: sx.empty }, 'Nothing here matches that.'));
@@ -4181,25 +4306,11 @@ class App extends React.Component {
       onClick: () => this.setState({ tab: 'wines' }),
     }, 'See the ' + visible.length + (visible.length === 1 ? ' wine' : ' wines')));
 
-    /* History belongs here rather than buried in Settings: this is the screen
-       showing what the cellar is worth, and "what happened to that case" is a
-       question you ask while looking at a total it is deliberately left out
-       of.
-
-       Scoped to wherever you are in the funnel, not whole-cellar. It was
-       whole-cellar while history was nearly empty and the difference did not
-       show; the home cellar export filled it, and a Rhone page saying nothing
-       about the thirty Rhone bottles at home was simply wrong. Still only
-       drawn when there is something to say, so it costs nothing on a region
-       with none. */
-    const scopedHist = this.scopedHistory();
-    const scopedBottles = scopedHist.reduce((a, e) => a + e.bottles, 0);
-    if (scopedBottles) {
-      out.push(h('button', {
-        key: 'hist', style: { ...btn('plain'), alignSelf: 'flex-start', flexShrink: 0 },
-        onClick: () => this.setState({ sheet: 'history' }),
-      }, scopedBottles + (scopedBottles === 1 ? ' bottle' : ' bottles') + ' at home or consumed'));
-    }
+    /* The standalone "N bottles at home or consumed" line used to sit here.
+       The toggle under the ring does the same job and does it better: it says
+       there is something at home, gives the number in the stat row, and shows
+       the shape rather than only a count. Two entry points to one thing was
+       one too many. */
     return out;
   }
 
