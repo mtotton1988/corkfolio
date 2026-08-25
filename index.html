@@ -4162,7 +4162,12 @@ class App extends React.Component {
   modeToggle() {
     const st = this.state;
     if (!st.history.length) return null;
-    const opts = [['bond', 'In bond'], ['home', 'At home']];
+    /* "Consumed" rather than "At home": paired against "In bond" it reads as
+       the other end of a bottle's life, which is what the mode is about. The
+       sheet it opens is still called Home and consumed, because that bucket
+       honestly covers both - the export says a bottle left bond and says
+       nothing about whether it has been drunk. */
+    const opts = [['bond', 'In bond'], ['home', 'Consumed']];
     return h('div', {
       key: 'mode',
       style: {
