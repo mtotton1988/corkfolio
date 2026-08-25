@@ -630,6 +630,11 @@ const ESTIMATED_SPANS = {
 const COMBINING = new RegExp('[' + String.fromCharCode(768) + '-' +
                              String.fromCharCode(879) + ']', 'g');
 const BOM = String.fromCharCode(65279);
+/* A blank line inside a confirm dialog. Built from char codes for the same
+   reason COMBINING and BOM are: a literal escape in this source has been
+   mangled on the way in more than once. */
+const BREAK = String.fromCharCode(10) + String.fromCharCode(10);
+
 const stripBom = s => (s && s.charAt(0) === BOM) ? s.slice(1) : s;
 
 const fold = s => (s || '').toLowerCase()
@@ -990,12 +995,19 @@ function withIds(history) {
 }
 
 function readPayload(p) {
-  if (!p || typeof p !== 'object') return { lots: null, notes: {}, history: [], deleted: {} };
+  if (!p || typeof p !== 'object') {
+    return { lots: null, notes: {}, history: [], deleted: {}, homeSource: null };
+  }
   return {
     lots: (p.lots && p.lots.rows) ? p.lots : null,
     notes: (p.notes && typeof p.notes === 'object') ? p.notes : {},
     history: withIds(Array.isArray(p.history) ? p.history : []),
     deleted: (p.deleted && typeof p.deleted === 'object') ? p.deleted : {},
+    /* Which home cellar export seeded the history, so every device knows the
+       seeding is done and none of them offers to do it again. Absent on a
+       payload written before this existed, which reads as never seeded - and
+       that is correct, because it had not been. */
+    homeSource: (p.homeSource && typeof p.homeSource === 'object') ? p.homeSource : null,
   };
 }
 
@@ -1008,13 +1020,14 @@ function sortedKeys(map) {
   return out;
 }
 
-function writePayload(lots, notes, history, deleted) {
+function writePayload(lots, notes, history, deleted, homeSource) {
   return JSON.stringify({
     v: 1,
     lots: lots || null,
     notes: sortedKeys(notes),
-    history: [...history].sort((a, b) => (a.at - b.at) || (eventId(a) < eventId(b) ? -1 : 1)),
+    history: [...history].sort((a, b) => ((a.at || 0) - (b.at || 0)) || (eventId(a) < eventId(b) ? -1 : 1)),
     deleted: sortedKeys(deleted),
+    homeSource: homeSource || null,
   });
 }
 
@@ -2413,6 +2426,27 @@ class App extends React.Component {
   ------------------------------------------------------------------------- */
 
   ingestHome(text, sourceName) {
+    /* Seeding is a one-off. Everything after it arrives on its own: a bottle
+       in one bond export and not the next moves here automatically. So a
+       second home import is almost always a mistake, and it is asked about
+       rather than done - naming the file that seeded it, because "are you
+       sure" without the detail is worse than no question at all. */
+    const seeded = this.state.homeSource;
+    if (seeded) {
+      const ok = window.confirm(
+        'The home cellar was already seeded from ' + seeded.source + ' on ' +
+        whenLeft(seeded.at) + ', with ' + seeded.wines +
+        (seeded.wines === 1 ? ' wine' : ' wines') + '.' + BREAK +
+        'You should not need to do this again: from then on, a bottle that is in one BBR ' +
+        'export and not the next moves to home and consumed on its own.' + BREAK +
+        'Importing again replaces those seeded entries. Anything that arrived ' +
+        'automatically since is untouched.');
+      if (!ok) {
+        this.setState({ busy: null });
+        this.toast('Left alone. Nothing changed.');
+        return;
+      }
+    }
     const { lots, problems } = parseCellarCsv(text);
     if (!lots.length) {
       this.toast(problems[0] || 'No wines found in that file.');
@@ -2449,9 +2483,13 @@ class App extends React.Component {
     const alsoInferred = kept.filter(e => homeKeys.has(e.key)).length;
 
     const history = kept.concat(fresh);
-    this.setState({ history, busy: null, sheet: null });
+    /* Into state as well as storage. It was only written to storage, so the
+       guard above and the label in Settings both stayed asleep until the next
+       reload - the app knew it had been seeded and could not say so. */
+    const homeSource = { at: Date.now(), source: sourceName, wines: fresh.length };
+    this.setState({ history, homeSource, busy: null, sheet: null });
     this.save(HISTORY_KEY, history);
-    this.save(HOME_SOURCE_KEY, { at: Date.now(), source: sourceName, wines: fresh.length });
+    this.save(HOME_SOURCE_KEY, homeSource);
     this.queueSync();
 
     const bottles = fresh.reduce((a, e) => a + e.bottles, 0);
@@ -2683,7 +2721,7 @@ class App extends React.Component {
   historyRow(e, i) {
     return h('button', {
       key: 'hist-' + e.key + '-' + e.at + '-' + i, style: sx.rowHistory,
-      onClick: () => this.setState({ sheet: 'history' }),
+      onClick: () => this.setState({ sheet: 'histwine', sheetArg: i }),
     }, [
       h('div', {
         key: 's',
@@ -2757,9 +2795,13 @@ class App extends React.Component {
         const lots = mergeLots(this.state.lots, remote.lots);
         const notes = mergeNotes(this.state.notes, remote.notes);
         const history = mergeHistory(this.state.history, remote.history, deleted);
-        const next = writePayload(lots, notes, history, deleted);
+        /* Newest seeding wins, the same rule as lots: it is a fact about which
+           file was read, not something two devices can each half-know. */
+        const mine = this.state.homeSource, theirs = remote.homeSource;
+        const homeSource = ((theirs && theirs.at || 0) > (mine && mine.at || 0)) ? theirs : (mine || theirs || null);
+        const next = writePayload(lots, notes, history, deleted, homeSource);
 
-        if (next !== writePayload(remote.lots, remote.notes, remote.history, remote.deleted)) {
+        if (next !== writePayload(remote.lots, remote.notes, remote.history, remote.deleted, remote.homeSource)) {
           const res = await this.ghFetch(cfg, 'PUT', {
             message: 'Sync from Corkfolio',
             content: this.b64e(next),
@@ -2773,8 +2815,9 @@ class App extends React.Component {
         this.save('corkfolio.notes.v1', notes);
         this.save(HISTORY_KEY, history);
         this.save(DELETED_KEY, deleted);
+        if (homeSource) this.save(HOME_SOURCE_KEY, homeSource);
         this.setState({
-          lots: lots || null, notes, history,
+          lots: lots || null, notes, history, homeSource,
           syncStatus: 'ok', syncHint: null, syncedAt: Date.now(),
         });
         return;
@@ -2860,6 +2903,84 @@ class App extends React.Component {
       ]),
       h('div', { key: 'b', style: sx.sheetBody }, kids),
     ]));
+  }
+
+  /* The reference notes for a wine, as nodes. Shared by the lot sheet and the
+     home-and-consumed sheet, because a bottle you have drunk deserves exactly
+     the same estate note, the same tasting note and the same vintage note as
+     one still in bond - arguably more, since the app is now the only place
+     that remembers it.
+
+     Everything it needs is on the description, the vintage and the region, all
+     of which a history entry carries. So it takes a "subject" rather than a
+     lot, and neither sheet holds its own copy of this. */
+  referenceProse(subject) {
+    const wine = this.state.ref ? matchWine(subject, this.state.ref.wines) : null;
+    const vint = this.state.ref ? matchVintage(subject, this.state.ref.vintages) : null;
+    const out = [];
+    /* --- reference notes --------------------------------------------- */
+      if (wine) {
+        const sections = [
+          ['The estate', wine.estate],
+          ['Who makes it', wine.producer],
+          ['How it tastes', wine.style],
+          ['Drinking it', wine.drink],
+        ];
+        for (const [label, text] of sections) {
+          if (!text) continue;
+          out.push(h(Eyebrow, { key: 'e-' + label }, label));
+          out.push(h('p', { key: 'p-' + label, style: sx.prose }, text));
+        }
+        if (wine.grapes) {
+          out.push(h('div', { key: 'grapes', style: sx.note }, 'Grapes: ' + wine.grapes));
+        }
+      }
+
+      /* What everybody else thinks, which is the one thing the reference files
+         cannot hold. Sits after the estate note and before the vintage, because
+         it belongs with opinion rather than with fact - and it is a link out, so
+         it should not interrupt anything the app can answer itself. */
+      /* The mark sits inside the link rather than beside it: one tap target
+         instead of a button next to a picture that does nothing when pressed.
+         It also carries the whole explanation. A line underneath used to say
+         that this opens CellarTracker and needs a connection, which the logo
+         already says and the tab bar of the browser confirms - a caption
+         repeating what a mark has just told you is the kind of text people stop
+         reading, and then stop reading the useful ones too. */
+      out.push(h('a', {
+        key: 'ct',
+        href: communityNotesUrl(subject, wine),
+        target: '_blank', rel: 'noopener noreferrer',
+        style: {
+          ...btn('plain'), flexShrink: 0, alignSelf: 'flex-start',
+          textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 9,
+          marginTop: 2,
+        },
+      }, [
+        h(CellarTrackerMark, { key: 'm', height: 30 }),
+        h('span', { key: 'l' }, 'Community tasting notes'),
+      ]));
+
+      if (vint) {
+        out.push(h(Eyebrow, { key: 'e-v' }, 'The ' + subject.vintage + ' vintage in ' + subject.region));
+        out.push(h('p', {
+          key: 'v-h',
+          style: { ...sx.prose, fontStyle: 'italic', color: ink(0.7) },
+        }, vint.headline));
+        out.push(h('p', { key: 'v-n', style: sx.prose }, vint.note));
+        if (vint.now) out.push(h('p', { key: 'v-w', style: { ...sx.prose, color: ink(0.72) } }, vint.now));
+      }
+
+      if (!wine || !vint) {
+        out.push(h('div', { key: 'gap', style: sx.note },
+          this.state.refError ? this.state.refError
+            : !wine && !vint ? 'No reference notes for this wine or this vintage yet.'
+            : !wine ? 'No reference notes for this estate yet.'
+            : 'No notes for this vintage in this region yet.'));
+      }
+
+
+    return out;
   }
 
   renderLotSheet() {
@@ -2984,67 +3105,7 @@ class App extends React.Component {
       (lot.producer ? ' · ' + (note.producer || lot.producer) : '') +
       (lot.status ? ' · ' + lot.status.toLowerCase() : '')));
 
-    /* --- reference notes --------------------------------------------- */
-    if (wine) {
-      const sections = [
-        ['The estate', wine.estate],
-        ['Who makes it', wine.producer],
-        ['How it tastes', wine.style],
-        ['Drinking it', wine.drink],
-      ];
-      for (const [label, text] of sections) {
-        if (!text) continue;
-        kids.push(h(Eyebrow, { key: 'e-' + label }, label));
-        kids.push(h('p', { key: 'p-' + label, style: sx.prose }, text));
-      }
-      if (wine.grapes) {
-        kids.push(h('div', { key: 'grapes', style: sx.note }, 'Grapes: ' + wine.grapes));
-      }
-    }
-
-    /* What everybody else thinks, which is the one thing the reference files
-       cannot hold. Sits after the estate note and before the vintage, because
-       it belongs with opinion rather than with fact - and it is a link out, so
-       it should not interrupt anything the app can answer itself. */
-    /* The mark sits inside the link rather than beside it: one tap target
-       instead of a button next to a picture that does nothing when pressed.
-       It also carries the whole explanation. A line underneath used to say
-       that this opens CellarTracker and needs a connection, which the logo
-       already says and the tab bar of the browser confirms - a caption
-       repeating what a mark has just told you is the kind of text people stop
-       reading, and then stop reading the useful ones too. */
-    kids.push(h('a', {
-      key: 'ct',
-      href: communityNotesUrl(lot, wine),
-      target: '_blank', rel: 'noopener noreferrer',
-      style: {
-        ...btn('plain'), flexShrink: 0, alignSelf: 'flex-start',
-        textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 9,
-        marginTop: 2,
-      },
-    }, [
-      h(CellarTrackerMark, { key: 'm', height: 30 }),
-      h('span', { key: 'l' }, 'Community tasting notes'),
-    ]));
-
-    if (vint) {
-      kids.push(h(Eyebrow, { key: 'e-v' }, 'The ' + lot.vintage + ' vintage in ' + lot.region));
-      kids.push(h('p', {
-        key: 'v-h',
-        style: { ...sx.prose, fontStyle: 'italic', color: ink(0.7) },
-      }, vint.headline));
-      kids.push(h('p', { key: 'v-n', style: sx.prose }, vint.note));
-      if (vint.now) kids.push(h('p', { key: 'v-w', style: { ...sx.prose, color: ink(0.72) } }, vint.now));
-    }
-
-    if (!wine || !vint) {
-      kids.push(h('div', { key: 'gap', style: sx.note },
-        this.state.refError ? this.state.refError
-          : !wine && !vint ? 'No reference notes for this wine or this vintage yet.'
-          : !wine ? 'No reference notes for this estate yet.'
-          : 'No notes for this vintage in this region yet.'));
-    }
-
+    kids.push(...this.referenceProse(lot));
 
     return this.sheet(lot.vintage, kids);
   }
@@ -3106,9 +3167,16 @@ class App extends React.Component {
        stored order, which is oldest first - so it is carried, not recomputed
        from the reversed list. */
     const ordered = rows.slice().reverse();
-    kids.push(...ordered.map(({ e, i }) => h('div', {
+    kids.push(...ordered.map(({ e, i }) => h('button', {
       key: e.key + '-' + e.at + '-' + i,
-      style: { ...sx.panel, gap: 4 },
+      /* Tappable, into the wine's own page. It used to be a plain block with a
+         remove button on it - the only interactive thing on the row was the
+         destructive one, which is the wrong way round. */
+      style: {
+        ...sx.row, flexDirection: 'column', alignItems: 'stretch', gap: 4,
+        textAlign: 'left',
+      },
+      onClick: () => this.setState({ sheet: 'histwine', sheetArg: i }),
     }, [
       h('div', { key: 't', style: sx.rowTitle }, e.vintage + ' ' + shortName(e)),
       h('div', { key: 'm', style: sx.rowMeta }, [
@@ -3124,14 +3192,136 @@ class App extends React.Component {
         e.deliveredPerBottle ? h('span', { key: 'b', className: 'm-num' },
           money(e.deliveredPerBottle) + ' delivered') : null,
       ]),
-      h('button', {
-        key: 'x',
-        style: { ...btn('plain'), alignSelf: 'flex-start', marginTop: 4, fontSize: 12 },
-        onClick: () => this.forgetHistory(i),
-      }, 'Never left - remove'),
     ])));
 
     return this.sheet('Home and consumed', kids);
+  }
+
+
+  /* One bottle that has left bond, on its own page.
+
+     It was a list-only feature: you could see what went and what it cost, and
+     nothing else. That was wrong. Everything the app knows about a wine - the
+     estate, who makes it, how it tastes, the character of that vintage - is
+     just as true of a bottle in a rack at home as one in a warehouse, and the
+     app is the only place that still remembers the ones already drunk.
+
+     What differs from a lot sheet, and why:
+
+     THE PRICES ARE FROZEN and say so. A market value that carried on moving
+     after the bottle left would be a number about a wine you no longer own.
+
+     THERE IS NO MATURITY STATE. A bottle that has gone is not "at best" or
+     "closing" - it is drunk, or it is in a rack. The window it had is still
+     shown, because knowing you drank it inside or outside its window is worth
+     something.
+
+     THE REMOVE CONTROL LIVES HERE, not on every row of the list. It is for a
+     bottle that never actually left - an export imported out of order, a row
+     BBR dropped and put back - which is rare, and a rare destructive action
+     does not belong on every row of a list you are reading.
+  ------------------------------------------------------------------------- */
+
+  renderHistoryWineSheet() {
+    const i = this.state.sheetArg;
+    const e = this.state.history[i];
+    if (!e) return null;
+    const wine = this.state.ref ? matchWine(e, this.state.ref.wines) : null;
+    const say = this.state.saying ? mapFor(this.state.saying, e.subRegion || '') : null;
+    const kids = [];
+
+    /* --- identity, the same shape as a lot sheet --- */
+    kids.push(h('div', {
+      key: 'id',
+      style: { flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 6 },
+    }, [
+      h('div', {
+        key: 'a',
+        style: { fontFamily: "'Newsreader',Georgia,serif", fontSize: 25, lineHeight: 1.15, fontWeight: 500 },
+      }, e.vintage + ' ' + (wine ? wine.name : shortName(e))),
+      wine && wine.say ? h('div', {
+        key: 'say',
+        style: {
+          fontFamily: "'Newsreader',Georgia,serif", fontStyle: 'italic',
+          fontSize: 14, color: ink(0.45),
+        },
+      }, wine.say) : null,
+      h('div', { key: 'b', style: { fontSize: 13, color: ink(0.6) } },
+        [wine ? wine.appellation : e.subRegion, e.region, wine ? wine.rank : null]
+          .filter(Boolean).join(' · ')),
+      h('div', { key: 'c', style: { ...sx.chipRow, marginTop: 2, alignItems: 'center' } }, [
+        h('span', {
+          key: 's',
+          style: {
+            fontSize: 11.5, fontWeight: 600, color: '#fff', background: CLARET,
+            borderRadius: 999, padding: '3px 10px',
+          },
+        }, 'AT HOME'),
+        h('span', {
+          key: 'w', className: 'm-num',
+          style: { fontSize: 11.5, color: ink(0.6), padding: '3px 0' },
+        }, e.windowFrom && e.windowTo
+          ? 'window ' + e.windowFrom + '–' + e.windowTo
+          : 'no window recorded'),
+        h('a', {
+          key: 'ws',
+          href: wineSearcherUrl(e, wine),
+          target: '_blank', rel: 'noopener noreferrer',
+          style: { marginLeft: 'auto', display: 'block', lineHeight: 0 },
+        }, h(WineSearcherMark, { height: 22 })),
+      ]),
+    ]));
+
+    /* --- what it cost, frozen --- */
+    kids.push(h(Eyebrow, { key: 'e-p' }, 'What it cost'));
+    kids.push(h('div', { key: 'p', style: sx.card }, [
+      h('div', {
+        key: 'big', className: 'm-num',
+        style: { fontFamily: "'Newsreader',Georgia,serif", fontSize: 34, fontWeight: 500, lineHeight: 1 },
+      }, money(e.deliveredPerBottle)),
+      h('div', { key: 'sub', style: { fontSize: 12.5, color: ink(0.6) } },
+        'a bottle, delivered, at the price it left at'),
+      h('div', {
+        key: 'br',
+        style: { display: 'flex', flexDirection: 'column', gap: 3, marginTop: 6, fontSize: 12.5 },
+      }, [
+        ['In bond', e.paidPerBottle],
+        ['Mark when it left', e.marketPerBottle],
+      ].filter(r => r[1] !== null && r[1] !== undefined).map(([label, v]) => h('div', {
+        key: label, style: { display: 'flex', justifyContent: 'space-between', gap: 10 },
+      }, [
+        h('span', { key: 'a', style: { color: ink(0.62) } }, label),
+        h('span', { key: 'b', className: 'm-num' }, money(v)),
+      ]))),
+    ]));
+
+    kids.push(h('div', { key: 'nums', style: sx.statRow }, [
+      h(Stat, { key: 'a', k: 'Bottles', v: String(e.bottles) }),
+      h(Stat, { key: 'b', k: 'Paid', v: money0((e.paidPerBottle || 0) * e.bottles) }),
+      h(Stat, { key: 'c', k: 'Delivered', v: money0((e.deliveredPerBottle || 0) * e.bottles) }),
+    ]));
+
+    kids.push(h('div', { key: 'fmt', style: sx.note },
+      (e.volumeCl ? e.volumeCl + 'cl' : 'Bottle') +
+      (e.caseSize ? ', in cases of ' + e.caseSize : '') +
+      (e.producer ? ' · ' + e.producer : '') +
+      ' · ' + (e.origin === 'home' ? 'from the home cellar export' : 'left bond ' + whenLeft(e.at)) +
+      (e.full ? ' · the last of them' : '')));
+
+    /* --- everything the app knows about the wine itself --- */
+    kids.push(...this.referenceProse(e));
+
+    /* --- the rare correction, out of the way at the bottom --- */
+    kids.push(h('button', {
+      key: 'forget',
+      style: { ...btn('plain'), borderColor: 'rgba(var(--claret-rgb),0.5)', color: CLARET, marginTop: 4 },
+      onClick: () => { this.setState({ sheet: 'history' }); this.forgetHistory(i); },
+    }, 'These never left bond — remove'));
+    kids.push(h('div', { key: 'fn', style: sx.note },
+      'For an export imported out of order, or a row BBR dropped and put back. It does not ' +
+      'put the bottles back in the cellar - the next import of the current export does that.'));
+
+    return this.sheet(e.vintage, kids);
   }
 
   renderSettingsSheet() {
@@ -3171,8 +3361,13 @@ class App extends React.Component {
         key: 'hloc', style: btn('plain'), onClick: this.loadHomeFile,
       }, 'Load the home export in this folder'));
     }
-    kids.push(h('label', { key: 'himp', style: { ...btn('plain'), textAlign: 'center' } }, [
-      st.homeSource ? 'Re-import a home cellar export' : 'Import a home cellar export',
+    kids.push(h('label', {
+      key: 'himp',
+      style: st.homeSource
+        ? { ...btn('plain'), textAlign: 'center', opacity: 0.7, fontSize: 12.5 }
+        : { ...btn('plain'), textAlign: 'center' },
+    }, [
+      st.homeSource ? 'Seed again from a different export' : 'Import the home cellar export',
       h('input', {
         key: 'i', type: 'file', accept: '.csv,text/csv', style: { display: 'none' },
         onChange: e => { const f = e.target.files[0]; e.target.value = ''; this.importHome(f); },
@@ -3180,12 +3375,14 @@ class App extends React.Component {
     ]));
     kids.push(h('div', { key: 'hn', style: sx.note },
       st.homeSource
-        ? 'Last read from ' + st.homeSource.source + ', ' + st.homeSource.wines +
-          (st.homeSource.wines === 1 ? ' wine' : ' wines') +
-          '. A re-import replaces those entries rather than adding to them, so importing the ' +
-          'same file twice changes nothing. It never touches the totals.'
-        : 'The “my-home-cellar-view” export lists what is at home rather than in bond. It goes ' +
-          'straight to Home and consumed and counts towards no total in the app.'));
+        ? 'Seeded from ' + st.homeSource.source + ' on ' + whenLeft(st.homeSource.at) + ', ' +
+          st.homeSource.wines + (st.homeSource.wines === 1 ? ' wine' : ' wines') +
+          '. Nothing more is needed: from here on, a bottle that is in one BBR export and not ' +
+          'the next moves to home and consumed on its own. That record is synced, so no other ' +
+          'device will ask to seed it again.'
+        : 'A one-off. The “my-home-cellar-view” export seeds what is already at home; after ' +
+          'that, anything leaving bond moves across on its own as each BBR export is imported. ' +
+          'It goes straight to Home and consumed and counts towards no total.'));
 
     const cov = this.coverage();
     if (cov.ready && lots.length) {
@@ -4153,6 +4350,7 @@ class App extends React.Component {
       st.sheet === 'lot' ? h('div', { key: 'sh' }, this.renderLotSheet()) : null,
       st.sheet === 'settings' ? h('div', { key: 'sh' }, this.renderSettingsSheet()) : null,
       st.sheet === 'history' ? h('div', { key: 'sh' }, this.renderHistorySheet()) : null,
+      st.sheet === 'histwine' ? h('div', { key: 'sh' }, this.renderHistoryWineSheet()) : null,
     ]);
   }
 }
