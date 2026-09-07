@@ -453,6 +453,21 @@
       "drink": "Ampodium is the earliest-drinking wine in the range — good from four or five years and best inside about twelve. Do not cellar it as though it were a single-vineyard cuvée."
     },
     {
+      "slug": "jaboulet-thalabert",
+      "match": [
+        "thalabert"
+      ],
+      "name": "Paul Jaboulet Aîné, Domaine de Thalabert",
+      "say": "zha-boo-LAY, ta-la-BAIR",
+      "appellation": "Crozes-Hermitage",
+      "rank": "The reference bottling of the appellation",
+      "grapes": "Syrah",
+      "estate": "Thalabert is a single holding on Les Chassis, the flat glacial terrace south of Tain covered in round alpine stones, and it is the wine that proved Crozes-Hermitage could be more than an early-drinking neighbour of Hermitage. Some of the vines are very old by the standards of the appellation. Jaboulet was founded in Tain-l’Hermitage in 1834 and sold to the Frey family in 2006, since when the estate has moved to organic working.",
+      "producer": "Caroline Frey, who also makes the wine at Château La Lagune. Her tenure has meant less extraction and less new oak than the house used in the 1990s, and the wines are the better for it.",
+      "style": "Cooler and more savoury than the southern Rhône: black pepper, olive, iron and dark red fruit, medium-bodied, with the stony grip the terrace gives it. More structure than most Crozes.",
+      "drink": "Good from about four years and holds a plateau to twelve or so — longer than the appellation’s reputation suggests, which is the point of this particular wine."
+    },
+    {
       "slug": "montille-taillepieds",
       "match": [
         "montille",
