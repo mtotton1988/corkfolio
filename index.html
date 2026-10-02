@@ -3115,90 +3115,6 @@ class App extends React.Component {
      what went and what it had cost by the time it reached the house. No
      market value, because the wine is drunk and a mark on it would be a
      number about something you no longer have. */
-  renderHistorySheet() {
-    const st = this.state;
-    /* Opened from a region page, the sheet shows that region. The line that
-       opened it counted a scope, and a sheet that then showed the whole cellar
-       would contradict the number just tapped.
-
-       The index into the FULL array is carried through the filter, because
-       removing an entry by hand splices the stored list and a position in a
-       filtered view would point at the wrong wine. */
-    const scoped = st.dRegion || st.dSub;
-    const rows = st.history
-      .map((e, i) => ({ e, i }))
-      .filter(({ e }) => {
-        if (st.dRegion && e.region !== st.dRegion) return false;
-        if (st.dSub && (e.subRegion || 'Not recognised') !== st.dSub) return false;
-        return true;
-      });
-    const h_ = rows.map(r => r.e);
-    const t = {
-      bottles: h_.reduce((a, e) => a + e.bottles, 0),
-      wines: new Set(h_.map(e => e.key)).size,
-      paid: h_.reduce((a, e) => a + (e.paidPerBottle || 0) * e.bottles, 0),
-      delivered: h_.reduce((a, e) => a + (e.deliveredPerBottle || 0) * e.bottles, 0),
-    };
-    const kids = [];
-    if (scoped) {
-      kids.push(h('div', { key: 'scope', style: sx.note },
-        'Showing ' + (st.dSub || st.dRegion) + ' only. The whole cellar is behind the same ' +
-        'line on the overview.'));
-    }
-
-    const fromHome = h_.filter(e => e.origin === 'home').length;
-    kids.push(h('p', { key: 'i', style: sx.prose },
-      'Bottles that are out of bond - in a rack waiting, or already drunk. Nothing here counts ' +
-      'towards any total in the app, because every total in the app is about what is still in ' +
-      'bond.' + (fromHome
-        ? ' Most of these come from the home cellar export, which says plainly what is at home. ' +
-          'The rest were noticed going missing between two bond exports.'
-        : ' They were noticed going missing between two bond exports.')));
-
-    kids.push(h('div', { key: 'nums', style: sx.statRow }, [
-      h(Stat, { key: 'a', k: 'Bottles', v: String(t.bottles) }),
-      h(Stat, { key: 'b', k: 'Wines', v: String(t.wines) }),
-      h(Stat, { key: 'c', k: 'Paid', v: money0(t.paid) }),
-      h(Stat, { key: 'd', k: 'Cost delivered', v: money0(t.delivered) }),
-    ]));
-
-    kids.push(h(Eyebrow, { key: 'e' }, 'Most recent first'));
-
-    /* Newest first for reading, but the index has to point back into the
-       stored order, which is oldest first - so it is carried, not recomputed
-       from the reversed list. */
-    const ordered = rows.slice().reverse();
-    kids.push(...ordered.map(({ e, i }) => h('button', {
-      key: e.key + '-' + e.at + '-' + i,
-      /* Tappable, into the wine's own page. It used to be a plain block with a
-         remove button on it - the only interactive thing on the row was the
-         destructive one, which is the wrong way round. */
-      style: {
-        ...sx.row, flexDirection: 'column', alignItems: 'stretch', gap: 4,
-        textAlign: 'left',
-      },
-      onClick: () => this.setState({ sheet: 'histwine', sheetArg: i }),
-    }, [
-      h('div', { key: 't', style: sx.rowTitle }, e.vintage + ' ' + shortName(e)),
-      h('div', { key: 'm', style: sx.rowMeta }, [
-        h('span', { key: 'a' }, e.subRegion || e.region),
-        h('span', { key: 'b', className: 'm-num' },
-          e.bottles + (e.bottles === 1 ? ' bottle' : ' bottles') + (e.full ? ', the last of them' : '')),
-        h('span', { key: 'c' },
-          e.origin === 'home' ? 'from the home export' : 'left ' + whenLeft(e.at)),
-      ]),
-      h('div', { key: 'p', style: { ...sx.rowMeta, marginTop: 2 } }, [
-        h('span', { key: 'a', className: 'm-num' },
-          e.paidPerBottle ? money(e.paidPerBottle) + ' a bottle in bond' : 'price paid unknown'),
-        e.deliveredPerBottle ? h('span', { key: 'b', className: 'm-num' },
-          money(e.deliveredPerBottle) + ' delivered') : null,
-      ]),
-    ])));
-
-    return this.sheet('Home and consumed', kids);
-  }
-
-
   /* One bottle that has left bond, on its own page.
 
      It was a list-only feature: you could see what went and what it cost, and
@@ -3316,7 +3232,10 @@ class App extends React.Component {
     kids.push(h('button', {
       key: 'forget',
       style: { ...btn('plain'), borderColor: 'rgba(var(--claret-rgb),0.5)', color: CLARET, marginTop: 4 },
-      onClick: () => { this.setState({ sheet: 'history' }); this.forgetHistory(i); },
+      /* Closes this bottle's page and leaves you on the list you opened it
+         from, which is now the Wines tab rather than a sheet. It used to
+         reopen the sheet, which was the list it came from at the time. */
+      onClick: () => { this.setState({ sheet: null, sheetArg: null }); this.forgetHistory(i); },
     }, 'These never left bond — remove'));
     kids.push(h('div', { key: 'fn', style: sx.note },
       'For an export imported out of order, or a row BBR dropped and put back. It does not ' +
@@ -4164,9 +4083,9 @@ class App extends React.Component {
     if (!st.history.length) return null;
     /* "Consumed" rather than "At home": paired against "In bond" it reads as
        the other end of a bottle's life, which is what the mode is about. The
-       sheet it opens is still called Home and consumed, because that bucket
-       honestly covers both - the export says a bottle left bond and says
-       nothing about whether it has been drunk. */
+       bucket underneath is still Home and consumed, because it honestly covers
+       both - the export says a bottle left bond and says nothing about whether
+       it has since been drunk. */
     const opts = [['bond', 'In bond'], ['home', 'Consumed']];
     return h('div', {
       key: 'mode',
@@ -4293,9 +4212,19 @@ class App extends React.Component {
     if (home) {
       const bottles = entries.reduce((a, e) => a + e.bottles, 0);
       if (bottles) {
+        /* Hands over to the Wines tab exactly as the in-bond button beside it
+           does. This used to open a sheet over the page, which made the two
+           sides of the same toggle behave differently for no reason a reader
+           could see: one walked you down the funnel, the other covered it up.
+           The Wines tab already draws this list, scoped to wherever you are,
+           so there was nothing to build - only a destination to correct.
+
+           fWhere is already 'home' here, because the toggle that got you to
+           this side set it. It is passed anyway: a button that states where
+           it is going does not depend on state set somewhere else. */
         out.push(h('button', {
           key: 'see', style: { ...btn('plain'), alignSelf: 'flex-start', flexShrink: 0 },
-          onClick: () => this.setState({ sheet: 'history' }),
+          onClick: () => this.setState({ tab: 'wines', fWhere: 'home' }),
         }, 'See the ' + bottles + (bottles === 1 ? ' bottle' : ' bottles')));
       }
       return out;
@@ -4465,7 +4394,6 @@ class App extends React.Component {
       st.toastMsg && !st.busy ? h('div', { key: 'toast', style: sx.toast }, st.toastMsg) : null,
       st.sheet === 'lot' ? h('div', { key: 'sh' }, this.renderLotSheet()) : null,
       st.sheet === 'settings' ? h('div', { key: 'sh' }, this.renderSettingsSheet()) : null,
-      st.sheet === 'history' ? h('div', { key: 'sh' }, this.renderHistorySheet()) : null,
       st.sheet === 'histwine' ? h('div', { key: 'sh' }, this.renderHistoryWineSheet()) : null,
     ]);
   }
