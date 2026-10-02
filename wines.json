@@ -468,6 +468,21 @@
       "drink": "Good from about four years and holds a plateau to twelve or so — longer than the appellation’s reputation suggests, which is the point of this particular wine."
     },
     {
+      "slug": "chapoutier-meysonniers",
+      "match": [
+        "meysonniers"
+      ],
+      "name": "M. Chapoutier, Les Meysonniers",
+      "say": "sha-poo-TYAY, lay may-zon-YAY",
+      "appellation": "Crozes-Hermitage",
+      "rank": "The house’s Crozes-Hermitage, from its own vines",
+      "grapes": "Syrah",
+      "estate": "Chapoutier has been in Tain-l’Hermitage since 1808 and was turned round by Michel Chapoutier from 1990, who converted the vineyards to biodynamics — among the earliest estates of this size in France to do so — and has printed Braille on every label since 1996. Les Meysonniers is the estate’s own Crozes-Hermitage, farmed organically on the terraces north of Tain rather than the stony flats to the south.",
+      "producer": "Michel Chapoutier. Whole-bunch fermentation and almost no new oak here: this is the cuvée meant to taste of the appellation rather than of the cellar, and it is bottled early to keep the fruit.",
+      "style": "Lighter and more immediate than the serious end of Crozes: violets, black pepper and crunchy red fruit, with a cool savoury edge and soft tannin. Northern-Rhône Syrah in its most approachable form.",
+      "drink": "Ready on release and best inside about ten years. This is not a bottle to lay down against the Hermitage upstairs — it is the one to open while they wait."
+    },
+    {
       "slug": "montille-taillepieds",
       "match": [
         "montille",
