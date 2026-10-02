@@ -2170,7 +2170,6 @@ class App extends React.Component {
        from fState, not a third value of it: readiness is about a wine, this is
        about where the bottles are, and a bottle can be both At best and at
        home. Defaults to bond because every total in the app is about bond. */
-    fWhere: 'bond',
     sheet: null, sheetArg: null,
     toastMsg: null, busy: null,
     localFile: false,        /* a cellar.local.csv sits next to index.html */
@@ -2889,7 +2888,7 @@ class App extends React.Component {
      is worse than not moving at all. */
   goHome = () => this.setState({
     tab: 'cellar', dRegion: null, dSub: null,
-    fState: null, fQuery: '', fWhere: 'bond',
+    fState: null, fQuery: '', mode: 'bond',
     sheet: null, sheetArg: null,
   });
 
@@ -3913,13 +3912,17 @@ class App extends React.Component {
      are all filters on the same list, and stacking them implied a hierarchy
      that is not there. The count goes on the end of the same row rather than
      taking a line of its own. */
+  /* Readiness only. The location pair that used to lead this row is now the
+     segmented toggle above it: a mode is not a filter, and putting the two in
+     one row said they were the same kind of thing. */
   filterChips(scoped, visible) {
+    const chips = this.readinessChipList(scoped);
+    if (!chips.length && !visible) return null;
     return h('div', {
       key: 'chips',
       style: { ...sx.chipRow, alignItems: 'center' },
     }, [
-      ...this.whereChips(scoped),
-      ...(this.state.fWhere === 'home' ? [] : this.readinessChipList(scoped)),
+      ...chips,
       visible ? h('span', {
         key: 'n',
         style: {
@@ -3930,34 +3933,6 @@ class App extends React.Component {
         ? visible.length + (visible.length === 1 ? ' wine' : ' wines')
         : visible.length + ' of ' + scoped.length) : null,
     ]);
-  }
-
-  whereChips(scoped) {
-    const st = this.state;
-    const bond = scoped.reduce((a, l) => a + l.bottles, 0);
-    const home = this.scopedHistory().reduce((a, e) => a + e.bottles, 0);
-    const opts = [
-      { k: 'bond', label: 'In-bond', n: bond, colour: ink(0.45) },
-      { k: 'home', label: 'Home/Consumed', n: home, colour: 'var(--hist)' },
-    ];
-    return opts.map(o => h('button', {
-      key: o.k, style: chip(st.fWhere === o.k),
-      /* Switching clears the readiness filter: a count taken from one set
-         means nothing about the other, and leaving "Closing" lit while the
-         list changed underneath it was the confusing version of this. */
-      onClick: () => this.setState({ fWhere: o.k, fState: null }),
-    }, [
-      h('span', {
-        key: 'd',
-        style: {
-          display: 'inline-block', width: 7, height: 7, borderRadius: 2, marginRight: 6,
-          background: o.colour,
-        },
-      }),
-      o.label,
-      h('span', { key: 'n', className: 'm-num', style: { opacity: 0.6, marginLeft: 5 } },
-        String(o.n)),
-    ]));
   }
 
   /* The whole cellar's drinking windows, on their own. Deliberately not tied
@@ -4102,10 +4077,18 @@ class App extends React.Component {
         fontSize: 12.5, fontWeight: st.mode === k ? 600 : 500,
         boxShadow: st.mode === k ? 'var(--shadow-soft)' : 'none',
       },
-      /* The drill is cleared on the way across. A region with bottles in bond
-         may have none at home, and landing on an empty page having tapped a
-         segment that was there a moment ago reads as a bug. */
-      onClick: () => this.setState({ mode: k, dRegion: null, dSub: null, fState: null }),
+      /* The drill is KEPT on the way across. It used to be cleared, on the
+         grounds that a region with bottles in bond may have none at home and
+         an empty page reads as a bug. That was right while this toggle only
+         existed on the overview and region pages; it is wrong now it sits on
+         sub-region pages too, where clearing the drill would throw away the
+         very scope you were asking about. Both sides have an honest empty
+         state - "Nothing from here has left bond yet" - and an empty answer to
+         a question you asked is information rather than a fault.
+
+         The readiness filter still goes: a count taken from one side means
+         nothing about the other. */
+      onClick: () => this.setState({ mode: k, fState: null }),
     }, label)));
   }
 
@@ -4151,10 +4134,14 @@ class App extends React.Component {
         out.push(h('div', { key: 'nohome', style: sx.empty },
           'Nothing from here has left bond yet.'));
       }
-      /* Under the ring, as the way to compare the two shapes. */
-      const tog = this.modeToggle();
-      if (tog) out.push(tog);
     }
+
+    /* Outside the ring block, so it reaches sub-region pages as well. It used
+       to sit inside, which meant the one screen with a single appellation in
+       front of you - the place you are most likely to ask what happened to the
+       rest of it - was the one screen with no way to ask. */
+    const tog = this.modeToggle();
+    if (tog) out.push(tog);
 
     /* The region essay, under the donut. Only at region level: the overview
        has no one region to describe, and a sub-region page is already about
@@ -4219,12 +4206,12 @@ class App extends React.Component {
            The Wines tab already draws this list, scoped to wherever you are,
            so there was nothing to build - only a destination to correct.
 
-           fWhere is already 'home' here, because the toggle that got you to
-           this side set it. It is passed anyway: a button that states where
-           it is going does not depend on state set somewhere else. */
+           mode is already 'home' here, because the toggle that got you to this
+           side set it. It is passed anyway: a button that states where it is
+           going does not depend on state set somewhere else. */
         out.push(h('button', {
           key: 'see', style: { ...btn('plain'), alignSelf: 'flex-start', flexShrink: 0 },
-          onClick: () => this.setState({ tab: 'wines', fWhere: 'home' }),
+          onClick: () => this.setState({ tab: 'wines', mode: 'home' }),
         }, 'See the ' + bottles + (bottles === 1 ? ' bottle' : ' bottles')));
       }
       return out;
@@ -4252,6 +4239,7 @@ class App extends React.Component {
      region, sub-region and readiness you arrived with. */
   renderWinesTab() {
     const st = this.state;
+    const home = st.mode === 'home';
     const out = [];
     const scoped = this.scopeLots();
     const visible = this.visibleLots();
@@ -4264,10 +4252,20 @@ class App extends React.Component {
        carries its pronunciation, which is worth the room. */
     if (st.dSub || st.dRegion) out.push(this.placeHeading(st.dSub || st.dRegion));
 
-    out.push(this.filterChips(scoped, st.fWhere === 'home' ? null : visible));
+    /* The same segmented control the Cellar page uses, rather than the pair
+       of chips this tab used to carry. One idea should not have two
+       appearances and two state fields: the chips sat in the same row as the
+       readiness filters and read as another filter, when it is a mode. */
+    const tog = this.modeToggle();
+    if (tog) out.push(tog);
+
+    /* No readiness chips over consumption, the same rule the Cellar page
+       follows: a bottle that has gone is not closing or at best, and as a
+       filter it would mean nothing. */
+    if (!home) out.push(this.filterChips(scoped, visible));
 
     /* --- what has come home ------------------------------------------- */
-    if (st.fWhere === 'home') {
+    if (home) {
       const past = this.scopedHistory()
         .map((e, i) => ({ e, i: this.state.history.indexOf(e) }))
         .sort((a, b) => b.e.at - a.e.at);
@@ -4387,7 +4385,7 @@ class App extends React.Component {
                match a filter set elsewhere. */
             onClick: () => this.setState(
               k === 'windows' || st.tab === 'windows'
-                ? { tab: k, fState: null, fQuery: '', fWhere: 'bond' }
+                ? { tab: k, fState: null, fQuery: '' }
                 : { tab: k, fQuery: '' }),
           }, label))) : null,
       st.busy ? h('div', { key: 'busy', style: sx.toast }, st.busy) : null,
