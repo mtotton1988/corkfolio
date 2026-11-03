@@ -884,6 +884,38 @@ function marketPerBottle(lot) {
   return lx || sane(lot.bbxLastTxn) || sane(lot.wsLowest) || sane(lot.bbxLowest) || null;
 }
 
+/* What a bottle is worth, and where the figure came from - the same shape as
+   windowOf, for the same reason: a number you pinned by hand and a number
+   BBR supplied deserve different amounts of trust, and the sheet should say
+   which it is showing.
+
+   Precedence, strongest first:
+
+   1. YOURS - pinned on the lot sheet. Deliberate, and never overwritten by an
+      import, because it lives in notes rather than lots.
+   2. The export's own comps, through marketPerBottle: Liv-ex first, then a
+      sane BBX print, then Wine-Searcher.
+   3. Nothing, and the sheet says so.
+
+   The pin exists because Liv-ex is a clearing price and the two diverge on
+   mature and odd-sized lots in a way they do not on the rest of a young
+   cellar. The 1988 Las Cases arrived marked at 130 a bottle on Liv-ex while
+   the UK in-bond asks were 165 to 187: both numbers are honest about
+   different things, and only the owner can say which one the cellar should
+   be counted at. */
+function pinnedMarket(note) {
+  const v = note && note.marketPerBottle;
+  return (typeof v === 'number' && isFinite(v) && v > 0) ? v : null;
+}
+
+function marketOf(lot, note) {
+  const pin = pinnedMarket(note);
+  if (pin !== null) return { perBottle: pin, source: 'yours' };
+  const mk = marketPerBottle(lot);
+  if (mk !== null) return { perBottle: mk, source: lot.livex ? 'livex' : 'comp' };
+  return { perBottle: null, source: 'none' };
+}
+
 /* What a bottle is worth, with the price paid standing in where the export
    gives no mark at all. En primeur lines have no market yet, and a wine the
    export has no comp for would otherwise drop silently out of the "At market"
@@ -892,13 +924,13 @@ function marketPerBottle(lot) {
 
    marketPerBottle stays honest and returns null when it does not know, so the
    detail sheet can say so. Only the aggregate substitutes. */
-function marketOrPaid(lot) {
-  const mk = marketPerBottle(lot);
+function marketOrPaid(lot, note) {
+  const mk = marketOf(lot, note).perBottle;
   return mk === null ? perBottle(lot) : mk;
 }
 
-function marketIsEstimated(lot) {
-  return marketPerBottle(lot) === null && perBottle(lot) !== null;
+function marketIsEstimated(lot, note) {
+  return marketOf(lot, note).perBottle === null && perBottle(lot) !== null;
 }
 
 /* Duty on one bottle of this wine, at its own strength and volume. Falls back
@@ -2171,6 +2203,7 @@ class App extends React.Component {
        about where the bottles are, and a bottle can be both At best and at
        home. Defaults to bond because every total in the app is about bond. */
     sheet: null, sheetArg: null,
+    marketDraft: null,       /* { key, value } while a market value is being typed */
     toastMsg: null, busy: null,
     localFile: false,        /* a cellar.local.csv sits next to index.html */
     homeFile: false,         /* and a home.local.csv beside it */
@@ -2524,6 +2557,12 @@ class App extends React.Component {
      pass them - forgetting one was how a lot could silently fall back to the
      rule of thumb on one screen and not another. */
   win(lot) { return windowOf(lot, this.state.notes[lot.key], this.state.researched); }
+  /* Third of the wrappers, and here for the reason the other two are: a call
+     site that forgets to pass the note silently shows BBR's figure over
+     yours, which is the kind of bug nobody reports because it looks fine. */
+  market(lot) { return marketOf(lot, this.state.notes[lot.key]); }
+  marketOrPaid(lot) { return marketOrPaid(lot, this.state.notes[lot.key]); }
+  marketIsEstimated(lot) { return marketIsEstimated(lot, this.state.notes[lot.key]); }
   lotState(lot) { return stateOf(lot, this.state.notes[lot.key], this.year(), this.state.researched); }
 
   lots() { return (this.state.lots && this.state.lots.rows) || []; }
@@ -2546,7 +2585,9 @@ class App extends React.Component {
       region: lot.region, subRegion: lot.subRegion, producer: lot.producer,
       volumeCl: lot.volumeCl, caseSize: lot.caseSize,
       paidPerBottle: perBottle(lot),
-      marketPerBottle: marketPerBottle(lot),
+      /* The effective figure, pin included: a bottle that left bond was worth
+         what you said it was worth, not what Liv-ex said. */
+      marketPerBottle: this.market(lot).perBottle,
       deliveredPerBottle: d ? d.total : null,
       windowFrom: win.from, windowTo: win.to,
     };
@@ -2593,6 +2634,24 @@ class App extends React.Component {
     this.queueSync();
     this.toast('Removed from history.');
   }
+  /* The first thing in the app that writes to notes. The key has existed
+     since the beginning holding nothing, so that its shape would be settled
+     before there was data to migrate; this is that bet paying off.
+
+     A cleared pin leaves the note behind with only its updatedAt. That looks
+     like litter and is not: notes merge newest-wins per lot key, so deleting
+     the key outright would let the other device's older note - still holding
+     the pin you just removed - win the next sync and put it back. */
+  setNote(lotKey, patch) {
+    const prev = this.state.notes[lotKey] || {};
+    const next = { ...prev, ...patch, updatedAt: Date.now() };
+    for (const k of Object.keys(next)) if (next[k] === null || next[k] === undefined) delete next[k];
+    const notes = { ...this.state.notes, [lotKey]: next };
+    this.setState({ notes });
+    this.save('corkfolio.notes.v1', notes);
+    this.queueSync();
+  }
+
   year() { return new Date().getFullYear(); }
 
   /* ================================================================ views */
@@ -2984,14 +3043,16 @@ class App extends React.Component {
   }
 
   renderLotSheet() {
-    const lot = this.lots().find(l => l.key === this.state.sheetArg);
+    const st = this.state;
+    const lot = this.lots().find(l => l.key === st.sheetArg);
     if (!lot) return null;
-    const note = this.state.notes[lot.key] || {};
+    const note = st.notes[lot.key] || {};
     const y = this.year();
     const win = this.win(lot);
     const state = this.lotState(lot);
     const d = deliveredPerBottle(lot, lot.bottles);
-    const mk = marketPerBottle(lot);
+    const mkt = this.market(lot);
+    const mk = mkt.perBottle;
     const wine = this.state.ref ? matchWine(lot, this.state.ref.wines) : null;
     const vint = this.state.ref ? matchVintage(lot, this.state.ref.vintages) : null;
     const kids = [];
@@ -3080,8 +3141,10 @@ class App extends React.Component {
       h(Stat, { key: 'a', k: 'Bottles', v: String(lot.bottles) }),
       h(Stat, { key: 'b', k: 'In bond /bt', v: money(perBottle(lot)) }),
       h(Stat, {
-        key: 'c', k: marketIsEstimated(lot) ? 'Market est.' : 'Market /bt',
-        v: money(marketOrPaid(lot)),
+        key: 'c',
+        k: mkt.source === 'yours' ? 'Market, yours'
+          : this.marketIsEstimated(lot) ? 'Market est.' : 'Market /bt',
+        v: money(this.marketOrPaid(lot)),
       }),
       h(Stat, {
         key: 'd', k: 'Vs paid',
@@ -3091,6 +3154,44 @@ class App extends React.Component {
         tone: (mk && perBottle(lot) && mk > perBottle(lot)) ? 'var(--st-opening)' : undefined,
       }),
     ]));
+    /* --- a market value of your own ----------------------------------
+       Liv-ex is a clearing price and the export's comps are whatever BBR has
+       to hand; neither is wrong, and on a mature or odd-sized lot they can
+       sit a third apart. Rather than change what the app prefers for every
+       wine, one wine can be told what it is worth.
+
+       It writes to notes, so an import never touches it, and it is used
+       everywhere the figure appears - this sheet, the Wines list, and the At
+       market total on every screen above it. */
+    {
+      const bbr = marketPerBottle(lot);
+      const draft = (st.marketDraft && st.marketDraft.key === lot.key) ? st.marketDraft.value
+        : (mkt.source === 'yours' ? String(mkt.perBottle) : '');
+      const commit = () => {
+        const v = num(draft);
+        this.setState({ marketDraft: null });
+        this.setNote(lot.key, { marketPerBottle: (v && v > 0) ? v : null });
+      };
+      kids.push(h('label', { key: 'mk-set', style: { ...sx.label, flexShrink: 0, marginTop: 2 } }, [
+        h('span', { key: 'l' }, 'Market value a bottle, in bond'),
+        h('input', {
+          key: 'i', style: sx.input, inputMode: 'decimal', placeholder: bbr ? money(bbr) : 'not priced',
+          value: draft,
+          onChange: e => this.setState({ marketDraft: { key: lot.key, value: e.target.value } }),
+          onBlur: commit,
+          onKeyDown: e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } },
+        }),
+      ]));
+      kids.push(h('div', { key: 'mk-note', style: { flexShrink: 0, fontSize: 11, color: ink(0.5) } },
+        mkt.source === 'yours'
+          ? (bbr ? 'Yours, used everywhere including the totals. BBR marks it at ' + money(bbr) +
+                   ' a bottle. Clear the box to go back to that.'
+                 : 'Yours. The export gives no mark for this wine at all. Clear the box to remove it.')
+          : (bbr ? 'From the export, ' + (lot.livex ? 'Liv-ex' : 'a BBX or Wine-Searcher comp') +
+                   '. Type a figure to use your own instead.'
+                 : 'The export gives no mark for this wine. Type a figure to set one.')));
+    }
+
     if (win.source === 'researched' && win.basis) {
       kids.push(h('div', { key: 'wbasis', style: sx.note },
         'Drinking window: ' + win.basis));
@@ -3461,11 +3562,11 @@ class App extends React.Component {
     for (const lot of lots) {
       bottles += lot.bottles;
       if (lot.caseSize) cases += lot.bottles / lot.caseSize;
-      const pb = perBottle(lot), mk = marketOrPaid(lot);
+      const pb = perBottle(lot), mk = this.marketOrPaid(lot);
       const d = deliveredPerBottle(lot, lot.bottles);
       if (pb !== null) inBond += pb * lot.bottles;
       if (mk !== null) atMarket += mk * lot.bottles;
-      if (marketIsEstimated(lot)) estimatedBottles += lot.bottles;
+      if (this.marketIsEstimated(lot)) estimatedBottles += lot.bottles;
       if (d) taxPaid += d.total * lot.bottles;
     }
     return { wines: lots.length, bottles, cases, inBond, atMarket, taxPaid, estimatedBottles };
