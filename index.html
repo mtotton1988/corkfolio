@@ -144,11 +144,12 @@
      corkfolio.lots.v1        the cellar as last imported from BBR. FACTS:
                               replaced wholesale by each import, never edited
                               by hand.
-     corkfolio.notes.v1       OPINIONS, one per lot key. Nothing writes to this
-                              yet; the key exists so the importer can already
-                              read a pinned window and a corrected producer,
-                              and so the shape is fixed before there is data in
-                              it to migrate.
+     corkfolio.notes.v1       OPINIONS, one per lot key: a pinned drinking
+                              window and a pinned market value, both set on the
+                              lot sheet. Survives every import, because an
+                              import replaces lots and never touches this.
+                              Clearing a pin leaves the key behind holding only
+                              updatedAt - see mergeNotes for why.
      corkfolio.sync.v1        { token, repo } for GitHub sync, if it is set up.
                               Device-only and never synced anywhere itself.
      corkfolio.history-deleted.v1
@@ -3180,33 +3181,60 @@ class App extends React.Component {
       const pinned = win.source === 'yours';
       const from = wd ? wd.from : (pinned ? String(win.from) : '');
       const to = wd ? wd.to : (pinned ? String(win.to) : '');
+      const f = Math.round(num(from) || 0), t = Math.round(num(to) || 0);
+      const blank = !String(from).trim() && !String(to).trim();
+      const valid = f >= 1900 && t <= 2100 && f < t;
       const draft = (patch) => this.setState({
         windowDraft: { key: lot.key, from, to, ...patch },
       });
-      const commit = () => {
-        const f = Math.round(num(from) || 0), t = Math.round(num(to) || 0);
-        const ok = f >= 1900 && t <= 2100 && f < t;
+      /* Two rules, both learned the hard way.
+
+         Commit on leaving the PAIR, not on leaving a box. Moving from the
+         first box to the second blurs the first, and an earlier version
+         committed there: a half window, which is invalid, which cleared the
+         draft, so the year just typed vanished as the second box was tapped
+         and nothing could ever be pinned. A desktop test that filled both
+         boxes before firing one blur passed it happily.
+
+         Then: a half-typed window is not a request to clear the pin. Only
+         both boxes empty is. Anything in between leaves the note alone and
+         keeps the draft, which is also the safety net for a browser that
+         reports no relatedTarget on focusout - the typing survives either
+         way. */
+      const commit = (e) => {
+        if (e && e.currentTarget.contains(e.relatedTarget)) return;
+        if (!blank && !valid) return;
         this.setState({ windowDraft: null });
-        this.setNote(lot.key, ok ? { windowFrom: f, windowTo: t }
-                                 : { windowFrom: null, windowTo: null });
+        if (valid) this.setNote(lot.key, { windowFrom: f, windowTo: t });
+        else if (pinned) this.setNote(lot.key, { windowFrom: null, windowTo: null });
       };
       const yearBox = (val, which) => h('input', {
         key: which, style: { ...sx.input, flex: 1, minWidth: 0 },
         inputMode: 'numeric', placeholder: which === 'from' ? 'from' : 'to', value: val,
         onChange: e => draft({ [which]: e.target.value }),
-        onBlur: commit,
         onKeyDown: e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } },
       });
       kids.push(h('label', { key: 'w-set', style: { ...sx.label, flexShrink: 0, marginTop: 2 } }, [
         h('span', { key: 'l' }, 'Drinking window'),
-        h('div', { key: 'r', style: { display: 'flex', gap: 8, alignItems: 'center' } }, [
+        h('div', {
+          key: 'r', onBlur: commit,
+          style: { display: 'flex', gap: 8, alignItems: 'center' },
+        }, [
           yearBox(from, 'from'),
           h('span', { key: 'dash', style: { color: ink(0.45) } }, 'to'),
           yearBox(to, 'to'),
         ]),
       ]));
-      kids.push(h('div', { key: 'w-note', style: { flexShrink: 0, fontSize: 11, color: ink(0.5) } },
-        pinned
+      kids.push(h('div', {
+        key: 'w-note',
+        /* CLARET rather than the closing rust: the rust is a maturity state,
+           not a warning, and at 11px it measures 4.4:1 where claret is 7.3. */
+        style: { flexShrink: 0, fontSize: 11, color: (!blank && !valid) ? CLARET : ink(0.5) },
+      },
+        (!blank && !valid)
+          ? 'Both years, the first before the second. Nothing is saved until then, and ' +
+            'emptying both boxes is how you remove a window of your own.'
+        : pinned
           ? (lot.windowFrom
               ? 'Yours. It sets the maturity state and the place on the timeline. BBR says ' +
                 lot.windowFrom + '–' + lot.windowTo + '; empty both boxes to go back to that.'
