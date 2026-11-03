@@ -62,6 +62,21 @@
       "drink": "Needs eight to ten years to shed its reserve, then holds well. Decant young bottles generously."
     },
     {
+      "slug": "leoville-las-cases",
+      "match": [
+        "leoville las cases"
+      ],
+      "name": "Château Léoville Las Cases",
+      "say": "lay-oh-VEEL lass KAHZ",
+      "appellation": "St Julien",
+      "rank": "Deuxième Cru Classé, 1855",
+      "grapes": "Cabernet Sauvignon-dominant, usually around three quarters, with Merlot and Cabernet Franc",
+      "estate": "The largest of the three estates carved out of the old Léoville holding, and the one that kept the heart of it: the Grand Clos, a walled vineyard running north to the Pauillac boundary, where it touches Latour. The lion on its gate is the mark on the label. Proximity to Latour is not a detail — the gravel is the same bank, and the wine has always behaved more like a Pauillac than a St Julien.",
+      "producer": "The Delon family, now Jean-Hubert Delon, who select hard: the grand vin takes only the Grand Clos, and a great deal is declassified in weaker years. The house has been called a first growth in all but name for forty years, and prices accordingly.",
+      "style": "Austere and tightly wound when young — cassis, graphite, cedar and iron over tannin that takes years to unlock. Nothing plush about it. The most structured and the longest-lived of the three Léovilles.",
+      "drink": "The slowest of its neighbours to come round and the longest to hold. Mature vintages from the 1980s are at their plateau now; young ones want fifteen years before they say much."
+    },
+    {
       "slug": "batailley",
       "match": [
         "batailley"
@@ -375,6 +390,21 @@
       "producer": "The Bonnie family. Modern, precise and increasingly confident; the wine has been quietly outperforming its price for a decade.",
       "style": "Firm and structured, with dark fruit, tobacco and a graphite finish. Less silky than Haut-Bailly, less smoky than Chevalier — the most conventionally claret-shaped of the three.",
       "drink": "Wants eight to ten years and holds twenty. Reliable rather than dramatic, which is the point."
+    },
+    {
+      "slug": "pape-clement",
+      "match": [
+        "pape clement,"
+      ],
+      "name": "Château Pape Clément",
+      "say": "pap klay-MON",
+      "appellation": "Pessac-Léognan",
+      "rank": "Cru Classé de Graves",
+      "grapes": "Cabernet Sauvignon and Merlot in close to equal parts",
+      "estate": "One of the oldest vineyards in Bordeaux still in production, planted around 1300 and given to the archbishopric of Bordeaux by Bertrand de Goth, who had owned it before he became Pope Clement V in 1305 and took the name the estate still carries. It sits inside the Bordeaux suburbs now, surrounded by the city rather than by vines.",
+      "producer": "Bernard Magrez, whose vineyard work here is famously meticulous to the point of eccentricity — hand destemming berry by berry in some years. The style is deliberately modern: very ripe fruit, a lot of new oak, and polish.",
+      "style": "Dark, smoky and opulent. Roasted coffee, graphite and black fruit over the warm earthy note the Graves gravel gives, with soft tannin and obvious oak. Among the most immediately impressive wines of the appellation, and the least austere.",
+      "drink": "Approachable early for a classed growth — good at five years, better at ten, and the ripest vintages hold two decades without difficulty."
     },
     {
       "slug": "beaucastel",
