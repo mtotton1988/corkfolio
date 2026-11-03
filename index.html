@@ -2204,6 +2204,7 @@ class App extends React.Component {
        home. Defaults to bond because every total in the app is about bond. */
     sheet: null, sheetArg: null,
     marketDraft: null,       /* { key, value } while a market value is being typed */
+    windowDraft: null,       /* { key, from, to } while a window is being typed */
     toastMsg: null, busy: null,
     localFile: false,        /* a cellar.local.csv sits next to index.html */
     homeFile: false,         /* and a home.local.csv beside it */
@@ -3154,6 +3155,68 @@ class App extends React.Component {
         tone: (mk && perBottle(lot) && mk > perBottle(lot)) ? 'var(--st-opening)' : undefined,
       }),
     ]));
+    if (win.source === 'researched' && win.basis) {
+      kids.push(h('div', { key: 'wbasis', style: sx.note },
+        'Drinking window: ' + win.basis));
+    } else if (windowIsEstimated(win)) {
+      kids.push(h('div', { key: 'wbasis', style: sx.note },
+        'The export states no drinking window for this wine, and no published one has been ' +
+        'found, so this is an estimate from the vintage and the sub-region. Treat it as a hint.'));
+    }
+
+    /* --- a drinking window of your own -------------------------------
+       The first precedence in windowOf() and, until now, the only one with no
+       way to set it. BBR's window is a house view and often a conservative
+       one; published criticism moves, and a wine the export calls finished in
+       2029 can have two critics putting it comfortably into the 2040s.
+
+       A pinned window is not cosmetic. stateOf() reads it, so it changes the
+       maturity state on every screen, where the wine sits on the Windows
+       timeline, and what the app tells you to drink next - which is the whole
+       purpose of the app. Both years are required, because half a window is
+       not one. */
+    {
+      const wd = (st.windowDraft && st.windowDraft.key === lot.key) ? st.windowDraft : null;
+      const pinned = win.source === 'yours';
+      const from = wd ? wd.from : (pinned ? String(win.from) : '');
+      const to = wd ? wd.to : (pinned ? String(win.to) : '');
+      const draft = (patch) => this.setState({
+        windowDraft: { key: lot.key, from, to, ...patch },
+      });
+      const commit = () => {
+        const f = Math.round(num(from) || 0), t = Math.round(num(to) || 0);
+        const ok = f >= 1900 && t <= 2100 && f < t;
+        this.setState({ windowDraft: null });
+        this.setNote(lot.key, ok ? { windowFrom: f, windowTo: t }
+                                 : { windowFrom: null, windowTo: null });
+      };
+      const yearBox = (val, which) => h('input', {
+        key: which, style: { ...sx.input, flex: 1, minWidth: 0 },
+        inputMode: 'numeric', placeholder: which === 'from' ? 'from' : 'to', value: val,
+        onChange: e => draft({ [which]: e.target.value }),
+        onBlur: commit,
+        onKeyDown: e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } },
+      });
+      kids.push(h('label', { key: 'w-set', style: { ...sx.label, flexShrink: 0, marginTop: 2 } }, [
+        h('span', { key: 'l' }, 'Drinking window'),
+        h('div', { key: 'r', style: { display: 'flex', gap: 8, alignItems: 'center' } }, [
+          yearBox(from, 'from'),
+          h('span', { key: 'dash', style: { color: ink(0.45) } }, 'to'),
+          yearBox(to, 'to'),
+        ]),
+      ]));
+      kids.push(h('div', { key: 'w-note', style: { flexShrink: 0, fontSize: 11, color: ink(0.5) } },
+        pinned
+          ? (lot.windowFrom
+              ? 'Yours. It sets the maturity state and the place on the timeline. BBR says ' +
+                lot.windowFrom + '–' + lot.windowTo + '; empty both boxes to go back to that.'
+              : 'Yours. The export states no window for this wine. Empty both boxes to remove it.')
+          : (lot.windowFrom
+              ? 'From the export. Type both years to use your own instead — a critic’s range, ' +
+                'or your own judgement.'
+              : 'The export states no window for this wine. Type both years to set one.')));
+    }
+
     /* --- a market value of your own ----------------------------------
        Liv-ex is a clearing price and the export's comps are whatever BBR has
        to hand; neither is wrong, and on a mature or odd-sized lot they can
@@ -3190,15 +3253,6 @@ class App extends React.Component {
           : (bbr ? 'From the export, ' + (lot.livex ? 'Liv-ex' : 'a BBX or Wine-Searcher comp') +
                    '. Type a figure to use your own instead.'
                  : 'The export gives no mark for this wine. Type a figure to set one.')));
-    }
-
-    if (win.source === 'researched' && win.basis) {
-      kids.push(h('div', { key: 'wbasis', style: sx.note },
-        'Drinking window: ' + win.basis));
-    } else if (windowIsEstimated(win)) {
-      kids.push(h('div', { key: 'wbasis', style: sx.note },
-        'The export states no drinking window for this wine, and no published one has been ' +
-        'found, so this is an estimate from the vintage and the sub-region. Treat it as a hint.'));
     }
 
     kids.push(h('div', { key: 'fmt', style: sx.note },
