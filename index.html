@@ -2206,6 +2206,7 @@ class App extends React.Component {
     sheet: null, sheetArg: null,
     marketDraft: null,       /* { key, value } while a market value is being typed */
     windowDraft: null,       /* { key, from, to } while a window is being typed */
+    lotEdit: null,           /* the lot key whose sheet is open for editing */
     toastMsg: null, busy: null,
     localFile: false,        /* a cellar.local.csv sits next to index.html */
     homeFile: false,         /* and a home.local.csv beside it */
@@ -3044,6 +3045,133 @@ class App extends React.Component {
     return out;
   }
 
+  /* The two figures you can overrule, kept behind the Edit button on the
+     sheet. They are for the rare occasion when BBR is wrong about a wine,
+     not for reading, and left on show they pushed the estate notes - the
+     thing the sheet is actually for - below the fold on a phone. */
+  lotEditor(lot, win, mkt) {
+    const st = this.state;
+    const kids = [];
+    /* --- a drinking window of your own -------------------------------
+       The first precedence in windowOf() and, until now, the only one with no
+       way to set it. BBR's window is a house view and often a conservative
+       one; published criticism moves, and a wine the export calls finished in
+       2029 can have two critics putting it comfortably into the 2040s.
+
+       A pinned window is not cosmetic. stateOf() reads it, so it changes the
+       maturity state on every screen, where the wine sits on the Windows
+       timeline, and what the app tells you to drink next - which is the whole
+       purpose of the app. Both years are required, because half a window is
+       not one. */
+    {
+      const wd = (st.windowDraft && st.windowDraft.key === lot.key) ? st.windowDraft : null;
+      const pinned = win.source === 'yours';
+      const from = wd ? wd.from : (pinned ? String(win.from) : '');
+      const to = wd ? wd.to : (pinned ? String(win.to) : '');
+      const f = Math.round(num(from) || 0), t = Math.round(num(to) || 0);
+      const blank = !String(from).trim() && !String(to).trim();
+      const valid = f >= 1900 && t <= 2100 && f < t;
+      const draft = (patch) => this.setState({
+        windowDraft: { key: lot.key, from, to, ...patch },
+      });
+      /* Two rules, both learned the hard way.
+
+         Commit on leaving the PAIR, not on leaving a box. Moving from the
+         first box to the second blurs the first, and an earlier version
+         committed there: a half window, which is invalid, which cleared the
+         draft, so the year just typed vanished as the second box was tapped
+         and nothing could ever be pinned. A desktop test that filled both
+         boxes before firing one blur passed it happily.
+
+         Then: a half-typed window is not a request to clear the pin. Only
+         both boxes empty is. Anything in between leaves the note alone and
+         keeps the draft, which is also the safety net for a browser that
+         reports no relatedTarget on focusout - the typing survives either
+         way. */
+      const commit = (e) => {
+        if (e && e.currentTarget.contains(e.relatedTarget)) return;
+        if (!blank && !valid) return;
+        this.setState({ windowDraft: null });
+        if (valid) this.setNote(lot.key, { windowFrom: f, windowTo: t });
+        else if (pinned) this.setNote(lot.key, { windowFrom: null, windowTo: null });
+      };
+      const yearBox = (val, which) => h('input', {
+        key: which, style: { ...sx.input, flex: 1, minWidth: 0 },
+        inputMode: 'numeric', placeholder: which === 'from' ? 'from' : 'to', value: val,
+        onChange: e => draft({ [which]: e.target.value }),
+        onKeyDown: e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } },
+      });
+      kids.push(h('label', { key: 'w-set', style: { ...sx.label, flexShrink: 0, marginTop: 2 } }, [
+        h('span', { key: 'l' }, 'Drinking window'),
+        h('div', {
+          key: 'r', onBlur: commit,
+          style: { display: 'flex', gap: 8, alignItems: 'center' },
+        }, [
+          yearBox(from, 'from'),
+          h('span', { key: 'dash', style: { color: ink(0.45) } }, 'to'),
+          yearBox(to, 'to'),
+        ]),
+      ]));
+      kids.push(h('div', {
+        key: 'w-note',
+        /* CLARET rather than the closing rust: the rust is a maturity state,
+           not a warning, and at 11px it measures 4.4:1 where claret is 7.3. */
+        style: { flexShrink: 0, fontSize: 11, color: (!blank && !valid) ? CLARET : ink(0.5) },
+      },
+        (!blank && !valid)
+          ? 'Both years, the first before the second. Nothing is saved until then, and ' +
+            'emptying both boxes is how you remove a window of your own.'
+        : pinned
+          ? (lot.windowFrom
+              ? 'Yours. It sets the maturity state and the place on the timeline. BBR says ' +
+                lot.windowFrom + '–' + lot.windowTo + '; empty both boxes to go back to that.'
+              : 'Yours. The export states no window for this wine. Empty both boxes to remove it.')
+          : (lot.windowFrom
+              ? 'From the export. Type both years to use your own instead — a critic’s range, ' +
+                'or your own judgement.'
+              : 'The export states no window for this wine. Type both years to set one.')));
+    }
+
+    /* --- a market value of your own ----------------------------------
+       Liv-ex is a clearing price and the export's comps are whatever BBR has
+       to hand; neither is wrong, and on a mature or odd-sized lot they can
+       sit a third apart. Rather than change what the app prefers for every
+       wine, one wine can be told what it is worth.
+
+       It writes to notes, so an import never touches it, and it is used
+       everywhere the figure appears - this sheet, the Wines list, and the At
+       market total on every screen above it. */
+    {
+      const bbr = marketPerBottle(lot);
+      const draft = (st.marketDraft && st.marketDraft.key === lot.key) ? st.marketDraft.value
+        : (mkt.source === 'yours' ? String(mkt.perBottle) : '');
+      const commit = () => {
+        const v = num(draft);
+        this.setState({ marketDraft: null });
+        this.setNote(lot.key, { marketPerBottle: (v && v > 0) ? v : null });
+      };
+      kids.push(h('label', { key: 'mk-set', style: { ...sx.label, flexShrink: 0, marginTop: 2 } }, [
+        h('span', { key: 'l' }, 'Market value a bottle, in bond'),
+        h('input', {
+          key: 'i', style: sx.input, inputMode: 'decimal', placeholder: bbr ? money(bbr) : 'not priced',
+          value: draft,
+          onChange: e => this.setState({ marketDraft: { key: lot.key, value: e.target.value } }),
+          onBlur: commit,
+          onKeyDown: e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } },
+        }),
+      ]));
+      kids.push(h('div', { key: 'mk-note', style: { flexShrink: 0, fontSize: 11, color: ink(0.5) } },
+        mkt.source === 'yours'
+          ? (bbr ? 'Yours, used everywhere including the totals. BBR marks it at ' + money(bbr) +
+                   ' a bottle. Clear the box to go back to that.'
+                 : 'Yours. The export gives no mark for this wine at all. Clear the box to remove it.')
+          : (bbr ? 'From the export, ' + (lot.livex ? 'Liv-ex' : 'a BBX or Wine-Searcher comp') +
+                   '. Type a figure to use your own instead.'
+                 : 'The export gives no mark for this wine. Type a figure to set one.')));
+    }
+    return kids;
+  }
+
   renderLotSheet() {
     const st = this.state;
     const lot = this.lots().find(l => l.key === st.sheetArg);
@@ -3165,123 +3293,17 @@ class App extends React.Component {
         'found, so this is an estimate from the vintage and the sub-region. Treat it as a hint.'));
     }
 
-    /* --- a drinking window of your own -------------------------------
-       The first precedence in windowOf() and, until now, the only one with no
-       way to set it. BBR's window is a house view and often a conservative
-       one; published criticism moves, and a wine the export calls finished in
-       2029 can have two critics putting it comfortably into the 2040s.
-
-       A pinned window is not cosmetic. stateOf() reads it, so it changes the
-       maturity state on every screen, where the wine sits on the Windows
-       timeline, and what the app tells you to drink next - which is the whole
-       purpose of the app. Both years are required, because half a window is
-       not one. */
-    {
-      const wd = (st.windowDraft && st.windowDraft.key === lot.key) ? st.windowDraft : null;
-      const pinned = win.source === 'yours';
-      const from = wd ? wd.from : (pinned ? String(win.from) : '');
-      const to = wd ? wd.to : (pinned ? String(win.to) : '');
-      const f = Math.round(num(from) || 0), t = Math.round(num(to) || 0);
-      const blank = !String(from).trim() && !String(to).trim();
-      const valid = f >= 1900 && t <= 2100 && f < t;
-      const draft = (patch) => this.setState({
-        windowDraft: { key: lot.key, from, to, ...patch },
-      });
-      /* Two rules, both learned the hard way.
-
-         Commit on leaving the PAIR, not on leaving a box. Moving from the
-         first box to the second blurs the first, and an earlier version
-         committed there: a half window, which is invalid, which cleared the
-         draft, so the year just typed vanished as the second box was tapped
-         and nothing could ever be pinned. A desktop test that filled both
-         boxes before firing one blur passed it happily.
-
-         Then: a half-typed window is not a request to clear the pin. Only
-         both boxes empty is. Anything in between leaves the note alone and
-         keeps the draft, which is also the safety net for a browser that
-         reports no relatedTarget on focusout - the typing survives either
-         way. */
-      const commit = (e) => {
-        if (e && e.currentTarget.contains(e.relatedTarget)) return;
-        if (!blank && !valid) return;
-        this.setState({ windowDraft: null });
-        if (valid) this.setNote(lot.key, { windowFrom: f, windowTo: t });
-        else if (pinned) this.setNote(lot.key, { windowFrom: null, windowTo: null });
-      };
-      const yearBox = (val, which) => h('input', {
-        key: which, style: { ...sx.input, flex: 1, minWidth: 0 },
-        inputMode: 'numeric', placeholder: which === 'from' ? 'from' : 'to', value: val,
-        onChange: e => draft({ [which]: e.target.value }),
-        onKeyDown: e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } },
-      });
-      kids.push(h('label', { key: 'w-set', style: { ...sx.label, flexShrink: 0, marginTop: 2 } }, [
-        h('span', { key: 'l' }, 'Drinking window'),
-        h('div', {
-          key: 'r', onBlur: commit,
-          style: { display: 'flex', gap: 8, alignItems: 'center' },
-        }, [
-          yearBox(from, 'from'),
-          h('span', { key: 'dash', style: { color: ink(0.45) } }, 'to'),
-          yearBox(to, 'to'),
-        ]),
-      ]));
-      kids.push(h('div', {
-        key: 'w-note',
-        /* CLARET rather than the closing rust: the rust is a maturity state,
-           not a warning, and at 11px it measures 4.4:1 where claret is 7.3. */
-        style: { flexShrink: 0, fontSize: 11, color: (!blank && !valid) ? CLARET : ink(0.5) },
-      },
-        (!blank && !valid)
-          ? 'Both years, the first before the second. Nothing is saved until then, and ' +
-            'emptying both boxes is how you remove a window of your own.'
-        : pinned
-          ? (lot.windowFrom
-              ? 'Yours. It sets the maturity state and the place on the timeline. BBR says ' +
-                lot.windowFrom + '–' + lot.windowTo + '; empty both boxes to go back to that.'
-              : 'Yours. The export states no window for this wine. Empty both boxes to remove it.')
-          : (lot.windowFrom
-              ? 'From the export. Type both years to use your own instead — a critic’s range, ' +
-                'or your own judgement.'
-              : 'The export states no window for this wine. Type both years to set one.')));
-    }
-
-    /* --- a market value of your own ----------------------------------
-       Liv-ex is a clearing price and the export's comps are whatever BBR has
-       to hand; neither is wrong, and on a mature or odd-sized lot they can
-       sit a third apart. Rather than change what the app prefers for every
-       wine, one wine can be told what it is worth.
-
-       It writes to notes, so an import never touches it, and it is used
-       everywhere the figure appears - this sheet, the Wines list, and the At
-       market total on every screen above it. */
-    {
-      const bbr = marketPerBottle(lot);
-      const draft = (st.marketDraft && st.marketDraft.key === lot.key) ? st.marketDraft.value
-        : (mkt.source === 'yours' ? String(mkt.perBottle) : '');
-      const commit = () => {
-        const v = num(draft);
-        this.setState({ marketDraft: null });
-        this.setNote(lot.key, { marketPerBottle: (v && v > 0) ? v : null });
-      };
-      kids.push(h('label', { key: 'mk-set', style: { ...sx.label, flexShrink: 0, marginTop: 2 } }, [
-        h('span', { key: 'l' }, 'Market value a bottle, in bond'),
-        h('input', {
-          key: 'i', style: sx.input, inputMode: 'decimal', placeholder: bbr ? money(bbr) : 'not priced',
-          value: draft,
-          onChange: e => this.setState({ marketDraft: { key: lot.key, value: e.target.value } }),
-          onBlur: commit,
-          onKeyDown: e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } },
-        }),
-      ]));
-      kids.push(h('div', { key: 'mk-note', style: { flexShrink: 0, fontSize: 11, color: ink(0.5) } },
-        mkt.source === 'yours'
-          ? (bbr ? 'Yours, used everywhere including the totals. BBR marks it at ' + money(bbr) +
-                   ' a bottle. Clear the box to go back to that.'
-                 : 'Yours. The export gives no mark for this wine at all. Clear the box to remove it.')
-          : (bbr ? 'From the export, ' + (lot.livex ? 'Liv-ex' : 'a BBX or Wine-Searcher comp') +
-                   '. Type a figure to use your own instead.'
-                 : 'The export gives no mark for this wine. Type a figure to set one.')));
-    }
+    /* Keyed by lot rather than a bare boolean, so opening another wine
+       always comes up in the reading view. */
+    const editing = st.lotEdit === lot.key;
+    kids.push(h('button', {
+      key: 'edit',
+      onClick: () => this.setState({
+        lotEdit: editing ? null : lot.key, windowDraft: null, marketDraft: null,
+      }),
+      style: { ...btn('plain'), alignSelf: 'flex-start', flexShrink: 0, marginTop: 2 },
+    }, editing ? 'Done' : 'Edit window and value'));
+    if (editing) kids.push(...this.lotEditor(lot, win, mkt));
 
     kids.push(h('div', { key: 'fmt', style: sx.note },
       lot.format + ', ' + lot.volumeCl + 'cl, in cases of ' + (lot.caseSize || '?') +
