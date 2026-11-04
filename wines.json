@@ -563,7 +563,8 @@
     {
       "slug": "rossignol-trapet-teurons",
       "match": [
-        "rossignol-trapet"
+        "rossignol-trapet",
+        "teurons"
       ],
       "name": "Domaine Rossignol-Trapet, Beaune Les Teurons 1er Cru",
       "say": "ross-een-YOL tra-PAY, tuh-RON",
@@ -574,6 +575,22 @@
       "producer": "Rossignol-Trapet, biodynamic since the 2000s, run by the brothers Nicolas and David. Whole-bunch, gentle extraction, and a light hand with oak.",
       "style": "Fragrant and red-fruited with a fine chalky grip and considerable energy. Transparent, cool-toned Burgundy rather than a rich one.",
       "drink": "Drinks well from four years and holds ten or more. Serve cool."
+    },
+    {
+      "slug": "rossignol-trapet-etelois",
+      "match": [
+        "rossignol-trapet",
+        "etelois"
+      ],
+      "name": "Domaine Rossignol-Trapet, Gevrey-Chambertin Aux Etelois",
+      "say": "ross-een-YOL tra-PAY, oh-zay-tuh-LWAH",
+      "appellation": "Gevrey-Chambertin",
+      "rank": "Village lieu-dit",
+      "grapes": "Pinot Noir",
+      "estate": "Aux Ételois is a third of a hectare in the wedge of village land that pushes up between the grand crus Griotte-Chambertin and Charmes-Chambertin. The classification follows where the line was drawn rather than what the ground is: the same stony mid-slope as its neighbours, on the Griotte side of it. The name is from the Latin for a hut rather than from étoile.",
+      "producer": "Rossignol-Trapet, biodynamic since the 2000s, run by the brothers Nicolas and David. They bought this parcel in 1997 and the vines are now around fifty years old. Whole-bunch, gentle extraction, about a quarter new oak. This is the Gevrey end of the domaine that makes its Beaune a bargain.",
+      "style": "Pressed flowers and dark cherry over the Gevrey signature of iron and earth. Medium-bodied, with firm and faintly dry tannins and real grip — structure before charm, and more serious than a village label suggests.",
+      "drink": "Open now but still tightly wound. Best from about five years in and good for a decade beyond that; the 2019 structure in particular rewards waiting."
     },
     {
       "slug": "bitouzet-prieur-pitures",
