@@ -593,6 +593,21 @@
       "drink": "Open now but still tightly wound. Best from about five years in and good for a decade beyond that; the 2019 structure in particular rewards waiting."
     },
     {
+      "slug": "serafin-gevrey-vv",
+      "match": [
+        "serafin"
+      ],
+      "name": "Domaine Sérafin Père & Fils, Gevrey-Chambertin Vieilles Vignes",
+      "say": "say-ra-FAN, zhev-RAY shom-bair-TAN",
+      "appellation": "Gevrey-Chambertin",
+      "rank": "Village, old-vine cuvée",
+      "grapes": "Pinot Noir",
+      "estate": "A village wine only on paper. The cuvée is drawn from parcels that sit against Griotte-Chambertin, Petite Chapelle, Les Crais and Champeaux, and the vines are at least seventy years old with some approaching a century. Yields from wood that age are tiny, which is where the concentration comes from.",
+      "producer": "Christian Sérafin took the domaine on in 1988 and made it a byword for dark, oak-framed Gevrey; it is now in the hands of Karine Sérafin and Frédérique Goulley. Around seventy per cent destemmed, a cool maceration, no filtration, and from this cuvée upwards one hundred per cent new oak — a deliberate house signature rather than an excess, and the thing people argue about.",
+      "style": "Dense and dark-fruited, with the Gevrey iron underneath and a conspicuous frame of new wood over the top. The opposite pole from the Rossignol-Trapet in this cellar: where that is transparent and cool-toned, this is built and polished. Both are Gevrey; only one of them tastes of the cellar it was raised in.",
+      "drink": "Needs the oak to be absorbed, which takes the best part of a decade. The export allows it to 2042 and that is not optimistic for old vines in a vintage like this. Decant young bottles well ahead."
+    },
+    {
       "slug": "bitouzet-prieur-pitures",
       "match": [
         "bitouzet-prieur"
